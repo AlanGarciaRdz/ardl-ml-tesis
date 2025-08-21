@@ -166,7 +166,7 @@ Una vez ejecutada la aplicación, la documentación interactiva estará disponib
 Estudiante de Maestría en Ingeniería en Ciencia de Datos
 
 ### Contacto
-- **Email**: [alan.garcia2009@alumnos.udg.m]
+- **Email**: [alan.garcia2009@alumnos.udg.mx]
 - **LinkedIn**: [https://www.linkedin.com/in/alan-garc%C3%ADa-rodr%C3%ADguez-9a46752a/]
 - **GitHub**: [https://github.com/AlanGarciaRdz]
 

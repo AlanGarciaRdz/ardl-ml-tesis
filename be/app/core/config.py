@@ -1,9 +1,10 @@
 from typing import List, Union
-from pydantic import AnyHttpUrl, BaseSettings, validator
+from pydantic import AnyHttpUrl, validator
+from pydantic_settings import BaseSettings
 
 class Settings(BaseSettings):
     API_V1_STR: str = "/api/v1"
-    PROJECT_NAME: str = "FastAPI Backend"
+    PROJECT_NAME: str = "Time Series Analysis API"
     VERSION: str = "1.0.0"
     
     # CORS
@@ -17,13 +18,9 @@ class Settings(BaseSettings):
             return v
         raise ValueError(v)
 
-    # Database
-    DATABASE_URL: str = "postgresql://user:password@localhost:5432/dbname"
-    
-    # Security
-    SECRET_KEY: str = "your-secret-key-here"
-    ALGORITHM: str = "HS256"
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
+    # Supabase Configuration
+    SUPABASE_URL: str = "your-supabase-url"
+    SUPABASE_KEY: str = "your-supabase-anon-key"
     
     # Environment
     ENVIRONMENT: str = "development"

@@ -1,17 +1,36 @@
-from supabase import create_client, Client
+from sqlalchemy import create_engine, text
+from sqlalchemy.engine import Engine
 from app.core.config import settings
 
-# Initialize Supabase client only if credentials are provided
-try:
-    if settings.SUPABASE_URL and settings.SUPABASE_URL != "your-supabase-url":
-        supabase: Client = create_client(settings.SUPABASE_URL, settings.SUPABASE_KEY)
-    else:
-        supabase = None
-except Exception:
-    supabase = None
+# Initialize PostgreSQL engine
+engine: Engine = None
 
-def get_supabase_client() -> Client:
-    """Get Supabase client instance."""
-    if supabase is None:
-        raise Exception("Supabase not configured. Please set SUPABASE_URL and SUPABASE_KEY in your .env file")
-    return supabase
+def get_database_engine() -> Engine:
+    """Get PostgreSQL database engine instance."""
+    global engine
+    if engine is None:
+        try:
+            engine = create_engine(
+                settings.DATABASE_URL,
+                pool_pre_ping=True,
+                pool_recycle=300,
+                echo=settings.DEBUG
+            )
+        except Exception as e:
+            raise Exception(f"Failed to connect to PostgreSQL: {str(e)}")
+    return engine
+
+def get_database_connection():
+    """Get a database connection."""
+    engine = get_database_engine()
+    return engine.connect()
+
+def test_connection():
+    """Test the database connection."""
+    try:
+        with get_database_connection() as conn:
+            result = conn.execute(text("SELECT 1"))
+            return True
+    except Exception as e:
+        print(f"Database connection failed: {str(e)}")
+        return False

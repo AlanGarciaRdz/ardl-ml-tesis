@@ -3,9 +3,9 @@ from pydantic import AnyHttpUrl, validator
 from pydantic_settings import BaseSettings
 
 class Settings(BaseSettings):
-    API_V1_STR: str = "/api/v1"
-    PROJECT_NAME: str = "Time Series Analysis API"
-    VERSION: str = "1.0.0"
+    API_V1_STR: str
+    PROJECT_NAME: str
+    VERSION: str
     
     # CORS
     BACKEND_CORS_ORIGINS: List[AnyHttpUrl] = []
@@ -18,12 +18,20 @@ class Settings(BaseSettings):
             return v
         raise ValueError(v)
 
-    # Supabase Configuration
-    SUPABASE_URL: str = "your-supabase-url"
-    SUPABASE_KEY: str = "your-supabase-anon-key"
+    # PostgreSQL Configuration
+    POSTGRES_HOST: str
+    POSTGRES_PORT: int
+    POSTGRES_DB: str
+    POSTGRES_USER: str
+    POSTGRES_PASSWORD: str
+    
+    # Database URL
+    @property
+    def DATABASE_URL(self) -> str:
+        return f"postgresql://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}@{self.POSTGRES_HOST}:{self.POSTGRES_PORT}/{self.POSTGRES_DB}"
     
     # Environment
-    ENVIRONMENT: str = "development"
+    ENVIRONMENT: str
     DEBUG: bool = True
 
     class Config:

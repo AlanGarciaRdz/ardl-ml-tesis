@@ -202,10 +202,3 @@ tmp/
 *.swp
 *.swo
 *~
-
-# Project specific
-data/
-ml/
-notebooks/
-fe/
-docs/

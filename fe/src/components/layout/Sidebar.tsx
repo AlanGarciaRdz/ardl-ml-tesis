@@ -9,11 +9,11 @@ import {
 import logo from '@/assets/images/logo1.png'
 
 const navigation = [
-  { name: 'Dashboard', href: '/', icon: Home },
-  { name: 'Data Explorer', href: '/data', icon: Database },
-  { name: 'Analytics', href: '/analytics', icon: BarChart3 },
-  { name: 'Forecasting', href: '/forecasting', icon: TrendingUp },
-  { name: 'Settings', href: '/settings', icon: Settings },
+  { name: 'Dashboard', href: '/dashboard', icon: Home },
+  { name: 'Data Explorer', href: '/dashboard/data', icon: Database },
+  { name: 'Analytics', href: '/dashboard/analytics', icon: BarChart3 },
+  { name: 'Forecasting', href: '/dashboard/forecasting', icon: TrendingUp },
+  { name: 'Settings', href: '/dashboard/settings', icon: Settings },
 ]
 
 export function Sidebar() {

@@ -6,14 +6,14 @@ export function Dashboard() {
     <div className="space-y-6">
       <div>
         <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
-        <p className="text-gray-600">Welcome to your Steel project dashboard</p>
+        <p className="text-gray-600">Welcome the pitiax project dashboard</p>
       </div>
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <Card size="2" className="custom-card">
           <Flex justify="between" align="center" className="pb-2">
-            <Text size="2" weight="medium">Cotizaciones</Text>
+            <Text size="2" weight="medium">Quotes</Text>
             <Database className="h-4 w-4 text-gray-400" />
           </Flex>
           <div className="text-2xl font-bold">12,847</div>

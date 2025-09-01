@@ -10,7 +10,17 @@ app = FastAPI(
 )
 
 # Set up CORS
-if settings.BACKEND_CORS_ORIGINS:
+if settings.ENVIRONMENT == "development":
+    # Allow all origins in development
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=["*"],
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
+elif settings.BACKEND_CORS_ORIGINS:
+    # Use specific origins in production
     app.add_middleware(
         CORSMiddleware,
         allow_origins=[str(origin) for origin in settings.BACKEND_CORS_ORIGINS],

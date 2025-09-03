@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import axios from 'axios'
 import { Card, Text, Heading, Button, TextField, Flex } from '@radix-ui/themes'
-import { Search, Filter, Download, Loader2 } from 'lucide-react'
+import { Loader2 } from 'lucide-react'
 
 // Types for the API response
 interface MaterialPrice {
@@ -50,7 +50,7 @@ const fetchMaterialPrices = async (params: {
 }
 
 export function DataExplorer() {
-  const [searchTerm, setSearchTerm] = useState('')
+  const [searchTerm] = useState('')
   const [currentPage, setCurrentPage] = useState(0)
   const [startDate, setStartDate] = useState('')
   const [endDate, setEndDate] = useState('')
@@ -79,18 +79,18 @@ export function DataExplorer() {
     item.hrcc1.toString().includes(searchTerm)
   ) || []
 
-  const handleDateFilter = () => {
-    setCurrentPage(0) // Reset to first page when filtering
-    refetch()
-  }
+  // const handleDateFilter = () => {
+  //   setCurrentPage(0) // Reset to first page when filtering
+  //   refetch()
+  // }
 
-  const handleClearFilters = () => {
-    setStartDate('')
-    setEndDate('')
-    setSearchTerm('')
-    setCurrentPage(0)
-    refetch()
-  }
+  // const handleClearFilters = () => {
+  //   setStartDate('')
+  //   setEndDate('')
+  //   setSearchTerm('')
+  //   setCurrentPage(0)
+  //   refetch()
+  // }
 
   if (error) {
     return (

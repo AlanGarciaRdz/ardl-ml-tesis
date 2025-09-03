@@ -14,10 +14,14 @@ const queryClient = new QueryClient({
   },
 })
 
+
+const basename = '/acero';//import.meta.env.PROD ? '/acero' : '/'
+
+
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
+    <BrowserRouter basename={basename}>
         <App />
       </BrowserRouter>
     </QueryClientProvider>

@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom'
 import { Button } from '@radix-ui/themes'
-import { ArrowRight, BarChart3, Database, TrendingUp, Shield, Globe, Factory, Zap, Users, Award, ChevronRight } from 'lucide-react'
+import { BarChart3, Database, TrendingUp, Shield, Globe, Factory, Zap, Users, Award, ChevronRight } from 'lucide-react'
 
 export function Landing() {
     const navigate = useNavigate()
@@ -70,7 +70,6 @@ export function Landing() {
                   className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white px-8 py-4 text-lg font-semibold shadow-2xl transform hover:scale-105 transition-all duration-300"
                 >
                   Comenzar Ahora
-                  <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
                 <Button 
                   size="4" 
@@ -390,7 +389,7 @@ export function Landing() {
                 className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white px-10 py-4 text-lg font-semibold shadow-2xl transform hover:scale-105 transition-all duration-300"
               >
                 Acceder al Dashboard
-                <ArrowRight className="ml-2 h-5 w-5" />
+                
               </Button>
               <Button 
                 size="4" 

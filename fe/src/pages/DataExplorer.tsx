@@ -54,7 +54,7 @@ const fetchMaterialPrices = async (params: {
 export function DataExplorer() {
   const [searchTerm] = useState('')
   const [currentPage, setCurrentPage] = useState(0)
-  const [startDate, setStartDate] = useState('2025-06-01')
+  const [startDate, setStartDate] = useState('2025-01-01')
   const [endDate, setEndDate] = useState('2025-09-23')
   const pageSize = 50 
 

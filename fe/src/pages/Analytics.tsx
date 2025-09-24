@@ -4,6 +4,8 @@ import { TrendingUp, BarChart3, PieChart, Activity, RefreshCw } from 'lucide-rea
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
 import axios from 'axios'
 import { useQuery } from '@tanstack/react-query'
+import 'katex/dist/katex.min.css'
+import { InlineMath, BlockMath } from 'react-katex'
 
 // Types for the API response
 interface MaterialPrice {
@@ -132,6 +134,8 @@ export function Analytics() {
                       <YAxis 
                         tick={{ fontSize: 12 }}
                         tickFormatter={(value) => `$${value.toLocaleString()}`}
+                        domain={['dataMin - 100', 'dataMax + 100']}
+                        allowDataOverflow
                       />
                       <Tooltip 
                         formatter={(value: number, name: string) => [
@@ -151,21 +155,21 @@ export function Analytics() {
                         dataKey="Varilla Distribuidor" 
                         stroke="#3b82f6" 
                         strokeWidth={2}
-                        dot={{ r: 4 }}
+                        dot={{ r: 1 }}
                       />
                       <Line 
                         type="monotone" 
                         dataKey="Varilla Crédito" 
                         stroke="#10b981" 
                         strokeWidth={2}
-                        dot={{ r: 4 }}
+                        dot={{ r: 1 }}
                       />
                       <Line 
                         type="monotone" 
                         dataKey="Precio Mercado" 
                         stroke="#f59e0b" 
                         strokeWidth={2}
-                        dot={{ r: 4 }}
+                        dot={{ r: 1 }}
                       />
                     </LineChart>
                   </ResponsiveContainer>
@@ -197,9 +201,15 @@ export function Analytics() {
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="text-center">
-              <div className="text-2xl font-bold text-blue-600">0.87</div>
+              <div className="text-2xl font-bold text-blue-600">0.43337</div>
               <p className="text-sm text-gray-600">Correlation Coefficient</p>
-              <p className="text-xs text-gray-500">Copper vs. Gold</p>
+              <p className="text-xs text-gray-500">Gas vs. Rebar </p>
+              <div className="mt-2 text-xs text-gray-400">
+               {/* Pearson correlation formula */}
+                <BlockMath math={
+                  String.raw`r = \frac{\text{Cov}(X,Y)}{\sigma_X \cdot \sigma_Y}`
+                } />
+              </div>
             </div>
             <div className="text-center">
               <div className="text-2xl font-bold text-green-600">12.3%</div>

@@ -1,6 +1,34 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { TrendingUp, BarChart3, PieChart, Activity } from 'lucide-react'
+import { TrendingUp, BarChart3, PieChart, Activity, RefreshCw } from 'lucide-react'
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
+import axios from 'axios'
+import { useQuery } from '@tanstack/react-query'
+
+// Types for the API response
+interface MaterialPrice {
+  id: number
+  date: string
+  varilla_distribuidor: number
+  varilla_credito: number
+  precio_mercado: number
+}
+
+interface ApiResponse {
+  data: MaterialPrice[]
+  total_count: number
+  limit: number
+  offset: number
+}
+
+// API function to fetch data
+const fetchMaterialPrices = async (): Promise<ApiResponse> => {
+  const response = await axios.get('http://127.0.0.1:8000/api/v1/data/?table_name=precios_materiales&start_date=2025-01-01&end_date=2025-09-23')
+  return response.data
+}
+
+
+
 
 export function Analytics() {
   return (
@@ -40,15 +68,110 @@ export function Analytics() {
 
       {/* Main Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card>
+      <Card>
           <CardHeader>
             <CardTitle>Price Trends Analysis</CardTitle>
             <CardDescription>Material price movements over time</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="h-80 flex items-center justify-center text-gray-500">
-              Chart placeholder - Interactive price trends chart
-            </div>
+            {(() => {
+              const { data, isLoading, error, refetch } = useQuery({
+                queryKey: ['materialPrices'],
+                queryFn: fetchMaterialPrices,
+                refetchInterval: 30000, // Refetch every 30 seconds
+              })
+
+              // Transform data for the chart
+              const chartData = data?.data?.map(item => ({
+                date: new Date(item.date).toLocaleDateString('es-MX', { 
+                  month: 'short', 
+                  day: 'numeric' 
+                }),
+                fullDate: item.date,
+                'Varilla Distribuidor': item.varilla_distribuidor,
+                'Varilla Crédito': item.varilla_credito,
+                'Precio Mercado': item.precio_mercado,
+              })) || [] // Reverse to show chronological order
+
+              if (isLoading) {
+                return (
+                  <div className="h-80 flex items-center justify-center">
+                    <div className="flex items-center space-x-2">
+                      <RefreshCw className="h-4 w-4 animate-spin" />
+                      <span>Loading data...</span>
+                    </div>
+                  </div>
+                )
+              }
+
+              if (error) {
+                return (
+                  <div className="h-80 flex items-center justify-center text-red-500">
+                    <div className="text-center">
+                      <p>Error loading data</p>
+                      <Button variant="outline" onClick={() => refetch()} className="mt-2">
+                        Try Again
+                      </Button>
+                    </div>
+                  </div>
+                )
+              }
+
+              return (
+                <div className="h-80">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <LineChart data={chartData}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis 
+                        dataKey="date" 
+                        tick={{ fontSize: 12 }}
+                        angle={-45}
+                        textAnchor="end"
+                        height={60}
+                      />
+                      <YAxis 
+                        tick={{ fontSize: 12 }}
+                        tickFormatter={(value) => `$${value.toLocaleString()}`}
+                      />
+                      <Tooltip 
+                        formatter={(value: number, name: string) => [
+                          `$${value.toLocaleString()}`, 
+                          name
+                        ]}
+                        labelFormatter={(label, payload) => {
+                          if (payload && payload[0]) {
+                            return `Date: ${payload[0].payload.fullDate}`
+                          }
+                          return label
+                        }}
+                      />
+                      <Legend />
+                      <Line 
+                        type="monotone" 
+                        dataKey="Varilla Distribuidor" 
+                        stroke="#3b82f6" 
+                        strokeWidth={2}
+                        dot={{ r: 4 }}
+                      />
+                      <Line 
+                        type="monotone" 
+                        dataKey="Varilla Crédito" 
+                        stroke="#10b981" 
+                        strokeWidth={2}
+                        dot={{ r: 4 }}
+                      />
+                      <Line 
+                        type="monotone" 
+                        dataKey="Precio Mercado" 
+                        stroke="#f59e0b" 
+                        strokeWidth={2}
+                        dot={{ r: 4 }}
+                      />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </div>
+              )
+            })()}
           </CardContent>
         </Card>
 

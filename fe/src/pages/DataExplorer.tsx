@@ -24,9 +24,11 @@ interface MaterialPrice {
 
 interface ApiResponse {
   data: MaterialPrice[]
-  total: number
+  total_count: number
+  table_name: string
   limit: number
   offset: number
+  message: string
 }
 
 // API function to fetch data
@@ -52,8 +54,8 @@ const fetchMaterialPrices = async (params: {
 export function DataExplorer() {
   const [searchTerm] = useState('')
   const [currentPage, setCurrentPage] = useState(0)
-  const [startDate, setStartDate] = useState('')
-  const [endDate, setEndDate] = useState('')
+  const [startDate, setStartDate] = useState('2025-06-01')
+  const [endDate, setEndDate] = useState('2025-09-23')
   const pageSize = 50 
 
   // Fetch data using React Query
@@ -180,7 +182,7 @@ export function DataExplorer() {
       <Card size="2">
         <Heading size="4">Material Prices</Heading>
         <Text size="2" color="gray">
-          {isLoading ? 'Loading data...' : `Showing ${filteredData.length} of ${data?.total || 0} records`}
+          {isLoading ? 'Loading data...' : `Showing ${filteredData.length} of ${data?.total_count || 0} records`}
         </Text>
         
         {isLoading ? (
@@ -193,31 +195,34 @@ export function DataExplorer() {
             <table className="w-full">
               <thead>
                 <tr className="border-b">
-                  <th className="text-left py-3 px-4 font-medium">Date</th>
-                  <th className="text-left py-3 px-4 font-medium">Scrap (USD)</th>
-                  <th className="text-left py-3 px-4 font-medium">Gas (USD)</th>
-                  <th className="text-left py-3 px-4 font-medium">Rebar (USD)</th>
-                  <th className="text-left py-3 px-4 font-medium">HRCC1 (USD)</th>
-                  <th className="text-left py-3 px-4 font-medium">Exchange Rate</th>
-                  <th className="text-left py-3 px-4 font-medium">Market Price (MXN)</th>
-                  <th className="text-left py-3 px-4 font-medium">Actions</th>
+                  <th className="text-left py-3 px-4 font-medium">Date (YYYY-MM-DD)</th>
+                  <th className="text-left py-3 px-4 font-medium">Scrap (MXN)</th>
+                  <th className="text-left py-3 px-4 font-medium">Gas (MXN)</th>
+                  <th className="text-left py-3 px-4 font-medium">Rebar (MXN)</th>
+                  <th className="text-left py-3 px-4 font-medium">HRCC1 (MXN)</th>
+                  <th className="text-left py-3 px-4 font-medium">Varilla Credito (MXN)</th>
+                  <th className="text-left py-3 px-4 font-medium">Varilla Distribuidor (MXN)</th>
+                  <th className="text-left py-3 px-4 font-medium">Precio Mercado (MXN)</th>
+                  {/* <th className="text-left py-3 px-4 font-medium">Actions</th> */}
                 </tr>
               </thead>
               <tbody>
                 {filteredData.map((item) => (
                   <tr key={item.id} className="border-b hover:bg-gray-50">
                     <td className="py-3 px-4 font-medium">{item.date}</td>
-                    <td className="py-3 px-4">${item.scrap.toFixed(2)}</td>
-                    <td className="py-3 px-4">${item.gas.toFixed(2)}</td>
-                    <td className="py-3 px-4">${item.rebar.toFixed(2)}</td>
-                    <td className="py-3 px-4">${item.hrcc1.toFixed(2)}</td>
-                    <td className="py-3 px-4 text-gray-600">${item.tipo_de_cambio.toFixed(2)}</td>
+                    <td className="py-3 px-4">${item.scrap_mxn.toFixed(2)}</td>
+                    <td className="py-3 px-4">${item.gas_mxn.toFixed(2)}</td>
+                    <td className="py-3 px-4">${item.rebar_mxn.toFixed(2)}</td>
+                    <td className="py-3 px-4">${item.hrcc1_mxn.toFixed(2)}</td>
+                    <td className="py-3 px-4 font-semibold">${item.varilla_credito.toLocaleString()}</td>
+                    <td className="py-3 px-4 font-semibold">${item.varilla_distribuidor.toLocaleString()}</td>
                     <td className="py-3 px-4 font-semibold">${item.precio_mercado.toLocaleString()}</td>
-                    <td className="py-3 px-4">
+                    
+                    {/* <td className="py-3 px-4">
                       <Button variant="ghost" size="1">
                         View Details
                       </Button>
-                    </td>
+                    </td> */}
                   </tr>
                 ))}
               </tbody>
@@ -226,10 +231,10 @@ export function DataExplorer() {
         )}
 
         {/* Pagination */}
-        {data && data.total > pageSize && (
+        {data && data.total_count > pageSize && (
           <div className="flex justify-between items-center mt-4">
             <Text size="2" color="gray">
-              Page {currentPage + 1} of {Math.ceil(data.total / pageSize)}
+              Page {currentPage + 1} of {Math.ceil(data.total_count / pageSize)}
             </Text>
             <Flex gap="2">
               <Button 
@@ -242,7 +247,7 @@ export function DataExplorer() {
               <Button 
                 variant="outline" 
                 onClick={() => setCurrentPage(prev => prev + 1)}
-                disabled={currentPage >= Math.ceil(data.total / pageSize) - 1 || isLoading}
+                disabled={currentPage >= Math.ceil(data.total_count / pageSize) - 1 || isLoading}
               >
                 Next
               </Button>
@@ -255,21 +260,22 @@ export function DataExplorer() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <Card size="2" className="custom-card">
           <Heading size="3">Total Records</Heading>
-          <div className="text-2xl font-bold mt-2">{data?.total || 0}</div>
+
+          <div className="text-2xl font-bold mt-2">{data?.total_count || 0}</div>
           <Text size="1" color="gray">Historical records available</Text>
         </Card>
 
         <Card size="2" className="custom-card">
           <Heading size="3">Date Range</Heading>
           <div className="text-2xl font-bold mt-2">
-            {data?.data?.[0]?.date?.split('-')[0] || 'N/A'} - {data?.data?.[data.data.length - 1]?.date?.split('-')[0] || 'N/A'}
+            {data?.data?.[0]?.date || 'N/A'} – {data?.data?.[data?.data?.length - 1]?.date || 'N/A'}
           </div>
           <Text size="1" color="gray">Data coverage period</Text>
         </Card>
 
         <Card size="2" className="custom-card">
           <Heading size="3">Last Updated</Heading>
-          <div className="text-2xl font-bold mt-2">{data?.data?.[0]?.date || 'N/A'}</div>
+          <div className="text-2xl font-bold mt-2">{data?.data?.[data?.data?.length - 1]?.date || 'N/A'}</div>
           <Text size="1" color="gray">Most recent data</Text>
         </Card>
       </div>

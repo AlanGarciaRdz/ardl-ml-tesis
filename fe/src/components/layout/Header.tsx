@@ -1,5 +1,6 @@
 import { Bell, User } from 'lucide-react'
 import { Button, Flex } from '@radix-ui/themes'
+import { LanguageSwitcher } from '../LanguageSwitcher'
 
 export function Header() {
   return (
@@ -10,6 +11,8 @@ export function Header() {
         </div>
         
         <Flex gap="4" align="center">
+          <LanguageSwitcher />
+          
           <Button variant="ghost" size="2">
             <Bell className="h-5 w-5" />
           </Button>

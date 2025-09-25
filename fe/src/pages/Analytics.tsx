@@ -46,13 +46,13 @@ interface CorrelationResponse {
 const fetchMaterialPrices = async (startDate?: string, endDate?: string): Promise<ApiResponse> => {
   const params = new URLSearchParams({
     table_name: 'precios_materiales',
-    limit: '100'
+    limit: '200'
   })
   
   if (startDate) params.append('start_date', startDate)
   if (endDate) params.append('end_date', endDate)
   
-  const response = await axios.get(`http://127.0.0.1:8000/api/v1/data/?table_name=precios_materiales&${params}`)
+  const response = await axios.get(`http://127.0.0.1:8000/api/v1/data/?${params}`)
   return response.data
 }
 
@@ -85,7 +85,9 @@ export function Analytics() {
   const { data, isLoading, error, refetch } = useQuery({
     queryKey: ['materialPrices', startDate, endDate],
     queryFn: () => fetchMaterialPrices(startDate, endDate),
-    refetchInterval: 30000,
+    refetchInterval: false,
+    staleTime: 0, // Force refetch when dates change
+    gcTime: 0, // Don't cache results
   })
 
   const handleCorrelationCalculation = async () => {
@@ -280,7 +282,7 @@ export function Analytics() {
                       [t('analytics.varillaDistribuidor')]: item.varilla_distribuidor,
                       [t('analytics.varillaCredito')]: item.varilla_credito,
                       [t('analytics.precioMercado')]: item.precio_mercado,
-                    })).reverse() || [] // Reverse to show chronological order
+                    })) || [] 
                     return chartData
                   })()}>
                       <CartesianGrid strokeDasharray="3 3" />
@@ -335,7 +337,7 @@ export function Analytics() {
                   </ResponsiveContainer>
                 </div>
               )
-            })()
+            }
           </CardContent>
         </Card>
 

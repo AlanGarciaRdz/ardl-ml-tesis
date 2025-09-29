@@ -353,7 +353,7 @@ export function Landing() {
                 <div className="bg-[#2596be]/5 rounded-xl p-4">
                   <div className="text-sm text-gray-500 mb-2">Alerta Activa</div>
                   <div className="text-lg font-bold text-[#2596be]">Precio Objetivo</div>
-                  <div className="text-sm text-gray-600">$17,500 MXN/ton</div>
+                  <div className="text-sm text-gray-600">$13,100 MXN/ton</div>
                 </div>
                 
                 <div className="bg-[#2596be]/5 rounded-xl p-4">

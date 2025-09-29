@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { TrendingUp, BarChart3, PieChart, Activity, RefreshCw, Calculator } from 'lucide-react'
+import {  RefreshCw, Calculator } from 'lucide-react'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
 import axios from 'axios'
 import { useQuery } from '@tanstack/react-query'
@@ -157,95 +157,10 @@ export function Analytics() {
         </CardContent>
       </Card>
 
-      {/* Correlation Calculator */}
-      <Card>
-        <CardHeader>
-          <CardTitle>{t('analytics.correlationAnalysis')}</CardTitle>
-          <CardDescription>{t('analytics.correlationDescription')}</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            <div className="flex flex-wrap gap-4 items-end">
-              <div className="flex flex-col space-y-2">
-                <Label htmlFor="field1">{t('analytics.firstField')}</Label>
-                <select
-                  id="field1"
-                  value={correlationField1}
-                  onChange={(e) => setCorrelationField1(e.target.value)}
-                  className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                  {fieldOptions.map(option => (
-                    <option key={option.value} value={option.value}>
-                      {option.label}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div className="flex flex-col space-y-2">
-                <Label htmlFor="field2">{t('analytics.secondField')}</Label>
-                <select
-                  id="field2"
-                  value={correlationField2}
-                  onChange={(e) => setCorrelationField2(e.target.value)}
-                  className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                  {fieldOptions.map(option => (
-                    <option key={option.value} value={option.value}>
-                      {option.label}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <Button 
-                onClick={handleCorrelationCalculation}
-                disabled={isCalculatingCorrelation || !data?.data}
-              >
-                <Calculator className={`h-4 w-4 mr-2 ${isCalculatingCorrelation ? 'animate-spin' : ''}`} />
-                {t('analytics.calculateCorrelation')}
-              </Button>
-            </div>
-            
-            {correlationResult && (
-              <div className="mt-4 p-4 bg-blue-50 rounded-lg">
-                <h4 className="font-semibold text-blue-900 mb-2">{t('analytics.correlationResults')}</h4>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <p className="text-sm text-gray-600">{t('analytics.correlationCoefficient')}:</p>
-                    <p className="text-2xl font-bold text-blue-600">
-                      {correlationResult.correlation_coefficient.toFixed(6)}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-600">{t('analytics.interpretation')}:</p>
-                    <p className="text-sm font-medium text-blue-800">
-                      {correlationResult.interpretation}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-600">{t('analytics.pValue')}:</p>
-                    <p className="text-sm font-medium">
-                      {correlationResult.p_value.toFixed(6)}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-600">{t('analytics.sampleSize')}:</p>
-                    <p className="text-sm font-medium">
-                      {correlationResult.sample_size} {t('analytics.dataPoints')}
-                    </p>
-                  </div>
-                </div>
-                <div className="mt-3">
-                  <p className="text-sm text-gray-600 mb-2">{t('analytics.pearsonFormula')}:</p>
-                  <InlineMath math="r = \frac{\sum_{i=1}^{n}(x_i - \bar{x})(y_i - \bar{y})}{\sqrt{\sum_{i=1}^{n}(x_i - \bar{x})^2 \sum_{i=1}^{n}(y_i - \bar{y})^2}}" />
-                </div>
-              </div>
-            )}
-          </div>
-        </CardContent>
-      </Card>
+      
 
       {/* Main Charts */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-1 gap-12">
         <Card>
           <CardHeader>
             <CardTitle>{t('analytics.priceTrendsAnalysis')}</CardTitle>
@@ -353,6 +268,93 @@ export function Analytics() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Correlation Calculator */}
+      <Card>
+        <CardHeader>
+          <CardTitle>{t('analytics.correlationAnalysis')}</CardTitle>
+          <CardDescription>{t('analytics.correlationDescription')}</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            <div className="flex flex-wrap gap-4 items-end">
+              <div className="flex flex-col space-y-2">
+                <Label htmlFor="field1">{t('analytics.firstField')}</Label>
+                <select
+                  id="field1"
+                  value={correlationField1}
+                  onChange={(e) => setCorrelationField1(e.target.value)}
+                  className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  {fieldOptions.map(option => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="flex flex-col space-y-2">
+                <Label htmlFor="field2">{t('analytics.secondField')}</Label>
+                <select
+                  id="field2"
+                  value={correlationField2}
+                  onChange={(e) => setCorrelationField2(e.target.value)}
+                  className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  {fieldOptions.map(option => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <Button 
+                onClick={handleCorrelationCalculation}
+                disabled={isCalculatingCorrelation || !data?.data}
+              >
+                <Calculator className={`h-4 w-4 mr-2 ${isCalculatingCorrelation ? 'animate-spin' : ''}`} />
+                {t('analytics.calculateCorrelation')}
+              </Button>
+            </div>
+            
+            {correlationResult && (
+              <div className="mt-4 p-4 bg-blue-50 rounded-lg">
+                <h4 className="font-semibold text-blue-900 mb-2">{t('analytics.correlationResults')}</h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <p className="text-sm text-gray-600">{t('analytics.correlationCoefficient')}:</p>
+                    <p className="text-2xl font-bold text-blue-600">
+                      {correlationResult.correlation_coefficient.toFixed(6)}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-600">{t('analytics.interpretation')}:</p>
+                    <p className="text-sm font-medium text-blue-800">
+                      {correlationResult.interpretation}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-600">{t('analytics.pValue')}:</p>
+                    <p className="text-sm font-medium">
+                      {correlationResult.p_value.toFixed(6)}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-600">{t('analytics.sampleSize')}:</p>
+                    <p className="text-sm font-medium">
+                      {correlationResult.sample_size} {t('analytics.dataPoints')}
+                    </p>
+                  </div>
+                </div>
+                <div className="mt-3">
+                  <p className="text-sm text-gray-600 mb-2">{t('analytics.pearsonFormula')}:</p>
+                  <InlineMath math="r = \frac{\sum_{i=1}^{n}(x_i - \bar{x})(y_i - \bar{y})}{\sqrt{\sum_{i=1}^{n}(x_i - \bar{x})^2 \sum_{i=1}^{n}(y_i - \bar{y})^2}}" />
+                </div>
+              </div>
+            )}
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Statistical Insights */}
       <Card>

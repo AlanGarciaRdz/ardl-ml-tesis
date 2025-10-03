@@ -20,11 +20,24 @@ interface MaterialPrice {
   precio_mercado: number
 }
 
+interface ForecastPrice {
+  id: number,
+  date: string,
+  period: number,
+  predicted_value: number,
+  confidence_interval: {
+    lower: number,
+    upper: number
+  }
+}
+
 interface ApiResponse {
   data: MaterialPrice[]
+  forecast: ForecastPrice[]
   total_count: number
   limit: number
   offset: number
+  startDate: string
 }
 
 interface CorrelationRequest {
@@ -46,15 +59,20 @@ interface CorrelationResponse {
 const fetchMaterialPrices = async (startDate?: string, endDate?: string): Promise<ApiResponse> => {
   const params = new URLSearchParams({
     table_name: 'precios_materiales',
-    limit: '200'
+    limit: '200',
+    forecast_periods: '7',
+    value_column: "precio_mercado"
   })
   
   if (startDate) params.append('start_date', startDate)
   if (endDate) params.append('end_date', endDate)
   
-  const response = await axios.get(`http://127.0.0.1:8000/api/v1/data/?${params}`)
+  //const response = await axios.get(`http://127.0.0.1:8000/api/v1/data/?${params}`)
+  const response = await axios.get(`http://127.0.0.1:8000/api/v1/forecast/?${params}`)
+  console.log(response)
   return response.data
 }
+
 
 // API function to calculate correlation using the new service
 const calculateCorrelation = async (request: CorrelationRequest): Promise<CorrelationResponse> => {
@@ -81,6 +99,39 @@ export function Analytics() {
   const [correlationField2, setCorrelationField2] = useState('varilla_credito')
   const [correlationResult, setCorrelationResult] = useState<CorrelationResponse | null>(null)
   const [isCalculatingCorrelation, setIsCalculatingCorrelation] = useState(false)
+
+  // Function to set date range based on preset buttons
+  const setDateRange = (period: string) => {
+    const today = new Date()
+    const endDate = today.toISOString().split('T')[0]
+    let startDate = new Date()
+
+    switch (period) {
+      case '5D':
+        startDate.setDate(today.getDate() - 5)
+        break
+      case '1M':
+        startDate.setMonth(today.getMonth() - 1)
+        break
+      case '6M':
+        startDate.setMonth(today.getMonth() - 6)
+        break
+      case 'YTD':
+        startDate = new Date(today.getFullYear(), 0, 1)
+        break
+      case '1Y':
+        startDate.setFullYear(today.getFullYear() - 1)
+        break
+      case '5Y':
+        startDate.setFullYear(today.getFullYear() - 5)
+        break
+      default:
+        return
+    }
+
+    setStartDate(startDate.toISOString().split('T')[0])
+    setEndDate(endDate)
+  }
 
   const { data, isLoading, error, refetch } = useQuery({
     queryKey: ['materialPrices', startDate, endDate],
@@ -128,6 +179,27 @@ export function Analytics() {
           <CardDescription>{t('analytics.selectDateRange')}</CardDescription>
         </CardHeader>
         <CardContent>
+          {/* Preset Date Range Buttons */}
+          <div className="mb-4">
+            <Label className="text-sm font-medium text-gray-700 mb-2 block">
+              {t('analytics.quickSelect') || 'Quick Select'}
+            </Label>
+            <div className="flex flex-wrap gap-2">
+              {['5D', '1M', '6M', 'YTD', '1Y', '5Y'].map((period) => (
+                <Button
+                  key={period}
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setDateRange(period)}
+                  className="text-xs"
+                >
+                  {period}
+                </Button>
+              ))}
+            </div>
+          </div>
+
+          {/* Manual Date Selection */}
           <div className="flex flex-wrap gap-4 items-end">
             <div className="flex flex-col space-y-2">
               <Label htmlFor="start-date">{t('analytics.startDate')}</Label>
@@ -188,7 +260,8 @@ export function Analytics() {
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart data={(() => {
                     // Transform data for the chart
-                    const chartData = data?.data?.map(item => ({
+                    //const chartData = data?.data?.map(item => ({
+                    const historicalData = data?.data?.map(item => ({
                       date: new Date(item.date).toLocaleDateString('es-MX', { 
                         month: 'short', 
                         day: 'numeric' 
@@ -197,8 +270,47 @@ export function Analytics() {
                       [t('analytics.varillaDistribuidor')]: item.varilla_distribuidor,
                       [t('analytics.varillaCredito')]: item.varilla_credito,
                       [t('analytics.precioMercado')]: item.precio_mercado,
+                      type: 'historical'
                     })) || [] 
-                    return chartData
+
+
+                    //Transform forecast data
+                    const forecastData = data?.forecast?.map(item => ({
+                      date: new Date(item.date).toLocaleDateString('es-MX', { 
+                        month: 'short', 
+                        day: 'numeric' 
+                      }),
+                      fullDate: item.date,
+                      [t('analytics.precioMercado')]: item.predicted_value,
+                      // You can also add confidence intervals if needed
+                      [`${t('analytics.precioMercado')}_lower`]: item.confidence_interval?.lower,
+                      [`${t('analytics.precioMercado')}_upper`]: item.confidence_interval?.upper,
+                      type: 'forecast'
+                    })) || [];
+
+                    // Calculate validation period (7 days before selected start date)
+                    const validationData = [];
+                    if (historicalData.length > 0 && data?.startDate) {
+                      const startDate = new Date(data.startDate);
+                      const validationStartDate = new Date(startDate);
+                      validationStartDate.setDate(validationStartDate.getDate() - 7);
+                      
+                      // Filter historical data for the validation period
+                      validationData.push(...historicalData.filter(item => {
+                        const itemDate = new Date(item.fullDate);
+                        return itemDate >= validationStartDate && itemDate < startDate;
+                      }).map(item => ({
+                        ...item,
+                        type: 'validation'
+                      })));
+                    }
+
+                    // // Combine historical and forecast data
+                    const combinedData = [...validationData, ...historicalData, ...forecastData];
+
+                    return combinedData;
+
+                    //return chartData
                   })()}>
                       <CartesianGrid strokeDasharray="3 3" />
                       <XAxis 
@@ -221,7 +333,10 @@ export function Analytics() {
                         ]}
                         labelFormatter={(label, payload) => {
                           if (payload && payload[0]) {
-                            return `Date: ${payload[0].payload.fullDate}`
+                            const dataType = payload[0].payload.type;
+                            const typeLabel = dataType === 'forecast' ? ' (Forecast)' : 
+                                             dataType === 'validation' ? ' (Validation)' : '';
+                            return `Date: ${payload[0].payload.fullDate}${typeLabel}`;
                           }
                           return label
                         }}
@@ -247,6 +362,18 @@ export function Analytics() {
                         stroke="#f59e0b" 
                         strokeWidth={2}
                         dot={false}
+                      />
+
+                    <Line 
+                        type="monotone" 
+                        dataKey={t('analytics.precioMercado')} 
+                        stroke="#ef4444" 
+                        strokeWidth={2}
+                        strokeDasharray="5 5"
+                        dot={{ fill: '#ef4444', strokeWidth: 2, r: 1 }}
+                        connectNulls
+                        //data={combinedData.filter(item => item.type === 'validation')}
+                        name={`${t('analytics.precioMercado')} (Validation)`}
                       />
                     </LineChart>
                   </ResponsiveContainer>

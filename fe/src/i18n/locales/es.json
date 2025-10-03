@@ -150,7 +150,7 @@
   },
   "errors": {
     "networkError": "Error de red. Por favor verifica tu conexión.",
-    "serverError": "Error del servidor. Por favor intenta de nuevo más tarde.",
+    "serverError": "No hay datos disponibles para el período seleccionado. Intenta con un rango de fechas diferente.",
     "notFound": "Recurso no encontrado.",
     "unauthorized": "No estás autorizado para acceder a este recurso.",
     "validationError": "Por favor verifica tu entrada e intenta de nuevo.",

@@ -342,14 +342,14 @@ export function Landing() {
       </div>
 
       {/* Partners Section */}
-      <div className="relative z-10 px-6 py-20">
-        <div className="max-w-7xl mx-auto">
-          <div className="relative rounded-3xl overflow-hidden">
-            {/* Background Image with Overlay */}
-            <div className="absolute inset-0 bg-gradient-to-br from-[#2596be] to-[#1772b5] opacity-90"></div>
-            <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48cGF0dGVybiBpZD0iZ3JpZCIgd2lkdGg9IjQwIiBoZWlnaHQ9IjQwIiBwYXR0ZXJuVW5pdHM9InVzZXJTcGFjZU9uVXNlIj48cGF0aCBkPSJNIDQwIDAgTCAwIDAgMCA0MCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLW9wYWNpdHk9IjAuMSIgc3Ryb2tlLXdpZHRoPSIxIi8+PC9wYXR0ZXJuPjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI2dyaWQpIi8+PC9zdmc+')] opacity-50"></div>
-            
-            <div className="relative z-10 px-8 py-16 md:px-16 md:py-20">
+      <div className="relative z-10 w-full py-20">
+        <div className="relative w-full overflow-hidden">
+          {/* Background Image with Overlay */}
+          <div className="absolute inset-0 bg-gradient-to-br from-[#2596be] to-[#1772b5] opacity-90"></div>
+          <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48cGF0dGVybiBpZD0iZ3JpZCIgd2lkdGg9IjQwIiBoZWlnaHQ9IjQwIiBwYXR0ZXJuVW5pdHM9InVzZXJTcGFjZU9uVXNlIj48cGF0aCBkPSJNIDQwIDAgTCAwIDAgMCA0MCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLW9wYWNpdHk9IjAuMSIgc3Ryb2tlLXdpZHRoPSIxIi8+PC9wYXR0ZXJuPjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI2dyaWQpIi8+PC9zdmc+')] opacity-50"></div>
+          
+          <div className="relative z-10 px-6 py-16 md:px-12 md:py-20">
+            <div className="max-w-7xl mx-auto mb-12">
               <h2 className="text-4xl lg:text-5xl font-bold text-white mb-8">
                 Mis socios
               </h2>
@@ -360,6 +360,47 @@ export function Landing() {
                 <p>
                   Nuestros socios se forman de proveedores y compradores, juntos logramos consolidar suficiente información para entender el pasado, presente y nuestro futuro.
                 </p>
+              </div>
+            </div>
+
+            {/* Scrolling Partners Logos */}
+            <div className="relative overflow-hidden mt-16">
+              <style>{`
+                @keyframes scroll {
+                  0% { transform: translateX(0); }
+                  100% { transform: translateX(-50%); }
+                }
+                .animate-scroll {
+                  animation: scroll 30s linear infinite;
+                }
+                .animate-scroll:hover {
+                  animation-play-state: paused;
+                }
+              `}</style>
+              
+              <div className="flex animate-scroll">
+                {/* First set of logos */}
+                {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
+                  <div key={`logo-${i}`} className="flex-shrink-0 mx-8">
+                    <div className="w-40 h-24 bg-white/10 backdrop-blur-sm rounded-xl border border-white/20 flex items-center justify-center hover:bg-white/20 transition-all duration-300">
+                      <div className="text-center">
+                        <Factory className="w-12 h-12 text-white/60 mx-auto mb-2" />
+                        <p className="text-white/40 text-xs">Socio {i}</p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+                {/* Duplicate set for seamless loop */}
+                {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
+                  <div key={`logo-dup-${i}`} className="flex-shrink-0 mx-8">
+                    <div className="w-40 h-24 bg-white/10 backdrop-blur-sm rounded-xl border border-white/20 flex items-center justify-center hover:bg-white/20 transition-all duration-300">
+                      <div className="text-center">
+                        <Factory className="w-12 h-12 text-white/60 mx-auto mb-2" />
+                        <p className="text-white/40 text-xs">Socio {i}</p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
           </div>

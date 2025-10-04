@@ -17,7 +17,12 @@ interface MaterialPrice {
   date: string
   varilla_distribuidor: number
   varilla_credito: number
-  precio_mercado: number
+  precio_mercado: number,
+  scrap: number,
+  gas: number,
+  rebar: number,
+  hrcc1: number,
+  tipo_de_cambio: number
 }
 
 interface ForecastPrice {
@@ -31,8 +36,16 @@ interface ForecastPrice {
   }
 }
 
+interface ValidationPrice {
+  id: number,
+  date: string,
+  period: number,
+  predicted_value: number,
+}
+
 interface ApiResponse {
   data: MaterialPrice[]
+  validation: ValidationPrice[],
   forecast: ForecastPrice[]
   total_count: number
   limit: number
@@ -56,12 +69,13 @@ interface CorrelationResponse {
 }
 
 // API function to fetch data
-const fetchMaterialPrices = async (startDate?: string, endDate?: string): Promise<ApiResponse> => {
+const fetchMaterialPrices = async (startDate?: string, endDate?: string, transform?: string): Promise<ApiResponse> => {
   const params = new URLSearchParams({
     table_name: 'precios_materiales',
     limit: '200',
     forecast_periods: '7',
-    value_column: "precio_mercado"
+    value_column: "precio_mercado",
+    transform: transform || ''
   })
   
   if (startDate) params.append('start_date', startDate)
@@ -140,6 +154,17 @@ export function Analytics() {
     staleTime: 0, // Force refetch when dates change
     gcTime: 0, // Don't cache results
   })
+
+    // Query for secondary chart (gas, scrap, rebar, hrcc1)
+    const { data: secondaryData, isLoading: secondaryLoading, error: secondaryError, refetch: refetchSecondary } = useQuery({
+      queryKey: ['materialPrices', startDate, endDate, 'secondary'],
+      queryFn: () => fetchMaterialPrices(startDate, endDate, 'log'),
+      refetchInterval: false,
+      staleTime: 0,
+      gcTime: 0,
+    })
+
+  
 
   const handleCorrelationCalculation = async () => {
     if (!data?.data) return
@@ -257,129 +282,284 @@ export function Analytics() {
               </div>
             ) : (
               <div className="h-80">
-                <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={(() => {
-                    // Transform data for the chart
-                    //const chartData = data?.data?.map(item => ({
-                    const historicalData = data?.data?.map(item => ({
+                {(() => {
+                  // Transform data for the chart
+                  const historicalData = data?.data?.map(item => ({
+                    date: new Date(item.date).toLocaleDateString('es-MX', { 
+                      month: 'short', 
+                      day: 'numeric' 
+                    }),
+                    fullDate: item.date,
+                    [t('analytics.varillaDistribuidor')]: item.varilla_distribuidor,
+                    [t('analytics.varillaCredito')]: item.varilla_credito,
+                    [t('analytics.precioMercado')]: item.precio_mercado,
+                    type: 'historical'
+                  })) || [] 
+
+                  // Calculate validation period (7 days before selected start date)
+                  const validationData = [];
+                  if (historicalData.length > 0 && data?.startDate) {
+                    const startDate = new Date(data.startDate);
+                    const validationStartDate = new Date(startDate);
+                    validationStartDate.setDate(validationStartDate.getDate() - 7);
+                    
+                    // Filter historical data for the validation period
+                    validationData.push(...historicalData.filter(item => {
+                      const itemDate = new Date(item.fullDate);
+                      return itemDate >= validationStartDate && itemDate < startDate;
+                    }).map(item => ({
+                      ...item,
+                      type: 'validation'
+                    })));
+                  }
+
+                 
+                  const forecastData = data?.forecast?.map((item) => {
+                    return {
                       date: new Date(item.date).toLocaleDateString('es-MX', { 
                         month: 'short', 
                         day: 'numeric' 
                       }),
                       fullDate: item.date,
-                      [t('analytics.varillaDistribuidor')]: item.varilla_distribuidor,
-                      [t('analytics.varillaCredito')]: item.varilla_credito,
-                      [t('analytics.precioMercado')]: item.precio_mercado,
-                      type: 'historical'
-                    })) || [] 
-
-
-                    //Transform forecast data
-                    const forecastData = data?.forecast?.map(item => ({
-                      date: new Date(item.date).toLocaleDateString('es-MX', { 
-                        month: 'short', 
-                        day: 'numeric' 
-                      }),
-                      fullDate: item.date,
-                      [t('analytics.precioMercado')]: item.predicted_value,
-                      // You can also add confidence intervals if needed
-                      [`${t('analytics.precioMercado')}_lower`]: item.confidence_interval?.lower,
-                      [`${t('analytics.precioMercado')}_upper`]: item.confidence_interval?.upper,
+                      [t('analytics.varillaDistribuidor')]: null,
+                      [t('analytics.varillaCredito')]: null,
+                      [t('analytics.precioMercado')]: null,
+                      [`${t('analytics.precioMercado')} (Validation)`]: item.predicted_value,
                       type: 'forecast'
-                    })) || [];
+                    };
+                  }) || [];
+                  
+                  const combinedData = [...historicalData, ...forecastData];
+                  return (
+                    <ResponsiveContainer width="100%" height="100%">
+                      <LineChart data={combinedData}>
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis 
+                          dataKey="date" 
+                          tick={{ fontSize: 12 }}
+                          angle={-45}
+                          textAnchor="end"
+                          height={60}
+                        />
+                        <YAxis 
+                          tick={{ fontSize: 12 }}
+                          tickFormatter={(value) => `$${value.toLocaleString()}`}
+                          domain={['dataMin - 100', 'dataMax + 100']}
+                          allowDataOverflow
+                        />
+                        <Tooltip 
+                          formatter={(value: number, name: string) => [
+                            `$${value.toLocaleString()}`, 
+                            name
+                          ]}
+                          labelFormatter={(label, payload) => {
+                            if (payload && payload[0]) {
+                              const dataType = payload[0].payload.type;
+                              const typeLabel = dataType === 'forecast' ? ' (Forecast)' : 
+                                               dataType === 'validation' ? ' (Validation)' : '';
+                              return `Date: ${payload[0].payload.fullDate}${typeLabel}`;
+                            }
+                            return label
+                          }}
+                        />
+                        <Legend />
+                        <Line 
+                          type="monotone" 
+                          dataKey={t('analytics.varillaDistribuidor')} 
+                          stroke="#3b82f6" 
+                          strokeWidth={2}
+                          dot={false}
+                        />
+                        <Line 
+                          type="monotone" 
+                          dataKey={t('analytics.varillaCredito')} 
+                          stroke="#10b981" 
+                          strokeWidth={2}
+                          dot={false}
+                        />
+                        <Line 
+                          type="monotone" 
+                          dataKey={t('analytics.precioMercado')} 
+                          stroke="#f59e0b" 
+                          strokeWidth={2}
+                          dot={false}
+                        />
 
-                    // Calculate validation period (7 days before selected start date)
-                    const validationData = [];
-                    if (historicalData.length > 0 && data?.startDate) {
-                      const startDate = new Date(data.startDate);
-                      const validationStartDate = new Date(startDate);
-                      validationStartDate.setDate(validationStartDate.getDate() - 7);
-                      
-                      // Filter historical data for the validation period
-                      validationData.push(...historicalData.filter(item => {
-                        const itemDate = new Date(item.fullDate);
-                        return itemDate >= validationStartDate && itemDate < startDate;
-                      }).map(item => ({
-                        ...item,
-                        type: 'validation'
-                      })));
-                    }
-
-                    // // Combine historical and forecast data
-                    const combinedData = [...validationData, ...historicalData, ...forecastData];
-
-                    return combinedData;
-
-                    //return chartData
-                  })()}>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis 
-                        dataKey="date" 
-                        tick={{ fontSize: 12 }}
-                        angle={-45}
-                        textAnchor="end"
-                        height={60}
-                      />
-                      <YAxis 
-                        tick={{ fontSize: 12 }}
-                        tickFormatter={(value) => `$${value.toLocaleString()}`}
-                        domain={['dataMin - 100', 'dataMax + 100']}
-                        allowDataOverflow
-                      />
-                      <Tooltip 
-                        formatter={(value: number, name: string) => [
-                          `$${value.toLocaleString()}`, 
-                          name
-                        ]}
-                        labelFormatter={(label, payload) => {
-                          if (payload && payload[0]) {
-                            const dataType = payload[0].payload.type;
-                            const typeLabel = dataType === 'forecast' ? ' (Forecast)' : 
-                                             dataType === 'validation' ? ' (Validation)' : '';
-                            return `Date: ${payload[0].payload.fullDate}${typeLabel}`;
-                          }
-                          return label
-                        }}
-                      />
-                      <Legend />
                       <Line 
-                        type="monotone" 
-                        dataKey={t('analytics.varillaDistribuidor')} 
-                        stroke="#3b82f6" 
-                        strokeWidth={2}
-                        dot={false}
-                      />
-                      <Line 
-                        type="monotone" 
-                        dataKey={t('analytics.varillaCredito')} 
-                        stroke="#10b981" 
-                        strokeWidth={2}
-                        dot={false}
-                      />
-                      <Line 
-                        type="monotone" 
-                        dataKey={t('analytics.precioMercado')} 
-                        stroke="#f59e0b" 
-                        strokeWidth={2}
-                        dot={false}
-                      />
+                          type="monotone" 
+                          dataKey={`${t('analytics.precioMercado')} (Validation)`}
+                          stroke="#ef4444" 
+                          strokeWidth={2}
+                          strokeDasharray="5 5"
+                          dot={{ fill: '#ef4444', strokeWidth: 2, r: 1 }}
+                          connectNulls={false}
+                          name={`${t('analytics.precioMercado')} (Validation)`}
+                        />
+                      </LineChart>
+                    </ResponsiveContainer>
+                  );
+                })()}
+              </div>
+            )}
+          </CardContent>
+        </Card>
 
-                    <Line 
-                        type="monotone" 
-                        dataKey={t('analytics.precioMercado')} 
-                        stroke="#ef4444" 
-                        strokeWidth={2}
-                        strokeDasharray="5 5"
-                        dot={{ fill: '#ef4444', strokeWidth: 2, r: 1 }}
-                        connectNulls
-                        //data={combinedData.filter(item => item.type === 'validation')}
-                        name={`${t('analytics.precioMercado')} (Validation)`}
-                      />
-                    </LineChart>
-                  </ResponsiveContainer>
+        <Card>
+          <CardHeader>
+            <CardTitle>Volatility Analysis</CardTitle>
+            <CardDescription>Price volatility patterns</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="h-80 flex items-center justify-center text-gray-500">
+              Chart placeholder - Volatility heatmap or chart
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Gas, scrap,  Charts */}
+      <div className="grid grid-cols-1 lg:grid-cols-1 gap-12">
+        <Card>
+          <CardHeader>
+            <CardTitle>{t('analytics.priceTrendsAnalysis')}</CardTitle>
+            <CardDescription>{t('analytics.priceMovements', { startDate, endDate })}</CardDescription>
+          </CardHeader>
+          <CardContent>
+            {secondaryLoading ? (
+              <div className="h-80 flex items-center justify-center">
+                <div className="flex items-center space-x-2">
+                  <RefreshCw className="h-4 w-4 animate-spin" />
+                  <span>{t('common.loading')}</span>
                 </div>
-              )
-            }
+              </div>
+            ) : secondaryError ? (
+              <div className="h-80 flex items-center justify-center text-red-500">
+                <div className="text-center">
+                  <p>{t('errors.serverError')}</p>
+                  <Button variant="outline" onClick={() => refetchSecondary()} className="mt-2">
+                    {t('common.refresh')}
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <div className="h-80">
+                {(() => {
+                  // Transform data for the chart
+                  const historicalData = secondaryData?.data?.map(item => ({
+                    date: new Date(item.date).toLocaleDateString('es-MX', { 
+                      month: 'short', 
+                      day: 'numeric' 
+                    }),
+                    fullDate: item.date,
+                    [t('analytics.scrap')]: item.scrap,
+                    [t('analytics.gas')]: item.gas,
+                    [t('analytics.rebar')]: item.rebar,
+                    [t('analytics.hrcc1')]: item.hrcc1,
+                    [t('analytics.tipoDeCambio')]: item.tipo_de_cambio,
+                    type: 'historical'
+                  })) || [] 
+
+                  // Calculate validation period (7 days before selected start date)
+                  const validationData = [];
+                  if (historicalData.length > 0 && data?.startDate) {
+                    const startDate = new Date(data.startDate);
+                    const validationStartDate = new Date(startDate);
+                    validationStartDate.setDate(validationStartDate.getDate() - 7);
+                    
+                    // Filter historical data for the validation period
+                    validationData.push(...historicalData.filter(item => {
+                      const itemDate = new Date(item.fullDate);
+                      return itemDate >= validationStartDate && itemDate < startDate;
+                    }).map(item => ({
+                      ...item,
+                      type: 'validation'
+                    })));
+                  }
+
+                 
+                  const forecastData = data?.forecast?.map((item) => {
+                    return {
+                      date: new Date(item.date).toLocaleDateString('es-MX', { 
+                        month: 'short', 
+                        day: 'numeric' 
+                      }),
+                      fullDate: item.date,
+                      [t('analytics.varillaDistribuidor')]: null,
+                      [t('analytics.varillaCredito')]: null,
+                      [t('analytics.precioMercado')]: null,
+                      [`${t('analytics.precioMercado')} (Validation)`]: item.predicted_value,
+                      type: 'forecast'
+                    };
+                  }) || [];
+                  
+                  const combinedData = [...historicalData, ...forecastData];
+                  return (
+                    <ResponsiveContainer width="100%" height="100%">
+                      <LineChart data={combinedData}>
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis 
+                          dataKey="date" 
+                          tick={{ fontSize: 12 }}
+                          angle={-45}
+                          textAnchor="end"
+                          height={60}
+                        />
+                        <YAxis 
+                          tick={{ fontSize: 12 }}
+                          tickFormatter={(value) => `$${value.toLocaleString()}`}
+                          domain={['dataMin - .9', 'dataMax + .9']}
+                          allowDataOverflow
+                        />
+                        <Tooltip 
+                          formatter={(value: number, name: string) => [
+                            `$${value.toLocaleString()}`, 
+                            name
+                          ]}
+                          labelFormatter={(label, payload) => {
+                            if (payload && payload[0]) {
+                              const dataType = payload[0].payload.type;
+                              const typeLabel = dataType === 'forecast' ? ' (Forecast)' : 
+                                               dataType === 'validation' ? ' (Validation)' : '';
+                              return `Date: ${payload[0].payload.fullDate}${typeLabel}`;
+                            }
+                            return label
+                          }}
+                        />
+                        <Legend />
+                        <Line 
+                          type="monotone" 
+                          dataKey={t('analytics.scrap')} 
+                          stroke="#3b82f6" 
+                          strokeWidth={2}
+                          dot={false}
+                        />
+                        <Line 
+                          type="monotone" 
+                          dataKey={t('analytics.tipoDeCambio')} 
+                          stroke="#10b981" 
+                          strokeWidth={2}
+                          dot={false}
+                        />
+                        <Line 
+                          type="monotone" 
+                          dataKey={t('analytics.gas')} 
+                          stroke="#f55500" 
+                          strokeWidth={2}
+                          dot={false}
+                        />
+                        <Line 
+                          type="monotone" 
+                          dataKey={t('analytics.hrcc1')} 
+                          stroke="#f59e0b" 
+                          strokeWidth={2}
+                          dot={false}
+                        />
+                      </LineChart>
+                    </ResponsiveContainer>
+                  );
+                })()}
+              </div>
+            )}
           </CardContent>
         </Card>
 

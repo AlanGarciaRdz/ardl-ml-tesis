@@ -1,4 +1,7 @@
 import { useState } from 'react'
+import React from 'react';
+import { useAuth } from '@/hooks/useAuth'
+import UserStatsBar from '../components/shared/UserStatsBar';
 import { useTranslation } from 'react-i18next'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -114,6 +117,10 @@ export function Analytics() {
   const [correlationResult, setCorrelationResult] = useState<CorrelationResponse | null>(null)
   const [isCalculatingCorrelation, setIsCalculatingCorrelation] = useState(false)
 
+  const { isLoggedIn } = useAuth();
+  const [material, setMaterial] = React.useState('');
+  const [volumen, setVolumen] = React.useState('');
+
   // Function to set date range based on preset buttons
   const setDateRange = (period: string) => {
     const today = new Date()
@@ -196,6 +203,23 @@ export function Analytics() {
         <h1 className="text-3xl font-bold text-gray-900">{t('analytics.title')}</h1>
         <p className="text-gray-600">{t('analytics.subtitle')}</p>
       </div>
+
+      {/* Stats Bar - Only show when logged in */}
+      {isLoggedIn && (
+        <UserStatsBar
+          cotizaciones={10}
+          comprado={75000}
+          tokens={5}
+          variacion={1.6}
+          cp=""
+          nombreProyecto=""
+          material={material}
+          volumen={volumen}
+          onMaterialChange={setMaterial}
+          onVolumenChange={setVolumen}
+        />
+      )}
+
 
       {/* Date Filters */}
       <Card>

@@ -1,13 +1,35 @@
 import { Card, Text, Heading, Flex } from '@radix-ui/themes'
+import React from 'react';
+import { useAuth } from '@/hooks/useAuth'
 import { TrendingUp, TrendingDown, Database, Activity } from 'lucide-react'
+import UserStatsBar from '@/components/shared/UserStatsBar';
 
 export function Dashboard() {
+  const { isLoggedIn } = useAuth();
+  const [material, setMaterial] = React.useState('');
+  const [volumen, setVolumen] = React.useState('');
+
   return (
     <div className="space-y-6">
       <div>
         <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
         <p className="text-gray-600">Welcome the pitiax project dashboard</p>
       </div>
+
+      {isLoggedIn && (
+        <UserStatsBar
+          cotizaciones={10}
+          comprado={75000}
+          tokens={5}
+          variacion={1.6}
+          cp=""
+          nombreProyecto=""
+          material={material}
+          volumen={volumen}
+          onMaterialChange={setMaterial}
+          onVolumenChange={setVolumen}
+        />
+      )}
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">

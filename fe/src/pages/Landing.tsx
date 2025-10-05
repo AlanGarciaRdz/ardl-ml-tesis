@@ -1,10 +1,17 @@
 import { useNavigate } from 'react-router-dom'
+import React from 'react';
+import { useAuth } from '@/hooks/useAuth'
+import UserStatsBar from '../components/shared/UserStatsBar';
 import { Button } from '@radix-ui/themes'
 import { BarChart3, Database, TrendingUp, Shield, Globe, Factory, Zap, Users, Award, ChevronRight } from 'lucide-react'
 import logo1 from '@/assets/images/logo1.png'
 
 export function Landing() {
+  const { isLoggedIn } = useAuth();
+  const [material, setMaterial] = React.useState('');
+  const [volumen, setVolumen] = React.useState('');
   const navigate = useNavigate()
+
 
   const handleGetStarted = () => {
     navigate('/dashboard')
@@ -55,6 +62,22 @@ export function Landing() {
           </div>
         </div>
       </nav>
+
+      {/* Stats Bar - Only show when logged in */}
+      {isLoggedIn && (
+        <UserStatsBar
+          cotizaciones={10}
+          comprado={75000}
+          tokens={5}
+          variacion={1.6}
+          cp=""
+          nombreProyecto=""
+          material={material}
+          volumen={volumen}
+          onMaterialChange={setMaterial}
+          onVolumenChange={setVolumen}
+        />
+      )}
 
       {/* Hero Section */}
       <div className="relative z-10 px-6 py-24">

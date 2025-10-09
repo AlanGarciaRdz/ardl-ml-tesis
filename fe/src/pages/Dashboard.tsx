@@ -1,13 +1,13 @@
-import { Card, Text, Heading, Flex } from '@radix-ui/themes'
-import React from 'react';
+//import { Card, Text, Heading, Flex } from '@radix-ui/themes'
+import { useState } from 'react';
 import { useAuth } from '@/hooks/useAuth'
-import { TrendingUp, TrendingDown, Database, Activity } from 'lucide-react'
+//import { TrendingUp, TrendingDown, Database, Activity } from 'lucide-react'
 import UserStatsBar from '@/components/shared/UserStatsBar';
 
 export function Dashboard() {
   const { isLoggedIn } = useAuth();
-  const [material, setMaterial] = React.useState('');
-  const [volumen, setVolumen] = React.useState('');
+  const [material, setMaterial] = useState('');
+  const [volumen, setVolumen] = useState('');
 
   return (
     <div className="space-y-6">
@@ -32,7 +32,7 @@ export function Dashboard() {
       )}
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      {/* <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <Card size="2" className="custom-card">
           <Flex justify="between" align="center" className="pb-2">
             <Text size="2" weight="medium">Quotes</Text>
@@ -78,7 +78,7 @@ export function Dashboard() {
         </Card>
       </div>
 
-      {/* Charts Section */}
+      {/* Charts Section * /}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card size="2">
           <Heading size="4">Price Trends</Heading>
@@ -97,7 +97,7 @@ export function Dashboard() {
         </Card>
       </div>
 
-      {/* Recent Activity */}
+      {/* Recent Activity * /}
       <Card size="2">
         <Heading size="4">Recent Activity</Heading>
         <Text size="2" color="gray">Latest updates and changes</Text>
@@ -124,7 +124,7 @@ export function Dashboard() {
             </div>
           </div>
         </div>
-      </Card>
-    </div>
+      </Card>*/}
+    </div> 
   )
 }

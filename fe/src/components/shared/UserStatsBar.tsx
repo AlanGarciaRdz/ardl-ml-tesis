@@ -2,29 +2,33 @@ import React from 'react';
 import { FileText, DollarSign, Coins, TrendingUp, ChevronDown } from 'lucide-react';
 
 interface UserStatsBarProps {
-  cotizaciones?: number;
-  comprado?: number;
-  tokens?: number;
-  variacion?: number;
-  cp?: string;
-  nombreProyecto?: string;
-  material?: string;
-  volumen?: string;
-  onMaterialChange?: (value: string) => void;
-  onVolumenChange?: (value: string) => void;
+    cotizaciones?: number;
+    comprado?: number;
+    tokens?: number;
+    variacion?: number;
+    cp?: string;
+    nombreProyecto?: string;
+    material?: string;
+    volumen?: string;
+    onCPChange?: (value: string) => void;
+    onNombreProyectoChange?: (value: string) => void;
+    onMaterialChange?: (value: string) => void;
+    onVolumenChange?: (value: string) => void;
 }
 
 const UserStatsBar: React.FC<UserStatsBarProps> = ({
-  cotizaciones = 10,
-  comprado = 75000,
-  tokens = 5,
-  variacion = 1.6,
-  cp = '',
-  nombreProyecto = '',
-  material = '',
-  volumen = '',
-  onMaterialChange,
-  onVolumenChange,
+    cotizaciones = 10,
+    comprado = 75000,
+    tokens = 5,
+    variacion = 1.6,
+    cp = '',
+    nombreProyecto = '',
+    material = '',
+    volumen = '',
+    onCPChange,
+    onNombreProyectoChange,
+    onMaterialChange,
+    onVolumenChange,
 }) => {
   return (
     <div className="relative z-10 w-full bg-white border-b border-gray-200 shadow-sm">
@@ -95,7 +99,7 @@ const UserStatsBar: React.FC<UserStatsBarProps> = ({
                 value={cp}
                 placeholder="Código Postal"
                 className="px-3 py-2 border border-blue-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-800 bg-white"
-                onChange={(e) => {/* Handle CP change */}}
+                onChange={(e) => onCPChange?.(e.target.value)}
               />
             </div>
 
@@ -109,7 +113,7 @@ const UserStatsBar: React.FC<UserStatsBarProps> = ({
                 value={nombreProyecto}
                 placeholder="Ingresa el nombre"
                 className="px-3 py-2 border border-blue-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-800 bg-white"
-                onChange={(e) => {/* Handle name change */}}
+                onChange={(e) => onNombreProyectoChange?.(e.target.value)}
               />
             </div>
 

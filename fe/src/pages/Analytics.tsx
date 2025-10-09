@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import React from 'react';
 import { useAuth } from '@/hooks/useAuth'
 import UserStatsBar from '../components/shared/UserStatsBar';
 import { useTranslation } from 'react-i18next'
@@ -118,8 +117,8 @@ export function Analytics() {
   const [isCalculatingCorrelation, setIsCalculatingCorrelation] = useState(false)
 
   const { isLoggedIn } = useAuth();
-  const [material, setMaterial] = React.useState('');
-  const [volumen, setVolumen] = React.useState('');
+  const [material, setMaterial] = useState('');
+  const [volumen, setVolumen] = useState('');
 
   // Function to set date range based on preset buttons
   const setDateRange = (period: string) => {
@@ -165,7 +164,7 @@ export function Analytics() {
     // Query for secondary chart (gas, scrap, rebar, hrcc1)
     const { data: secondaryData, isLoading: secondaryLoading, error: secondaryError, refetch: refetchSecondary } = useQuery({
       queryKey: ['materialPrices', startDate, endDate, 'secondary'],
-      queryFn: () => fetchMaterialPrices(startDate, endDate, 'log'),
+      queryFn: () => fetchMaterialPrices(startDate, endDate, 'sqrt'),
       refetchInterval: false,
       staleTime: 0,
       gcTime: 0,

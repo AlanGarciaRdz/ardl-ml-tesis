@@ -30,6 +30,7 @@ async def get_time_series_data(
     try:
         with get_database_connection() as conn:
             # Build the base query
+            print("data------------")
             base_query = f"SELECT * FROM {table_name}"
             where_conditions = []
             params = {}

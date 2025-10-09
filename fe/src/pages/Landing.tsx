@@ -1,15 +1,17 @@
 import { useNavigate } from 'react-router-dom'
-import React from 'react';
+import { useState } from 'react';
 import { useAuth } from '@/hooks/useAuth'
 import UserStatsBar from '../components/shared/UserStatsBar';
 import { Button } from '@radix-ui/themes'
-import { BarChart3, Database, TrendingUp, Shield, Globe, Factory, Zap, Users, Award, ChevronRight } from 'lucide-react'
-import logo1 from '@/assets/images/logo1.png'
+import { BarChart3, Database, TrendingUp, Shield, Globe, Factory, Zap, Users, Award, ChevronRight, MessageCircle } from 'lucide-react'
+import logo1 from '@/assets/images/PITIAX-logo.png'
 
 export function Landing() {
   const { isLoggedIn } = useAuth();
-  const [material, setMaterial] = React.useState('');
-  const [volumen, setVolumen] = React.useState('');
+  const [material, setMaterial] = useState('');
+  const [volumen, setVolumen] = useState('');
+  const [cp, setCP] = useState('');
+  const [nombreProyecto, setNombreProyecto] = useState('');
   const navigate = useNavigate()
 
 
@@ -17,11 +19,21 @@ export function Landing() {
     navigate('/dashboard')
   }
 
+  const scrollToSection = (elementId: string) => {
+    const element = document.getElementById(elementId);
+    if (element) {
+      element.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start'
+      });
+    }
+  };
+
   return (
     <div className="min-h-screen bg-[#fffdff] text-gray-800 overflow-hidden">
       {/* Animated Background */}
       <div className="fixed inset-0 z-0">
-        <div className="absolute inset-0 bg-gradient-to-br from-[#e8f4f8] via-[#ffffff] to-[#f0f9fc]"></div>
+        <div className="absolute inset-0 bg-gradient-to-br from-[#27348B] via-[#36A9E1] to-[#27348B]"></div>
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(37,150,190,0.05),transparent_50%)]"></div>
         <div className="absolute top-0 left-1/4 w-96 h-96 bg-[#2596be]/10 rounded-full blur-3xl animate-pulse"></div>
         <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-[#2ca6e1]/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
@@ -31,25 +43,27 @@ export function Landing() {
       <nav className="relative z-10 px-6 py-4 backdrop-blur-md bg-white/80 border-b border-[#2596be]/20">
         <div className="max-w-7xl mx-auto flex justify-between items-center">
           <div className="flex items-center space-x-3">
-            <div className="w-12 h-12 rounded-xl flex items-center justify-center shadow-lg bg-white p-2">
-              <img src={logo1} alt="Pitiax Logo" className="w-full h-full object-contain" />
-            </div>
-            <div>
-              <span className="text-xl font-bold text-[#1772b5]">Pitiax</span>
-              <div className="text-xs text-[#2596be]">Analytics Platform</div>
-            </div>
+              <img src={logo1} alt="Pitiax Logo" className="w-21 h-16 object-contain" />
           </div>
           <div className="flex items-center space-x-6">
-            <button className="text-gray-700 hover:text-[#2596be] transition-colors duration-300 text-sm font-medium">
+            <button
+              onClick={() => scrollToSection('quien-soy')}
+              className="text-gray-700 hover:text-[#2596be] transition-colors duration-300 text-sm font-medium">
               ¿Quién soy?
             </button>
-            <button className="text-gray-700 hover:text-[#2596be] transition-colors duration-300 text-sm font-medium">
+            <button
+              onClick={() => scrollToSection('que-hago')}
+              className="text-gray-700 hover:text-[#2596be] transition-colors duration-300 text-sm font-medium">
               ¿Qué hago?
             </button>
-            <button className="text-gray-700 hover:text-[#2596be] transition-colors duration-300 text-sm font-medium">
+            <button
+              onClick={() => scrollToSection('socios')}
+              className="text-gray-700 hover:text-[#2596be] transition-colors duration-300 text-sm font-medium">
               Mis socios
             </button>
-            <button className="text-gray-700 hover:text-[#2596be] transition-colors duration-300 text-sm font-medium">
+            <button
+              onClick={() => scrollToSection('futuro')}
+              className="text-gray-700 hover:text-[#2596be] transition-colors duration-300 text-sm font-medium">
               Hablemos del futuro
             </button>
             <Button
@@ -70,10 +84,12 @@ export function Landing() {
           comprado={75000}
           tokens={5}
           variacion={1.6}
-          cp=""
-          nombreProyecto=""
+          cp={cp}
+          nombreProyecto={nombreProyecto}
           material={material}
           volumen={volumen}
+          onCPChange={setCP}
+          onNombreProyectoChange={setNombreProyecto}
           onMaterialChange={setMaterial}
           onVolumenChange={setVolumen}
         />
@@ -86,17 +102,17 @@ export function Landing() {
             <div>
               <div className="inline-flex items-center px-4 py-2 rounded-full bg-[#2596be]/10 border border-[#2596be]/30 mb-6">
                 <Globe className="w-4 h-4 text-[#2596be] mr-2" />
-                <span className="text-sm text-[#1772b5]">Enfocado en el Mercado Mexicano</span>
+                <span className="text-sm text-[#000000]">Enfocado en el Mercado Mexicano</span>
               </div>
 
               <h1 className="text-5xl lg:text-7xl font-bold mb-6 leading-tight text-gray-800">
                 Analítica de
-                <span className="bg-gradient-to-r from-[#2596be] to-[#2ca6e1] bg-clip-text text-transparent block">
+                <span className="bg-gradient-to-r from-[#000000] to-[#000000] bg-clip-text text-transparent block">
                   Precios de Acero
                 </span>
               </h1>
 
-              <p className="text-xl text-gray-600 mb-8 leading-relaxed max-w-lg">
+              <p className="text-xl text-white mb-8 leading-relaxed max-w-lg">
                 Plataforma líder en México para análisis de precios de acero en tiempo real,
                 tendencias del mercado y predicciones inteligentes.
               </p>
@@ -184,7 +200,7 @@ export function Landing() {
       </div>
 
       {/* Who Am I Section */}
-      <div className="relative z-10 px-6 py-20">
+      <div id="quien-soy" className="relative z-10 px-6 py-20">
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
@@ -219,7 +235,7 @@ export function Landing() {
       </div>
 
       {/* Stats Section */}
-      <div className="relative z-10 px-6 py-16">
+      <div id="que-hago" className="relative z-10 px-6 py-16">
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div className="text-center group cursor-pointer">
@@ -278,7 +294,7 @@ export function Landing() {
                 </div>
                 <h3 className="text-xl font-bold text-gray-800 mb-4">Análisis Histórico de Precios</h3>
                 <p className="text-gray-600 mb-4">
-                Conservo y analizo el historial del comportamiento de precios por región en México, considerando las características específicas de cada proyecto.
+                  Conservo y analizo el historial del comportamiento de precios por región en México, considerando las características específicas de cada proyecto.
                 </p>
                 <div className="flex items-center text-[#2596be] text-sm font-semibold">
                   Ver más <ChevronRight className="w-4 h-4 ml-1" />
@@ -308,7 +324,7 @@ export function Landing() {
                 </div>
                 <h3 className="text-xl font-bold text-gray-800 mb-4">Monitor de Noticias Económicas</h3>
                 <p className="text-gray-600 mb-4">
-                Centralizo y sintetizo las noticias nacionales e internacionales con impacto potencial en el mercado y los precios.
+                  Centralizo y sintetizo las noticias nacionales e internacionales con impacto potencial en el mercado y los precios.
                 </p>
                 <div className="flex items-center text-[#41afe0] text-sm font-semibold">
                   Ver más <ChevronRight className="w-4 h-4 ml-1" />
@@ -338,7 +354,7 @@ export function Landing() {
                 </div>
                 <h3 className="text-xl font-bold text-gray-800 mb-4">Comparativo Regional y Sectorial</h3>
                 <p className="text-gray-600 mb-4">
-                Identifico patrones y diferencias de precios entre regiones y sectores en México para descubrir oportunidades y optimizar decisiones estratégicas.
+                  Identifico patrones y diferencias de precios entre regiones y sectores en México para descubrir oportunidades y optimizar decisiones estratégicas.
                 </p>
                 <div className="flex items-center text-[#2596be] text-sm font-semibold">
                   Ver más <ChevronRight className="w-4 h-4 ml-1" />
@@ -353,7 +369,7 @@ export function Landing() {
                 </div>
                 <h3 className="text-xl font-bold text-gray-800 mb-4">Conexión Financiera en Tiempo Real</h3>
                 <p className="text-gray-600 mb-4">
-                Nos conectamos a fuentes financieras externas e internas mediante una API ultrarrápida que integra datos de precios en tiempo real directamente en tus aplicaciones, garantizando información actualizada y confiable para tus decisiones
+                  Nos conectamos a fuentes financieras externas e internas mediante una API ultrarrápida que integra datos de precios en tiempo real directamente en tus aplicaciones, garantizando información actualizada y confiable para tus decisiones
                 </p>
                 <div className="flex items-center text-[#2ca6e1] text-sm font-semibold">
                   Ver más <ChevronRight className="w-4 h-4 ml-1" />
@@ -365,12 +381,12 @@ export function Landing() {
       </div>
 
       {/* Partners Section */}
-      <div className="relative z-10 w-full py-20">
+      <div id="socios" className="relative z-10 w-full py-20">
         <div className="relative w-full overflow-hidden">
           {/* Background Image with Overlay */}
           <div className="absolute inset-0 bg-gradient-to-br from-[#2596be] to-[#1772b5] opacity-90"></div>
           <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48cGF0dGVybiBpZD0iZ3JpZCIgd2lkdGg9IjQwIiBoZWlnaHQ9IjQwIiBwYXR0ZXJuVW5pdHM9InVzZXJTcGFjZU9uVXNlIj48cGF0aCBkPSJNIDQwIDAgTCAwIDAgMCA0MCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLW9wYWNpdHk9IjAuMSIgc3Ryb2tlLXdpZHRoPSIxIi8+PC9wYXR0ZXJuPjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI2dyaWQpIi8+PC9zdmc+')] opacity-50"></div>
-          
+
           <div className="relative z-10 px-6 py-16 md:px-12 md:py-20">
             <div className="max-w-7xl mx-auto mb-12">
               <h2 className="text-4xl lg:text-5xl font-bold text-white mb-8">
@@ -400,7 +416,7 @@ export function Landing() {
                   animation-play-state: paused;
                 }
               `}</style>
-              
+
               <div className="flex animate-scroll">
                 {/* First set of logos */}
                 {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
@@ -509,7 +525,7 @@ export function Landing() {
       </div>
 
       {/* CTA Section */}
-      <div className="relative z-10 px-6 py-24">
+      <div id="futuro" className="relative z-10 px-6 py-24">
         <div className="max-w-4xl mx-auto text-center">
           <div className="bg-white/90 backdrop-blur-md rounded-3xl p-12 border border-[#2596be]/20 shadow-2xl">
             <h2 className="text-4xl lg:text-5xl font-bold text-gray-800 mb-6">
@@ -580,6 +596,23 @@ export function Landing() {
           </div>
         </div>
       </footer>
+     {/* WhatsApp Floating Button */}
+      <a 
+        href="https://wa.me/1234567890" 
+        target="_blank" 
+        rel="noopener noreferrer"
+        className="fixed bottom-6 right-6 w-14 h-14 bg-green-500 hover:bg-green-600 rounded-full flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-300 z-50"
+        aria-label="Contactar por WhatsApp"
+      >
+        <svg 
+          className="w-8 h-8 text-white" 
+          fill="currentColor" 
+          viewBox="0 0 24 24"
+        >
+          <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+        </svg>
+      </a>
     </div>
+    
   )
 }

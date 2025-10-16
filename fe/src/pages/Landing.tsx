@@ -3,8 +3,16 @@ import { useState } from 'react';
 import { useAuth } from '@/hooks/useAuth'
 import UserStatsBar from '../components/shared/UserStatsBar';
 import { Button } from '@radix-ui/themes'
-import { BarChart3, Database, TrendingUp, Shield, Globe, Factory, Zap, Users, Award, ChevronRight, MessageCircle } from 'lucide-react'
+import { BarChart3, Database, TrendingUp, Shield, Globe, Factory, Zap, Users, Award, ChevronRight } from 'lucide-react'
 import logo1 from '@/assets/images/PITIAX-logo.png'
+import socio1 from '@/assets/images/socios/ACC.png'
+import socio2 from '@/assets/images/socios/ACEROS OCOTLAN.png'
+import socio3 from '@/assets/images/socios/ARCELOR MITTAL.png'
+import socio4 from '@/assets/images/socios/ARMASEL.png'
+import socio5 from '@/assets/images/socios/GERDAU.png'
+import socio6 from '@/assets/images/socios/HOME DEPOT.jpg'
+import socio7 from '@/assets/images/socios/RECAL.png'
+import socio8 from '@/assets/images/socios/SUACERO.png'
 
 export function Landing() {
   const { isLoggedIn } = useAuth();
@@ -29,6 +37,17 @@ export function Landing() {
     }
   };
 
+  const partners = [
+    { id: 1, image: socio1, name: "Socio 1" },
+    { id: 2, image: socio2, name: "Socio 2" },
+    { id: 3, image: socio3, name: "Socio 3" },
+    { id: 4, image: socio4, name: "Socio 4" },
+    { id: 5, image: socio5, name: "Socio 5" },
+    { id: 6, image: socio6, name: "Socio 6" },
+    { id: 7, image: socio7, name: "Socio 7" },
+    { id: 8, image: socio8, name: "Socio 8" },
+  ]
+
   return (
     <div className="min-h-screen bg-[#fffdff] text-gray-800 overflow-hidden">
       {/* Animated Background */}
@@ -40,7 +59,7 @@ export function Landing() {
       </div>
 
       {/* Navigation */}
-      <nav className="relative z-10 px-6 py-4 backdrop-blur-md bg-white/80 border-b border-[#2596be]/20">
+      <nav className="relative z-10 px-6 py-4 backdrop-blur-md bg-white/90 border-b border-[#2596be]/20">
         <div className="max-w-7xl mx-auto flex justify-between items-center">
           <div className="flex items-center space-x-3">
               <img src={logo1} alt="Pitiax Logo" className="w-21 h-16 object-contain" />
@@ -48,28 +67,35 @@ export function Landing() {
           <div className="flex items-center space-x-6">
             <button
               onClick={() => scrollToSection('quien-soy')}
-              className="text-gray-700 hover:text-[#2596be] transition-colors duration-300 text-sm font-medium">
+              className="text-gray-800 hover:text-[#27348B] transition-colors duration-300 text-sm font-medium">
               ¿Quién soy?
             </button>
             <button
               onClick={() => scrollToSection('que-hago')}
-              className="text-gray-700 hover:text-[#2596be] transition-colors duration-300 text-sm font-medium">
+              className="text-gray-800 hover:text-[#27348B] transition-colors duration-300 text-sm font-medium">
               ¿Qué hago?
             </button>
             <button
               onClick={() => scrollToSection('socios')}
-              className="text-gray-700 hover:text-[#2596be] transition-colors duration-300 text-sm font-medium">
+              className="text-gray-800 hover:text-[#27348B] transition-colors duration-300 text-sm font-medium">
               Mis socios
             </button>
             <button
               onClick={() => scrollToSection('futuro')}
-              className="text-gray-700 hover:text-[#2596be] transition-colors duration-300 text-sm font-medium">
+              className="text-gray-800 hover:text-[#27348B] transition-colors duration-300 text-sm font-medium">
               Hablemos del futuro
             </button>
+            <button
+              onClick={() => scrollToSection('futuro')}
+              className="text-gray-800 hover:text-[#27348B] transition-colors duration-300 text-sm font-medium">
+              Tu plan en acción
+            </button>
+
+            
             <Button
               variant="ghost"
               onClick={handleGetStarted}
-              className=" text-[#2596be] hover:text-[#1772b5] border-[#2596be] transition-all duration-300"
+              className="bg-[#27348B] text-white hover:bg-[#36A9E1] border-[#27348B] transition-all duration-300"
             >
               Sign In
             </Button>
@@ -100,19 +126,19 @@ export function Landing() {
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
-              <div className="inline-flex items-center px-4 py-2 rounded-full bg-[#2596be]/10 border border-[#2596be]/30 mb-6">
-                <Globe className="w-4 h-4 text-[#2596be] mr-2" />
-                <span className="text-sm text-[#000000]">Enfocado en el Mercado Mexicano</span>
+              <div className="inline-flex items-center px-4 py-2 rounded-full bg-white/20 border border-white/30 mb-6">
+                <Globe className="w-4 h-4 text-white mr-2" />
+                <span className="text-sm text-white font-medium">Enfocado en el Mercado Mexicano</span>
               </div>
 
-              <h1 className="text-5xl lg:text-7xl font-bold mb-6 leading-tight text-gray-800">
+              <h1 className="text-5xl lg:text-7xl font-bold mb-6 leading-tight text-white drop-shadow-lg">
                 Analítica de
-                <span className="bg-gradient-to-r from-[#000000] to-[#000000] bg-clip-text text-transparent block">
+                <span className="block text-white">
                   Precios de Acero
                 </span>
               </h1>
 
-              <p className="text-xl text-white mb-8 leading-relaxed max-w-lg">
+              <p className="text-xl text-white/95 mb-8 leading-relaxed max-w-lg drop-shadow-md">
                 Plataforma líder en México para análisis de precios de acero en tiempo real,
                 tendencias del mercado y predicciones inteligentes.
               </p>
@@ -121,28 +147,28 @@ export function Landing() {
                 <Button
                   size="4"
                   onClick={handleGetStarted}
-                  className="bg-gradient-to-r from-[#2596be] to-[#2ca6e1] hover:from-[#1772b5] hover:to-[#2596be] text-white px-8 py-4 text-lg font-semibold shadow-2xl transform hover:scale-105 transition-all duration-300"
+                  className="bg-white text-[#27348B] hover:bg-[#36A9E1] hover:text-white px-8 py-4 text-lg font-semibold shadow-2xl transform hover:scale-105 transition-all duration-300"
                 >
                   Comenzar Ahora
                 </Button>
                 <Button
                   size="4"
                   variant="outline"
-                  className="border-[#2596be] text-[#2596be] hover:bg-[#2596be]/10 px-8 py-4 text-lg"
+                  className="border-white text-white hover:bg-white hover:text-[#27348B] px-8 py-4 text-lg"
                 >
                   Ver Demo
                 </Button>
               </div>
 
               {/* Trust Indicators */}
-              <div className="flex items-center space-x-6 text-sm text-gray-500">
+              <div className="flex items-center space-x-6 text-sm text-white/90">
                 <div className="flex items-center">
-                  <Users className="w-4 h-4 mr-2 text-[#2596be]" />
-                  <span>500+ Empresas</span>
+                  <Users className="w-4 h-4 mr-2 text-white" />
+                  <span className="font-medium">500+ Empresas</span>
                 </div>
                 <div className="flex items-center">
-                  <Award className="w-4 h-4 mr-2 text-[#2596be]" />
-                  <span>Certificado ISO</span>
+                  <Award className="w-4 h-4 mr-2 text-white" />
+                  <span className="font-medium">Certificado ISO</span>
                 </div>
               </div>
             </div>
@@ -204,17 +230,17 @@ export function Landing() {
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
-              <h2 className="text-4xl lg:text-5xl font-bold text-gray-800 mb-8">
+              <h2 className="text-4xl lg:text-5xl font-bold text-white mb-8 drop-shadow-lg">
                 ¿Quién soy?
               </h2>
-              <div className="space-y-6 text-lg text-gray-700 leading-relaxed">
-                <p>
+              <div className="space-y-6 text-lg text-white/95 leading-relaxed">
+                <p className="drop-shadow-md">
                   Soy una inteligencia artificial que usa datos históricos, macroeconómicos y domésticos.
                 </p>
-                <p>
+                <p className="drop-shadow-md">
                   Analizo lo que sucede en el mercado, genero pronósticos y te ayudo a tomar decisiones sobre tus proyectos e inversiones en base a un análisis inteligente de datos.
                 </p>
-                <p className="text-[#2596be] font-semibold text-xl">
+                <p className="text-white font-bold text-xl drop-shadow-lg bg-white/10 px-4 py-2 rounded-lg inline-block">
                   ¿Te interesa que hablemos del futuro?
                 </p>
               </div>
@@ -239,35 +265,35 @@ export function Landing() {
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div className="text-center group cursor-pointer">
-              <div className="w-16 h-16 bg-gradient-to-br from-[#2596be] to-[#2ca6e1] rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
+              <div className="w-16 h-16 bg-gradient-to-br from-[#27348B] to-[#36A9E1] rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg">
                 <Database className="w-8 h-8 text-white" />
               </div>
-              <div className="text-3xl font-bold text-gray-800 mb-2">50M+</div>
-              <div className="text-gray-600">Puntos de Datos</div>
+              <div className="text-3xl font-bold text-white mb-2 drop-shadow-lg">50M+</div>
+              <div className="text-white/90 font-medium">Puntos de Datos</div>
             </div>
 
             <div className="text-center group cursor-pointer">
-              <div className="w-16 h-16 bg-gradient-to-br from-[#2ca6e1] to-[#41afe0] rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
+              <div className="w-16 h-16 bg-gradient-to-br from-[#36A9E1] to-[#27348B] rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg">
                 <TrendingUp className="w-8 h-8 text-white" />
               </div>
-              <div className="text-3xl font-bold text-gray-800 mb-2">99.9%</div>
-              <div className="text-gray-600">Disponibilidad</div>
+              <div className="text-3xl font-bold text-white mb-2 drop-shadow-lg">99.9%</div>
+              <div className="text-white/90 font-medium">Disponibilidad</div>
             </div>
 
             <div className="text-center group cursor-pointer">
-              <div className="w-16 h-16 bg-gradient-to-br from-[#41afe0] to-[#2596be] rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
+              <div className="w-16 h-16 bg-gradient-to-br from-[#27348B] to-[#36A9E1] rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg">
                 <Factory className="w-8 h-8 text-white" />
               </div>
-              <div className="text-3xl font-bold text-gray-800 mb-2">200+</div>
-              <div className="text-gray-600">Proveedores</div>
+              <div className="text-3xl font-bold text-white mb-2 drop-shadow-lg">200+</div>
+              <div className="text-white/90 font-medium">Proveedores</div>
             </div>
 
             <div className="text-center group cursor-pointer">
-              <div className="w-16 h-16 bg-gradient-to-br from-[#1772b5] to-[#2596be] rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
+              <div className="w-16 h-16 bg-gradient-to-br from-[#36A9E1] to-[#27348B] rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg">
                 <Zap className="w-8 h-8 text-white" />
               </div>
-              <div className="text-3xl font-bold text-gray-800 mb-2">&lt;2s</div>
-              <div className="text-gray-600">Tiempo de Respuesta</div>
+              <div className="text-3xl font-bold text-white mb-2 drop-shadow-lg">&lt;2s</div>
+              <div className="text-white/90 font-medium">Tiempo de Respuesta</div>
             </div>
           </div>
         </div>
@@ -277,10 +303,10 @@ export function Landing() {
       <div className="relative z-10 px-6 py-20">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-4xl lg:text-5xl font-bold text-gray-800 mb-6">
+            <h2 className="text-4xl lg:text-5xl font-bold text-white mb-6">
               ¿Qué hago?
             </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+            <p className="text-xl text-white max-w-3xl mx-auto">
               Características Principales
             </p>
           </div>
@@ -419,23 +445,31 @@ export function Landing() {
 
               <div className="flex animate-scroll">
                 {/* First set of logos */}
-                {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
-                  <div key={`logo-${i}`} className="flex-shrink-0 mx-8">
-                    <div className="w-40 h-24 bg-white/10 backdrop-blur-sm rounded-xl border border-white/20 flex items-center justify-center hover:bg-white/20 transition-all duration-300">
+                {partners.map((partner) => (
+                  <div key={`logo-${partner.id}`} className="flex-shrink-0 mx-8">
+                    <div className="w-40 h-24 bg-white/60 backdrop-blur-sm rounded-xl border border-white/30 flex items-center justify-center hover:bg-white/80 transition-all duration-300">
                       <div className="text-center">
-                        <Factory className="w-12 h-12 text-white/60 mx-auto mb-2" />
-                        <p className="text-white/40 text-xs">Socio {i}</p>
+                      <img 
+                          src={partner.image} 
+                          alt={partner.name}
+                          className="w-36 h-20  object-contain mx-auto mb-2"
+                        />
+                        {/* <p className="text-white/40 text-xs">{partner.name}</p> */}
                       </div>
                     </div>
                   </div>
                 ))}
                 {/* Duplicate set for seamless loop */}
-                {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
-                  <div key={`logo-dup-${i}`} className="flex-shrink-0 mx-8">
-                    <div className="w-40 h-24 bg-white/10 backdrop-blur-sm rounded-xl border border-white/20 flex items-center justify-center hover:bg-white/20 transition-all duration-300">
+                {partners.map((partner) => (
+                  <div key={`logo-dup-${partner.id}`} className="flex-shrink-0 mx-8">
+                    <div className="w-40 h-24 bg-white/60 backdrop-blur-sm rounded-xl border border-white/30 flex items-center justify-center hover:bg-white/80 transition-all duration-300">
                       <div className="text-center">
-                        <Factory className="w-12 h-12 text-white/60 mx-auto mb-2" />
-                        <p className="text-white/40 text-xs">Socio {i}</p>
+                      <img 
+                          src={partner.image} 
+                          alt={partner.name}
+                          className="w-36 h-20 object-contain mx-auto mb-2"
+                        />
+                        {/* <p className="text-white/40 text-xs">{partner.name}</p> */}
                       </div>
                     </div>
                   </div>
@@ -449,10 +483,10 @@ export function Landing() {
       {/* Interactive Dashboard Preview */}
       <div className="relative z-10 px-6 py-20">
         <div className="max-w-7xl mx-auto text-center">
-          <h2 className="text-4xl font-bold text-gray-800 mb-6">
+          <h2 className="text-4xl font-bold text-white mb-6">
             Dashboard en Acción
           </h2>
-          <p className="text-xl text-gray-600 mb-12">
+          <p className="text-xl text-white/90 mb-12">
             Visualiza datos complejos de manera simple e intuitiva
           </p>
 
@@ -541,14 +575,14 @@ export function Landing() {
               <Button
                 size="4"
                 onClick={handleGetStarted}
-                className="bg-gradient-to-r from-[#2596be] to-[#2ca6e1] hover:from-[#1772b5] hover:to-[#2596be] text-white px-10 py-4 text-lg font-semibold shadow-2xl transform hover:scale-105 transition-all duration-300"
+                className="bg-[#27348B] hover:bg-[#36A9E1] text-white px-10 py-4 text-lg font-semibold shadow-2xl transform hover:scale-105 transition-all duration-300"
               >
                 Acceder al Dashboard
               </Button>
               <Button
                 size="4"
                 variant="outline"
-                className="border-[#2596be] text-[#2596be] hover:bg-[#2596be]/10 px-10 py-4 text-lg"
+                className="border-[#27348B] text-[#27348B] hover:bg-[#27348B] hover:text-white px-10 py-4 text-lg"
               >
                 Solicitar Demo
               </Button>

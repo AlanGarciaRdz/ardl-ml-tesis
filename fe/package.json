@@ -46,7 +46,7 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
-    "deploy": "rsync  -rave --progress -e \"ssh -i ~/Desktop/monitoreo.pem\" -r ./dist/* ec2-user@100.24.31.252:/usr/share/nginx/html/acero/",
+    "deploy": "tsc && vite build && rsync  -rave --progress -e \"ssh -i ~/Desktop/monitoreo.pem\" -r ./dist/* ec2-user@100.24.31.252:/usr/share/nginx/html/acero/",
     "preview": "vite preview"
   },
   "browserslist": {

@@ -14,8 +14,9 @@ import socio6 from '@/assets/images/socios/HOME DEPOT.jpg'
 import socio7 from '@/assets/images/socios/RECAL.png'
 import socio8 from '@/assets/images/socios/SUACERO.png'
 
+
 export function Landing() {
-  const { isLoggedIn } = useAuth();
+  const { login, logout, isLoggedIn, user } = useAuth();
   const [material, setMaterial] = useState('');
   const [volumen, setVolumen] = useState('');
   const [cp, setCP] = useState('');
@@ -94,10 +95,11 @@ export function Landing() {
             
             <Button
               variant="ghost"
-              onClick={handleGetStarted}
+              // 
+              onClick={isLoggedIn ? logout : login}
               className="bg-[#27348B] text-white hover:bg-[#36A9E1] border-[#27348B] transition-all duration-300"
             >
-              Sign In
+              {isLoggedIn ? `Hi, ${user?.displayName?.split(' ')[0]}` : 'Sign In'}
             </Button>
           </div>
         </div>

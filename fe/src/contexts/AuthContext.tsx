@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { User } from 'firebase/auth';
-import { signInWithGoogle, signOutUser, onAuthStateChange } from '../services/authService';
+import { signInWithGoogle, signOutUser, onAuthStateChange, checkUserRegistrationStatus } from '../services/authService';
 
 
 // interface AuthContextType {
@@ -15,6 +15,7 @@ interface AuthContextType {
   user: User | null;
   isLoggedIn: boolean;
   loading: boolean;
+  isRegistrationComplete: boolean;
   login: () => Promise<void>;
   logout: () => Promise<void>;
 }
@@ -94,13 +95,67 @@ const getInitialAuthState = (): boolean => {
 //   );
 // };
 
+// export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
+//   const [user, setUser] = useState<User | null>(null);
+//   const [loading, setLoading] = useState(true);
+
+//   useEffect(() => {
+//     const unsubscribe = onAuthStateChange((user) => {
+//       setUser(user);
+//       setLoading(false);
+//     });
+
+//     return () => unsubscribe();
+//   }, []);
+
+//   const login = async () => {
+//     try {
+//       await signInWithGoogle();
+//     } catch (error) {
+//       console.error('Login failed:', error);
+//     }
+//   };
+
+//   const logout = async () => {
+//     try {
+//       await signOutUser();
+//     } catch (error) {
+//       console.error('Logout failed:', error);
+//     }
+//   };
+
+//   const value = {
+//     user,
+//     isLoggedIn: !!user,
+//     loading,
+//     login,
+//     logout,
+//   };
+
+//   return (
+//     <AuthContext.Provider value={value}>
+//       {children}
+//     </AuthContext.Provider>
+//   );
+// };
+
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isRegistrationComplete, setIsRegistrationComplete] = useState(false);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChange((user) => {
+    const unsubscribe = onAuthStateChange(async (user) => {
       setUser(user);
+      
+      if (user) {
+        // Check if user has completed registration
+        const registrationComplete = await checkUserRegistrationStatus(user);
+        setIsRegistrationComplete(registrationComplete);
+      } else {
+        setIsRegistrationComplete(false);
+      }
+      
       setLoading(false);
     });
 
@@ -127,6 +182,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     user,
     isLoggedIn: !!user,
     loading,
+    isRegistrationComplete,
     login,
     logout,
   };

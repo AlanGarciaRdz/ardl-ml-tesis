@@ -1,5 +1,6 @@
 import { Routes, Route } from 'react-router-dom'
 import { AuthProvider } from '@/contexts/AuthContext'
+import { ProtectedRoute } from '@/components/ProtectedRoutes'
 import { DashboardLayout } from '@/components/layout/DashboardLayout'
 import { Landing } from '@/pages/Landing'
 import { Dashboard } from '@/pages/Dashboard'
@@ -13,6 +14,13 @@ function App() {
       <Routes>
         {/* Landing page route */}
         <Route path="/" element={<Landing />} />
+
+        {/* Protected Dashboard routes */}
+        <Route path="/dashboard" element={
+          <ProtectedRoute>
+            <DashboardLayout />
+          </ProtectedRoute>
+        }></Route>
         
         {/* Dashboard routes with layout */}
         <Route path="/dashboard" element={<DashboardLayout />}>

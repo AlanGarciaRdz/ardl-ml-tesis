@@ -8,6 +8,8 @@ import {
     sendPasswordResetEmail,
     RecaptchaVerifier,
     signInWithPhoneNumber,
+    updateProfile,
+    updatePhoneNumber,
     User 
   } from 'firebase/auth';
   import { auth } from '../config/firebase';
@@ -74,6 +76,35 @@ export const setUpRecaptcha = (elementId: string) => {
     } catch (error) {
       console.error('Error signing in with phone:', error);
       throw error;
+    }
+  };
+
+  // ---- USER PROFILE MANAGEMENT ----
+  export const updateUserProfile = async (displayName: string, phoneNumber: string) => {
+    try {
+      const user = auth.currentUser;
+      if (!user) throw new Error('No user logged in');
+      
+      await updateProfile(user, {
+        displayName: displayName
+      });
+      
+      return user;
+    } catch (error) {
+      console.error('Error updating user profile:', error);
+      throw error;
+    }
+  };
+
+  // Check if user needs to complete registration
+  export const checkUserRegistrationStatus = async (user: User): Promise<boolean> => {
+    try {
+      // Check if user has phone number and displayName
+      // You can also check against a backend database here
+      return !!(user.displayName && user.phoneNumber);
+    } catch (error) {
+      console.error('Error checking user registration status:', error);
+      return false;
     }
   };
 

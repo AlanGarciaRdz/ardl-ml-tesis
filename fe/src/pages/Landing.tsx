@@ -60,7 +60,7 @@ export function Landing() {
   ]
 
   return (
-    <div className="min-h-screen bg-[#fffdff] text-gray-800 overflow-hidden">
+    <div className="min-h-screen bg-[#fffdff] text-gray-800">
       {/* Animated Background */}
       <div className="fixed inset-0 z-0">
         <div className="absolute inset-0 bg-gradient-to-br from-[#27348B] via-[#36A9E1] to-[#27348B]"></div>
@@ -70,7 +70,7 @@ export function Landing() {
       </div>
 
       {/* Navigation */}
-      <nav className="relative z-10 px-6 py-4 backdrop-blur-md bg-white/90 border-b border-[#2596be]/20">
+      <nav className="sticky top-0 z-50 px-6 py-4 backdrop-blur-md bg-white/90 border-b border-[#2596be]/20">
         <div className="max-w-7xl mx-auto flex justify-between items-center">
           <div className="flex items-center space-x-3">
             <img src={logo} alt="Pitiax Logo" className="w-21 h-16 object-contain" />

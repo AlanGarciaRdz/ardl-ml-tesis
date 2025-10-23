@@ -1,11 +1,10 @@
 //import { Card, Text, Heading, Flex } from '@radix-ui/themes'
 import { useState } from 'react';
-import { useAuth } from '@/hooks/useAuth'
 //import { TrendingUp, TrendingDown, Database, Activity } from 'lucide-react'
 import UserStatsBar from '@/components/shared/UserStatsBar';
+import { RegistrationForm } from '@/pages/RegistrationForm'
 
 export function Dashboard() {
-  const { isLoggedIn } = useAuth();
   const [material, setMaterial] = useState('');
   const [volumen, setVolumen] = useState('');
 
@@ -16,7 +15,7 @@ export function Dashboard() {
         <p className="text-gray-600">Welcome the pitiax project dashboard</p>
       </div>
 
-      {isLoggedIn && (
+      
         <UserStatsBar
           cotizaciones={10}
           comprado={75000}
@@ -29,7 +28,13 @@ export function Dashboard() {
           onMaterialChange={setMaterial}
           onVolumenChange={setVolumen}
         />
-      )}
+      
+      <RegistrationForm onComplete={function (): void {
+        throw new Error('Function not implemented.');
+      } }/>
+
+
+
 
       {/* Stats Cards */}
       {/* <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">

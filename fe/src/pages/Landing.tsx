@@ -4,7 +4,7 @@ import { useAuth } from '@/hooks/useAuth'
 import UserStatsBar from '../components/shared/UserStatsBar';
 import { Button } from '@radix-ui/themes'
 import { BarChart3, Database, TrendingUp, Shield, Globe, Factory, Zap, Users, Award, ChevronRight, LogOut } from 'lucide-react'
-import logo1 from '@/assets/images/PITIAX-logo.png'
+import logo from '@/assets/images/PITIAX-logo.png'
 import socio1 from '@/assets/images/socios/ACC.png'
 import socio2 from '@/assets/images/socios/ACEROS OCOTLAN.png'
 import socio3 from '@/assets/images/socios/ARCELOR MITTAL.png'
@@ -73,7 +73,7 @@ export function Landing() {
       <nav className="relative z-10 px-6 py-4 backdrop-blur-md bg-white/90 border-b border-[#2596be]/20">
         <div className="max-w-7xl mx-auto flex justify-between items-center">
           <div className="flex items-center space-x-3">
-            <img src={logo1} alt="Pitiax Logo" className="w-21 h-16 object-contain" />
+            <img src={logo} alt="Pitiax Logo" className="w-21 h-16 object-contain" />
           </div>
           <div className="flex items-center space-x-6">
             <button
@@ -633,12 +633,11 @@ export function Landing() {
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <div className="flex items-center space-x-3 mb-4 md:mb-0">
-              <div className="w-10 h-10 rounded-lg flex items-center justify-center bg-white p-2 shadow-md">
-                <img src={logo1} alt="Pitiax Logo" className="w-full h-full object-contain" />
-              </div>
-              <div>
-                <span className="text-[#1772b5] font-bold text-lg">Pitiax</span>
-                <div className="text-xs text-[#2596be]">Líder en Analytics de Acero</div>
+              <div className="flex items-center space-x-3">
+                <div className="flex flex-col items-center md:items-start mb-4 md:mb-0">
+                  <img src={logo} alt="Pitiax Logo" className="w-21 h-16 object-contain" />
+                  <div className="text-xs text-[#2596be]">Analisis precios de Acero</div>
+                </div>
               </div>
             </div>
             <div className="text-center md:text-right">

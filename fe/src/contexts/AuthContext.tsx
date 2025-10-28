@@ -27,22 +27,22 @@ interface AuthProviderProps {
 }
 
 // Helper function to get initial auth state from localStorage
-const getInitialAuthState = (): boolean => {
-  try {
-    const savedAuthState = localStorage.getItem('isLoggedIn');
-    console.log('Initial load - auth state from localStorage:', savedAuthState);
+// const getInitialAuthState = (): boolean => {
+//   try {
+//     const savedAuthState = localStorage.getItem('isLoggedIn');
+//     console.log('Initial load - auth state from localStorage:', savedAuthState);
     
-    if (savedAuthState !== null) {
-      const parsedState = JSON.parse(savedAuthState);
-      console.log('Initial load - parsed auth state:', parsedState);
-      return parsedState;
-    }
-    return false;
-  } catch (error) {
-    console.error('Error parsing auth state from localStorage:', error);
-    return false;
-  }
-};
+//     if (savedAuthState !== null) {
+//       const parsedState = JSON.parse(savedAuthState);
+//       console.log('Initial load - parsed auth state:', parsedState);
+//       return parsedState;
+//     }
+//     return false;
+//   } catch (error) {
+//     console.error('Error parsing auth state from localStorage:', error);
+//     return false;
+//   }
+// };
 
 // export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 //   // Initialize state directly from localStorage

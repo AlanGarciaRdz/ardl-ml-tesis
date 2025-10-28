@@ -1,0 +1,7 @@
+ Defines el model estimar coefeciente, la forma de estimarlos , es con gradiente , con ruido los metdos de 
+ gradiente no funcionan inferncia bayesiana a los coeficiente utilizar una red mismos coeficientes 
+
+ Curso inferncia bayesiana - antes de cuantificacion de incertidumbre
+
+ 
+ 

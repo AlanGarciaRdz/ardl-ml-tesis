@@ -1,21 +1,21 @@
-import { Bell, User, LogOut } from 'lucide-react'
-import { Button, Flex } from '@radix-ui/themes'
-import { useNavigate } from 'react-router-dom'
+import {  LogOut } from 'lucide-react'
+import { Button } from '@radix-ui/themes'
+//import { useNavigate } from 'react-router-dom'
 import { LanguageSwitcher } from '../LanguageSwitcher'
 import { useAuth } from '@/contexts/AuthContext'
 
 export function Header() {
   const { user, logout } = useAuth();
-  const navigate = useNavigate();
+  //const navigate = useNavigate();
 
-  const handleLogout = async () => {
-    try {
-      await logout();
-      navigate('/');
-    } catch (error) {
-      console.error('Logout failed:', error);
-    }
-  };
+  // const handleLogout = async () => {
+  //   try {
+  //     await logout();
+  //     navigate('/');
+  //   } catch (error) {
+  //     console.error('Logout failed:', error);
+  //   }
+  // };
 
   return (
     <header className="bg-white shadow-sm border-b border-gray-200">

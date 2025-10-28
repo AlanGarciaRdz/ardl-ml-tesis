@@ -80,7 +80,7 @@ export function RegistrationForm({ onComplete }: RegistrationFormProps) {
       await confirmationResult.confirm(verificationCode);
       
       // Update user profile with the form data
-      await updateUserProfile(formData.nombre, formData.celular);
+      await updateUserProfile(formData.nombre)//, formData.celular);
       
       setVerificationStep('complete');
       

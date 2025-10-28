@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { useAuth } from '@/hooks/useAuth'
 import UserStatsBar from '../components/shared/UserStatsBar';
 import { Button } from '@radix-ui/themes'
-import { BarChart3, Database, TrendingUp, Shield, Globe, Factory, Zap, Users, Award, ChevronRight, LogOut } from 'lucide-react'
+import { BarChart3, Database, TrendingUp, Shield, Globe, Factory, Zap, Users, Award, LogOut } from 'lucide-react'  //ChevronRight
 import logo from '@/assets/images/PITIAX-logo.png'
 import socio1 from '@/assets/images/socios/ACC.png'
 import socio2 from '@/assets/images/socios/ACEROS OCOTLAN.png'
@@ -78,34 +78,34 @@ export function Landing() {
           <div className="flex items-center space-x-6">
             <button
               onClick={() => scrollToSection('quien-soy')}
-              className="text-gray-800 hover:text-[#27348B] transition-colors duration-300 text-sm font-medium">
+              className="text-gray-800 hover:text-[#27348B] transition-colors duration-300 text-[16px] font-medium">
               ¿Quién soy?
             </button>
             <button
               onClick={() => scrollToSection('que-hago')}
-              className="text-gray-800 hover:text-[#27348B] transition-colors duration-300 text-sm font-medium">
+              className="text-gray-800 hover:text-[#27348B] transition-colors duration-300 text-[16px] font-medium">
               ¿Qué hago?
             </button>
             <button
               onClick={() => scrollToSection('socios')}
-              className="text-gray-800 hover:text-[#27348B] transition-colors duration-300 text-sm font-medium">
+              className="text-gray-800 hover:text-[#27348B] transition-colors duration-300 text-[16px] font-medium">
               Mis socios
             </button>
             <button
               onClick={() => scrollToSection('futuro')}
-              className="text-gray-800 hover:text-[#27348B] transition-colors duration-300 text-sm font-medium">
+              className="text-gray-800 hover:text-[#27348B] transition-colors duration-300 text-[16px] font-medium">
               Hablemos del futuro
             </button>
             <button
               onClick={() => scrollToSection('futuro')}
-              className="text-gray-800 hover:text-[#27348B] transition-colors duration-300 text-sm font-medium">
+              className="text-gray-800 hover:text-[#27348B] transition-colors duration-300 text-[16px] font-medium">
               Tu plan en acción
             </button>
 
 
             {isLoggedIn ? (
               <div className="flex items-center gap-2">
-                <span className="text-sm text-gray-700">
+                <span className="text-[16px] text-gray-700">
                   {user?.displayName?.split(' ')[0] || 'User'}
                 </span>
                 <Button variant="ghost" size="2" onClick={logout}>
@@ -344,9 +344,9 @@ export function Landing() {
                 <p className="text-gray-600 mb-4">
                   Conservo y analizo el historial del comportamiento de precios por región en México, considerando las características específicas de cada proyecto.
                 </p>
-                <div className="flex items-center text-[#2596be] text-sm font-semibold">
+                {/* <div className="flex items-center text-[#2596be] text-sm font-semibold">
                   Ver más <ChevronRight className="w-4 h-4 ml-1" />
-                </div>
+                </div> */}
               </div>
             </div>
 
@@ -359,9 +359,9 @@ export function Landing() {
                 <p className="text-gray-600 mb-4">
                   Actualizo en tiempo real los precios de cada región de México de acuerdo con el comportamiento del mercado.
                 </p>
-                <div className="flex items-center text-[#2ca6e1] text-sm font-semibold">
+                {/* <div className="flex items-center text-[#2ca6e1] text-sm font-semibold">
                   Ver más <ChevronRight className="w-4 h-4 ml-1" />
-                </div>
+                </div> */}
               </div>
             </div>
 
@@ -374,9 +374,9 @@ export function Landing() {
                 <p className="text-gray-600 mb-4">
                   Centralizo y sintetizo las noticias nacionales e internacionales con impacto potencial en el mercado y los precios.
                 </p>
-                <div className="flex items-center text-[#41afe0] text-sm font-semibold">
+                {/* <div className="flex items-center text-[#41afe0] text-sm font-semibold">
                   Ver más <ChevronRight className="w-4 h-4 ml-1" />
-                </div>
+                </div> */}
               </div>
             </div>
 
@@ -389,9 +389,9 @@ export function Landing() {
                 <p className="text-gray-600 mb-4">
                   Analizo y proyecto distintos escenarios futuros del comportamiento de los precios para apoyar la toma conjunta de decisiones.
                 </p>
-                <div className="flex items-center text-[#1772b5] text-sm font-semibold">
+                {/* <div className="flex items-center text-[#1772b5] text-sm font-semibold">
                   Ver más <ChevronRight className="w-4 h-4 ml-1" />
-                </div>
+                </div> */}
               </div>
             </div>
 
@@ -404,9 +404,9 @@ export function Landing() {
                 <p className="text-gray-600 mb-4">
                   Identifico patrones y diferencias de precios entre regiones y sectores en México para descubrir oportunidades y optimizar decisiones estratégicas.
                 </p>
-                <div className="flex items-center text-[#2596be] text-sm font-semibold">
+                {/* <div className="flex items-center text-[#2596be] text-sm font-semibold">
                   Ver más <ChevronRight className="w-4 h-4 ml-1" />
-                </div>
+                </div> */}
               </div>
             </div>
 
@@ -419,9 +419,9 @@ export function Landing() {
                 <p className="text-gray-600 mb-4">
                   Nos conectamos a fuentes financieras externas e internas mediante una API ultrarrápida que integra datos de precios en tiempo real directamente en tus aplicaciones, garantizando información actualizada y confiable para tus decisiones
                 </p>
-                <div className="flex items-center text-[#2ca6e1] text-sm font-semibold">
+                {/* <div className="flex items-center text-[#2ca6e1] text-sm font-semibold">
                   Ver más <ChevronRight className="w-4 h-4 ml-1" />
-                </div>
+                </div> */}
               </div>
             </div>
           </div>

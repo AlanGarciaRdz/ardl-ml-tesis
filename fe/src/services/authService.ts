@@ -9,7 +9,7 @@ import {
     RecaptchaVerifier,
     signInWithPhoneNumber,
     updateProfile,
-    updatePhoneNumber,
+    //updatePhoneNumber,
     User 
   } from 'firebase/auth';
   import { auth } from '../config/firebase';
@@ -80,7 +80,7 @@ export const setUpRecaptcha = (elementId: string) => {
   };
 
   // ---- USER PROFILE MANAGEMENT ----
-  export const updateUserProfile = async (displayName: string, phoneNumber: string) => {
+  export const updateUserProfile = async (displayName: string) => {
     try {
       const user = auth.currentUser;
       if (!user) throw new Error('No user logged in');

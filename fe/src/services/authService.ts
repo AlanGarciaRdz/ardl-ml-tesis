@@ -63,14 +63,44 @@ export const signUpWithEmail = async (email: string, password: string) => {
 
   // ---- PHONE AUTH ----
 export const setUpRecaptcha = (elementId: string) => {
+    // Use visible reCAPTCHA to bypass throttling and improve reliability
+    // The visible widget tells Firebase that requests are legitimate
     const verifier = new RecaptchaVerifier(auth, elementId, {
-      size: 'invisible', // or 'normal' if you want a visible widget
+      size: 'normal', // Visible widget - helps bypass throttling 'invisible'
+      callback: () => {
+        // reCAPTCHA solved - ready for phone authentication
+        console.log('reCAPTCHA verified');
+      },
+      'expired-callback': () => {
+        // reCAPTCHA expired - user needs to solve it again
+        console.warn('reCAPTCHA expired');
+      },
+      'error-callback': (error: any) => {
+        // Error loading reCAPTCHA
+        console.error('reCAPTCHA error:', error);
+      }
     });
     return verifier;
+  };
+
+  // Cleanup function to dispose of reCAPTCHA verifier
+  export const clearRecaptcha = (verifier: RecaptchaVerifier | null) => {
+    if (verifier) {
+      try {
+        verifier.clear();
+      } catch (error) {
+        console.warn('Error clearing reCAPTCHA:', error);
+      }
+    }
   };
   
   export const signInWithPhone = async (phoneNumber: string, appVerifier: RecaptchaVerifier) => {
     try {
+      
+      debugger;
+
+      
+
       const confirmationResult = await signInWithPhoneNumber(auth, phoneNumber, appVerifier);
       return confirmationResult;
     } catch (error) {
@@ -96,17 +126,6 @@ export const setUpRecaptcha = (elementId: string) => {
     }
   };
 
-  // Check if user needs to complete registration
-  export const checkUserRegistrationStatus = async (user: User): Promise<boolean> => {
-    try {
-      // Check if user has phone number and displayName
-      // You can also check against a backend database here
-      return !!(user.displayName && user.phoneNumber);
-    } catch (error) {
-      console.error('Error checking user registration status:', error);
-      return false;
-    }
-  };
 
   // SIGN OUT
   export const signOutUser = async () => {

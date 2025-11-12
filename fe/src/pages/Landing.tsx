@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom'
 import { useState } from 'react';
-import { useAuth } from '@/hooks/useAuth'
+import { useAuth } from '@/contexts/AuthContext'
+import { RegistrationForm } from './RegistrationForm';
 import UserStatsBar from '../components/shared/UserStatsBar';
 import { Button } from '@radix-ui/themes'
 import { BarChart3, Database, TrendingUp, Shield, Globe, Factory, Zap, Users, Award, LogOut } from 'lucide-react'  //ChevronRight
@@ -16,26 +17,50 @@ import socio8 from '@/assets/images/socios/SUACERO.png'
 
 
 export function Landing() {
-  const { login, logout, isLoggedIn, user } = useAuth();
+  const { login, logout, isLoggedIn, user, isRegistrationComplete } = useAuth();
   const [material, setMaterial] = useState('');
   const [volumen, setVolumen] = useState('');
   const [cp, setCP] = useState('');
   const [nombreProyecto, setNombreProyecto] = useState('');
+  const [showRegistrationForm, setShowRegistrationForm] = useState(false);
   const navigate = useNavigate()
 
 
   const handleLogin = async () => {
     try {
       await login();
-      // Navigation will be handled by the useEffect above
+      // After login, if registration is incomplete, RegistrationForm will be shown
+      // Show registration form if user is logged in but registration is not complete
+      debugger;
+      if (isLoggedIn && !isRegistrationComplete) {
+        return <RegistrationForm onComplete={handleRegistrationComplete} />;
+      }
     } catch (error) {
       console.error('Login failed:', error);
     }
   };
 
+  const handleRegistrationComplete = () => {
+    // After registration is complete, user can access the dashboard
+    // The auth context will update automatically
+    setShowRegistrationForm(false);
+    window.location.reload();
+  };
+
+  
+
 
   const handleGetStarted = () => {
-    navigate('/dashboard')
+    if (!isLoggedIn) {
+      // User not logged in, trigger login
+      handleLogin();
+    } else if (!isRegistrationComplete) {
+      // User logged in but registration incomplete, show form
+      setShowRegistrationForm(true);
+    } else {
+      // User logged in and registration complete, go to dashboard
+      navigate('/dashboard');
+    }
   }
 
   const scrollToSection = (elementId: string) => {
@@ -58,6 +83,17 @@ export function Landing() {
     { id: 7, image: socio7, name: "Socio 7" },
     { id: 8, image: socio8, name: "Socio 8" },
   ]
+
+  // Show registration form if user is logged in but registration is not complete
+  if (isLoggedIn && !isRegistrationComplete && showRegistrationForm) {
+    return <RegistrationForm onComplete={handleRegistrationComplete} />;
+  }
+
+  // Also show form automatically when user logs in without complete registration
+  if (isLoggedIn && !isRegistrationComplete && !showRegistrationForm) {
+    // Automatically show the form after login
+    setTimeout(() => setShowRegistrationForm(true), 100);
+  }
 
   return (
     <div className="min-h-screen bg-[#fffdff] text-gray-800">
@@ -126,7 +162,7 @@ export function Landing() {
       </nav>
 
       {/* Stats Bar - Only show when logged in */}
-      {isLoggedIn && (
+      {isLoggedIn && isRegistrationComplete && (
         <UserStatsBar
           cotizaciones={10}
           comprado={75000}

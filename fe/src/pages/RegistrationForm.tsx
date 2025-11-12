@@ -3,8 +3,10 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { updateUserProfile, setUpRecaptcha, signInWithPhone } from '@/services/authService';
+import { updateUserProfile, setUpRecaptcha, signInWithPhone, clearRecaptcha } from '@/services/authService';
+import { saveUserData, updatePhoneVerificationStatus } from '@/services/userService';
 import { Phone, User, Building, MapPin, CheckCircle } from 'lucide-react';
+
 
 interface RegistrationFormProps {
   onComplete: () => void;
@@ -25,17 +27,31 @@ export function RegistrationForm({ onComplete }: RegistrationFormProps) {
   const [verificationStep, setVerificationStep] = useState<'form' | 'verify' | 'complete'>('form');
   const [recaptchaVerifier, setRecaptchaVerifier] = useState<any>(null);
 
+
   const tiposEmpresa = [
     'CONTRATISTA',
-    'INVERSIONISTA', 
+    'INVERSIONISTA',
     'PROVEEDOR'
   ];
 
   useEffect(() => {
-    // Set up reCAPTCHA when component mounts
     if (typeof window !== 'undefined') {
-      const verifier = setUpRecaptcha('recaptcha-container');
-      setRecaptchaVerifier(verifier);
+      // Wait for DOM to be ready
+      const timer = setTimeout(() => {
+        const container = document.getElementById('recaptcha-container');
+        if (container) {
+          const verifier = setUpRecaptcha('recaptcha-container');
+          setRecaptchaVerifier(verifier);
+          verifier.render();
+        }
+      }, 100);
+
+      return () => {
+        clearTimeout(timer);
+        if (recaptchaVerifier) {
+          clearRecaptcha(recaptchaVerifier);
+        }
+      };
     }
   }, []);
 
@@ -47,51 +63,95 @@ export function RegistrationForm({ onComplete }: RegistrationFormProps) {
   };
 
   const handleSendVerification = async () => {
+
     if (!recaptchaVerifier) {
       alert('reCAPTCHA not ready. Please try again.');
       return;
     }
 
+    if (!user) {
+      alert('No user logged in. Please login first.');
+      return;
+    }
+
+    // Validate required fields
+    if (!formData.nombre || !formData.celular || !formData.empresa || !formData.tipoEmpresa) {
+      alert('Por favor completa todos los campos requeridos.');
+      return;
+    }
+
     try {
       setIsVerifying(true);
-      const phoneNumber = `+52${formData.celular}`; // Assuming Mexican phone numbers
-      
+
+
+      // First, save the user data to Firestore (without phone verification)
+      await saveUserData(user, {
+        nombre: formData.nombre,
+        celular: formData.celular,
+        empresa: formData.empresa,
+        tipoEmpresa: formData.tipoEmpresa,
+        puesto: formData.puesto,
+        codigoPostal: formData.codigoPostal,
+        phoneVerified: false,
+        registrationComplete: false,
+      });
+
+
+      // Update user profile with display name
+      await updateUserProfile(formData.nombre);
+
+      // Send SMS verification
+      const phoneNumber = `+52${formData.celular.replace(/\D/g, '')}`; // Clean and format phone number
       const confirmationResult = await signInWithPhone(phoneNumber, recaptchaVerifier);
-      
+
       // Store confirmation result for later use
       (window as any).confirmationResult = confirmationResult;
-      
+
       setVerificationStep('verify');
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error sending verification SMS:', error);
-      alert('Error sending verification SMS. Please try again.');
+      const errorMessage = error?.message || 'Error sending verification SMS. Please try again.';
+      alert(errorMessage);
     } finally {
       setIsVerifying(false);
     }
   };
 
   const handleVerifyCode = async () => {
+    if (!user) {
+      alert('No user logged in. Please login first.');
+      return;
+    }
+
     try {
       const confirmationResult = (window as any).confirmationResult;
       if (!confirmationResult) {
         throw new Error('No confirmation result found');
       }
 
+      // Verify the code
       await confirmationResult.confirm(verificationCode);
-      
-      // Update user profile with the form data
-      await updateUserProfile(formData.nombre)//, formData.celular);
-      
+
+      // Update phone verification status in Firestore
+      await updatePhoneVerificationStatus(user, true);
+
+      // Update user data to mark registration as complete
+      await saveUserData(user, {
+        phoneVerified: true,
+        registrationComplete: true,
+      });
+
       setVerificationStep('complete');
-      
+
       // Complete registration after a short delay
       setTimeout(() => {
         onComplete();
       }, 2000);
-      
-    } catch (error) {
+
+    } catch (error: any) {
       console.error('Error verifying code:', error);
-      alert('Invalid verification code. Please try again.');
+      const errorMessage = error?.message || 'Invalid verification code. Please try again.';
+      alert(errorMessage);
     }
   };
 
@@ -208,18 +268,20 @@ export function RegistrationForm({ onComplete }: RegistrationFormProps) {
         </div>
       </div>
 
+      {/* reCAPTCHA container */}
+      <div className="mt-8" id="recaptcha-container"></div>
+
       <div className="mt-8 flex justify-end">
         <Button
           onClick={handleSendVerification}
-          disabled={!formData.nombre || !formData.celular || isVerifying}
+          disabled={!formData.nombre || !formData.celular || !formData.empresa || !formData.tipoEmpresa || isVerifying}
           className="bg-blue-900 text-white hover:bg-blue-800 px-8 py-3 text-lg font-medium"
         >
           {isVerifying ? 'Enviando...' : 'REGISTRARME'}
         </Button>
       </div>
 
-      {/* reCAPTCHA container */}
-      <div id="recaptcha-container"></div>
+      
     </div>
   );
 

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
-import { RegistrationForm } from '../pages/RegistrationForm';
+
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -19,19 +19,13 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
   }
 
   if (!isLoggedIn) {
-    return <Navigate to="/" replace />;
+    return <Navigate to="/" state={{ from: location }} replace />;
   }
 
-  // If logged in but registration not complete, show registration form
+  // 2. LOGGED IN BUT REGISTRATION INCOMPLETE: Redirect to Registration Form
   if (!isRegistrationComplete) {
-    return (
-      <RegistrationForm 
-        onComplete={() => {
-          // Force re-check of registration status
-          window.location.reload();
-        }} 
-      />
-    );
+    // The user MUST complete registration before accessing the dashboard
+    return <Navigate to="/complete-registration" replace />;
   }
 
   // User is logged in and registration is complete

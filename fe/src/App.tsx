@@ -16,14 +16,14 @@ function App() {
         <Route path="/" element={<Landing />} />
 
         {/* Protected Dashboard routes */}
-        <Route path="/dashboard" element={
-          <ProtectedRoute>
-            <DashboardLayout />
-          </ProtectedRoute>
-        }></Route>
-        
-        {/* Dashboard routes with layout */}
-        <Route path="/dashboard" element={<DashboardLayout />}>
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <DashboardLayout />
+            </ProtectedRoute>
+          }
+        >
           <Route index element={<Dashboard />} />
           <Route path="data" element={<DataExplorer />} />
           <Route path="analytics" element={<Analytics />} />

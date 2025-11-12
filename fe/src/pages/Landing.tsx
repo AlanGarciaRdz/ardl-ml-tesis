@@ -31,7 +31,7 @@ export function Landing() {
       await login();
       // After login, if registration is incomplete, RegistrationForm will be shown
       // Show registration form if user is logged in but registration is not complete
-      debugger;
+      
       if (isLoggedIn && !isRegistrationComplete) {
         return <RegistrationForm onComplete={handleRegistrationComplete} />;
       }

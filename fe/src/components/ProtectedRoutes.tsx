@@ -1,5 +1,5 @@
 import React from 'react';
-import { Navigate } from 'react-router-dom';
+import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 
 
@@ -9,6 +9,8 @@ interface ProtectedRouteProps {
 
 export function ProtectedRoute({ children }: ProtectedRouteProps) {
   const { isLoggedIn, loading, isRegistrationComplete } = useAuth();
+  const location = useLocation();
+
 
   if (loading) {
     return (
@@ -18,6 +20,7 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
     );
   }
 
+  debugger;
   if (!isLoggedIn) {
     return <Navigate to="/" state={{ from: location }} replace />;
   }

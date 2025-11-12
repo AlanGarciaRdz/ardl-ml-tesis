@@ -156,13 +156,13 @@ export function RegistrationForm({ onComplete }: RegistrationFormProps) {
   };
 
   const renderForm = () => (
-    <div className="max-w-2xl mx-auto bg-white rounded-lg shadow-lg p-8">
+    <div className="max-w-3xl mx-auto bg-white rounded-lg shadow-lg p-8 flex flex-col items-center">
       <div className="text-center mb-8">
         <h1 className="text-3xl font-bold text-blue-900 mb-2">REGISTRO</h1>
         <p className="text-gray-600">Completa tu información para continuar</p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="w-full flex flex-col items-center gap-6 max-w-md mx-auto">
         {/* Left Column */}
         <div className="space-y-4">
           <div>
@@ -271,7 +271,7 @@ export function RegistrationForm({ onComplete }: RegistrationFormProps) {
       {/* reCAPTCHA container */}
       <div className="mt-8" id="recaptcha-container"></div>
 
-      <div className="mt-8 flex justify-end">
+      <div className="mt-8 flex justify-center">
         <Button
           onClick={handleSendVerification}
           disabled={!formData.nombre || !formData.celular || !formData.empresa || !formData.tipoEmpresa || isVerifying}

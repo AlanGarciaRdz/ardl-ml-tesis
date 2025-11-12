@@ -152,7 +152,7 @@ export function Landing() {
               <Button
                 variant="ghost"
                 onClick={handleLogin}
-                className="bg-[#27348B] text-white hover:bg-[#36A9E1] border-[#27348B] transition-all duration-300"
+                className="text-[#27348B] hover:text-[#616cb5] transition-all duration-300"
               >
                 Sign In
               </Button>

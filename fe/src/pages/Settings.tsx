@@ -17,8 +17,36 @@ export function Settings() {
   const [recaptchaVerifier, setRecaptchaVerifier] = useState<any>(null);
   const [isVerifying, setIsVerifying] = useState(false);
 
+  // Dark mode state
+  const [isDarkMode, setIsDarkMode] = useState(() => {
+    // Check localStorage first
+    const saved = localStorage.getItem('darkMode');
+    if (saved !== null) {
+      return saved === 'true';
+    }
+    // Check system preference
+    return window.matchMedia('(prefers-color-scheme: dark)').matches;
+  });
+
+  // Apply dark mode to document
+  useEffect(() => {
+    if (isDarkMode) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+    // Save preference
+    localStorage.setItem('darkMode', isDarkMode.toString());
+  }, [isDarkMode]);
+
+  const handleDarkModeToggle = (checked: boolean) => {
+    //TODO: I need to work on the dark version because not dark all the elements
+    //setIsDarkMode(checked);
+  };
+
   useEffect(() => {
     // Load user's phone number if available
+    debugger;
     const loadUserData = async () => {
       if (user) {
         const userData = await getUserData(user);
@@ -31,8 +59,8 @@ export function Settings() {
 
     // Set up reCAPTCHA
     if (typeof window !== 'undefined') {
-      const verifier = setUpRecaptcha('recaptcha-container-settings');
-      setRecaptchaVerifier(verifier);
+      //const verifier = setUpRecaptcha('recaptcha-container-settings');
+      //setRecaptchaVerifier(verifier);
     }
   }, [user]);
 
@@ -232,7 +260,8 @@ export function Settings() {
               <Label htmlFor="dark-mode">Dark Mode</Label>
               <p className="text-sm text-gray-500">Use dark theme</p>
             </div>
-            <Switch id="dark-mode" />
+            <Switch id="dark-mode" checked={isDarkMode}
+              onCheckedChange={handleDarkModeToggle} />
           </div>
         </CardContent>
       </Card>

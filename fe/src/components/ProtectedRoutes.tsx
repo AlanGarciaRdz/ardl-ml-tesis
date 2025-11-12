@@ -20,7 +20,6 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
     );
   }
 
-  debugger;
   if (!isLoggedIn) {
     return <Navigate to="/" state={{ from: location }} replace />;
   }

@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VAR Model Workflows</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.6.1/mermaid.min.js"></script>
+    <style>
+        @page {
+            size: A4;
+            margin: 10mm;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            background: white;
+            padding: 10mm;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 210mm;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            text-align: center;
+            font-size: 18pt;
+            margin-bottom: 5mm;
+            color: #333;
+        }
+        
+        .workflows {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 5mm;
+            width: 100%;
+        }
+        
+        .workflow-section {
+            border: 1px solid #ddd;
+            padding: 3mm;
+            background: #fafafa;
+            border-radius: 4px;
+        }
+        
+        .workflow-section h2 {
+            font-size: 12pt;
+            margin-bottom: 3mm;
+            color: #2c3e50;
+            text-align: center;
+        }
+        
+        .mermaid {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+        }
+        
+        .mermaid svg {
+            max-width: 100% !important;
+            height: auto !important;
+        }
+        
+        .print-button {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 10px 20px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            z-index: 1000;
+        }
+        
+        .print-button:hover {
+            background: #2980b9;
+        }
+        
+        @media print {
+            body {
+                padding: 0;
+            }
+            
+            .print-button {
+                display: none;
+            }
+            
+            .container {
+                page-break-inside: avoid;
+            }
+            
+            .workflow-section {
+                break-inside: avoid;
+            }
+        }
+        
+        .note {
+            text-align: center;
+            font-size: 9pt;
+            color: #666;
+            margin-top: 5mm;
+            padding: 2mm;
+            background: #f0f0f0;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <button class="print-button" onclick="window.print()">🖨️ Print to PDF</button>
+    
+    <div class="container">
+        <h1>VAR Model Development Workflows Comparison</h1>
+        
+        <div class="workflows">
+            <!-- Classical VAR Workflow -->
+            <div class="workflow-section">
+                <h2>Classical VAR Approach</h2>
+                <div class="mermaid">
+                    graph TD
+                    A[Start: Data Collection] --> B[Import Libraries<br/>pandas, numpy, statsmodels, matplotlib]
+                    B --> C[Load and Prepare Data]
+                    C --> D[Exploratory Data Analysis<br/>Visualize time series]
+                    
+                    D --> E{Check for<br/>Missing Values?}
+                    E -->|Yes| F[Handle Missing Data<br/>Imputation/Removal]
+                    E -->|No| G[Test for Stationarity<br/>ADF Test for each series]
+                    F --> G
+                    
+                    G --> H{All Series<br/>Stationary?}
+                    H -->|No| I[Apply Differencing<br/>d-order integration]
+                    I --> J[Re-test Stationarity]
+                    J --> H
+                    H -->|Yes| K[Cointegration Test<br/>Johansen Test]
+                    
+                    K --> L{Series<br/>Cointegrated?}
+                    L -->|No| M[Consider Alternative Models<br/>or Transformations]
+                    L -->|Yes| N[Model Selection<br/>Determine Optimal Lag Order]
+                    
+                    N --> O[Iteratively Fit VAR Models<br/>with different lag orders p]
+                    O --> P[Compare Information Criteria<br/>AIC, BIC, HQIC, FPE]
+                    P --> Q[Select Best Model<br/>Lowest AIC/BIC]
+                    
+                    Q --> R[Fit Final VAR Model<br/>with optimal lag order]
+                    R --> S[Model Diagnostics]
+                    S --> T[Test Residuals<br/>Autocorrelation, Normality]
+                    
+                    T --> U{Residuals<br/>White Noise?}
+                    U -->|No| V[Adjust Model<br/>Refine lag order]
+                    V --> R
+                    U -->|Yes| W[Granger Causality Test<br/>Analyze variable relationships]
+                    
+                    W --> X[Impulse Response Analysis<br/>IRF plots]
+                    X --> Y[Forecast Variance Decomposition<br/>FEVD analysis]
+                    
+                    Y --> Z[Generate Forecasts<br/>Out-of-sample predictions]
+                    Z --> AA[Evaluate Model Performance<br/>RMSE, MAE, MAPE]
+                    
+                    AA --> AB{Performance<br/>Satisfactory?}
+                    AB -->|No| AC[Model Refinement<br/>Review transformations]
+                    AC --> N
+                    AB -->|Yes| AD[Inverse Transformation<br/>Roll back differencing if applied]
+                    
+                    AD --> AE[Final Results<br/>Interpretation & Reporting]
+                    AE --> AF[End: Deploy Model<br/>or Further Analysis]
+                    
+                    style A fill:#e1f5e1
+                    style AF fill:#ffe1e1
+                    style Q fill:#fff4e1
+                    style R fill:#fff4e1
+                    style Z fill:#e1f0ff
+                    style AE fill:#f0e1ff
+                </div>
+            </div>
+            
+            <!-- Bayesian VAR Workflow -->
+            <div class="workflow-section">
+                <h2>Bayesian VAR Approach</h2>
+                <div class="mermaid">
+                    graph TD
+                    A[Start: Data Collection] --> B[Import Libraries<br/>pandas, numpy, statsmodels, matplotlib]
+                    B --> C[Load and Prepare Data]
+                    C --> D[Exploratory Data Analysis<br/>Visualize time series]
+                    
+                    D --> E{Check for<br/>Missing Values?}
+                    E -->|Yes| F[Handle Missing Data<br/>Imputation/Removal]
+                    E -->|No| G[Test for Stationarity<br/>ADF Test for each series]
+                    F --> G
+                    
+                    G --> H{All Series<br/>Stationary?}
+                    H -->|No| I[Apply Differencing<br/>d-order integration]
+                    I --> J[Re-test Stationarity]
+                    J --> H
+                    H -->|Yes| K[Cointegration Test<br/>Johansen Test]
+                    
+                    K --> L{Series<br/>Cointegrated?}
+                    L -->|No| M[Consider Alternative Models<br/>or Transformations]
+                    L -->|Yes| N[Model Selection<br/>Determine Optimal Lag Order]
+                    
+                    N --> O[Iteratively Fit VAR Models<br/>with different lag orders p]
+                    O --> P[Compare Information Criteria<br/>AIC, BIC, HQIC, FPE]
+                    P --> Q[Select Best Model<br/>Lowest AIC/BIC]
+                    
+                    Q --> Q1{Select<br/>Estimation Method}
+                    Q1 -->|Classical| R[Fit VAR Model - OLS<br/>Maximum Likelihood]
+                    Q1 -->|Bayesian| R1[Fit Bayesian VAR - BVAR<br/>MCMC/Gibbs Sampling]
+                    
+                    R1 --> R2[Specify Prior Distributions<br/>Minnesota/Normal-Wishart priors]
+                    R2 --> R3[Posterior Inference<br/>Parameter estimation with uncertainty]
+                    R3 --> R4[Convergence Diagnostics<br/>Trace plots, Gelman-Rubin]
+                    R4 --> S1{Chains<br/>Converged?}
+                    S1 -->|No| R5[Adjust MCMC settings<br/>Increase iterations/chains]
+                    R5 --> R1
+                    S1 -->|Yes| S[Model Diagnostics]
+                    
+                    R --> S
+                    S --> T[Test Residuals<br/>Autocorrelation, Normality]
+                    
+                    T --> U{Residuals<br/>White Noise?}
+                    U -->|No| V[Adjust Model<br/>Refine lag order]
+                    V --> R
+                    U -->|Yes| W[Granger Causality Test<br/>Analyze variable relationships]
+                    
+                    W --> X[Impulse Response Analysis<br/>IRF plots]
+                    X --> Y[Forecast Variance Decomposition<br/>FEVD analysis]
+                    
+                    Y --> Z{Forecasting<br/>Approach}
+                    Z -->|Point Forecasts| Z1[Generate Forecasts<br/>Out-of-sample predictions]
+                    Z -->|Bayesian Forecasts| Z2[Bayesian Predictive Distribution<br/>Credible intervals & density forecasts]
+                    
+                    Z1 --> AA[Evaluate Model Performance<br/>RMSE, MAE, MAPE]
+                    Z2 --> AA1[Evaluate Probabilistic Forecasts<br/>Log Score, CRPS, Coverage]
+                    AA1 --> AA
+                    
+                    AA --> AB{Performance<br/>Satisfactory?}
+                    AB -->|No| AC[Model Refinement<br/>Review transformations]
+                    AC --> N
+                    AB -->|Yes| AD[Inverse Transformation<br/>Roll back differencing if applied]
+                    
+                    AD --> AE[Final Results<br/>Interpretation & Reporting]
+                    AE --> AF[End: Deploy Model<br/>or Further Analysis]
+                    
+                    style A fill:#e1f5e1
+                    style AF fill:#ffe1e1
+                    style Q fill:#fff4e1
+                    style R fill:#fff4e1
+                    style Q1 fill:#ffd4e1
+                    style R1 fill:#ffd4e1
+                    style R2 fill:#ffd4e1
+                    style R3 fill:#ffd4e1
+                    style Z2 fill:#d4f1ff
+                    style AE fill:#f0e1ff
+                </div>
+            </div>
+        </div>
+        
+        <div class="note">
+            <strong>Key Differences:</strong> Classical approach uses OLS estimation with point forecasts. 
+            Bayesian approach incorporates prior information, provides full posterior distributions, 
+            and generates probabilistic forecasts with credible intervals.
+        </div>
+    </div>
+    
+    <script>
+        mermaid.initialize({ 
+            startOnLoad: true,
+            theme: 'default',
+            flowchart: {
+                useMaxWidth: true,
+                htmlLabels: true,
+                curve: 'basis',
+                nodeSpacing: 30,
+                rankSpacing: 40
+            }
+        });
+    </script>
+</body>
+</html>

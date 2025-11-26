@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VAR Model Workflows</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.6.1/mermaid.min.js"></script>
+    <style>
+        @page {
+            size: A4 portrait;
+            margin: 15mm;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            background: white;
+        }
+        
+        .page {
+            width: 210mm;
+            min-height: 297mm;
+            margin: 0 auto;
+            padding: 15mm;
+            background: white;
+            page-break-after: always;
+            position: relative;
+        }
+        
+        .page:last-child {
+            page-break-after: auto;
+        }
+        
+        h1 {
+            text-align: center;
+            font-size: 20pt;
+            margin-bottom: 8mm;
+            color: #2c3e50;
+            font-weight: bold;
+        }
+        
+        .workflow-section {
+            border: 2px solid #3498db;
+            padding: 5mm;
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin-bottom: 5mm;
+        }
+        
+        .mermaid {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            background: white;
+            padding: 3mm;
+            border-radius: 4px;
+        }
+        
+        .mermaid svg {
+            max-width: 100% !important;
+            height: auto !important;
+        }
+        
+        .description {
+            margin-top: 5mm;
+            padding: 4mm;
+            background: #e8f4f8;
+            border-left: 4px solid #3498db;
+            border-radius: 4px;
+        }
+        
+        .description h3 {
+            font-size: 12pt;
+            color: #2c3e50;
+            margin-bottom: 2mm;
+        }
+        
+        .description p {
+            font-size: 10pt;
+            line-height: 1.6;
+            color: #34495e;
+            margin-bottom: 2mm;
+        }
+        
+        .description ul {
+            margin-left: 5mm;
+            font-size: 10pt;
+            color: #34495e;
+        }
+        
+        .description li {
+            margin-bottom: 1mm;
+            line-height: 1.4;
+        }
+        
+        .print-button {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 12px 24px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.3);
+            z-index: 1000;
+            transition: background 0.3s;
+        }
+        
+        .print-button:hover {
+            background: #2980b9;
+        }
+        
+        .page-number {
+            position: absolute;
+            bottom: 10mm;
+            right: 15mm;
+            font-size: 10pt;
+            color: #7f8c8d;
+        }
+        
+        @media print {
+            body {
+                margin: 0;
+                padding: 0;
+            }
+            
+            .print-button {
+                display: none;
+            }
+            
+            .page {
+                margin: 0;
+                page-break-after: always;
+            }
+            
+            .page:last-child {
+                page-break-after: auto;
+            }
+        }
+        
+        @media screen {
+            body {
+                background: #ecf0f1;
+                padding: 20px 0;
+            }
+            
+            .page {
+                box-shadow: 0 0 20px rgba(0,0,0,0.1);
+                margin-bottom: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <button class="print-button" onclick="window.print()">🖨️ Print to PDF</button>
+    
+    <!-- Page 1: Classical VAR -->
+    <div class="page">
+        <h1>Classical VAR Model Development Workflow</h1>
+        
+        <div class="workflow-section">
+            <div class="mermaid">
+graph TD
+    A[Start: Data Collection] --> B[Import Libraries<br/>pandas, numpy, statsmodels, matplotlib]
+    B --> C[Load and Prepare Data]
+    C --> D[Exploratory Data Analysis<br/>Visualize time series]
+    
+    D --> E{Check for<br/>Missing Values?}
+    E -->|Yes| F[Handle Missing Data<br/>Imputation/Removal]
+    E -->|No| G[Test for Stationarity<br/>ADF Test for each series]
+    F --> G
+    
+    G --> H{All Series<br/>Stationary?}
+    H -->|No| I[Apply Differencing<br/>d-order integration]
+    I --> J[Re-test Stationarity]
+    J --> H
+    H -->|Yes| K[Cointegration Test<br/>Johansen Test]
+    
+    K --> L{Series<br/>Cointegrated?}
+    L -->|No| M[Consider Alternative Models<br/>or Transformations]
+    L -->|Yes| N[Model Selection<br/>Determine Optimal Lag Order]
+    
+    N --> O[Iteratively Fit VAR Models<br/>with different lag orders p]
+    O --> P[Compare Information Criteria<br/>AIC, BIC, HQIC, FPE]
+    P --> Q[Select Best Model<br/>Lowest AIC/BIC]
+    
+    Q --> R[Fit Final VAR Model - OLS<br/>Maximum Likelihood]
+    R --> S[Model Diagnostics]
+    S --> T[Test Residuals<br/>Autocorrelation, Normality]
+    
+    T --> U{Residuals<br/>White Noise?}
+    U -->|No| V[Adjust Model<br/>Refine lag order]
+    V --> R
+    U -->|Yes| W[Granger Causality Test<br/>Analyze variable relationships]
+    
+    W --> X[Impulse Response Analysis<br/>IRF plots]
+    X --> Y[Forecast Variance Decomposition<br/>FEVD analysis]
+    
+    Y --> Z[Generate Point Forecasts<br/>Out-of-sample predictions]
+    Z --> AA[Evaluate Model Performance<br/>RMSE, MAE, MAPE]
+    
+    AA --> AB{Performance<br/>Satisfactory?}
+    AB -->|No| AC[Model Refinement<br/>Review transformations]
+    AC --> N
+    AB -->|Yes| AD[Inverse Transformation<br/>Roll back differencing if applied]
+    
+    AD --> AE[Final Results<br/>Interpretation & Reporting]
+    AE --> AF[End: Deploy Model<br/>or Further Analysis]
+    
+    style A fill:#e1f5e1
+    style AF fill:#ffe1e1
+    style Q fill:#fff4e1
+    style R fill:#fff4e1
+    style Z fill:#e1f0ff
+    style AE fill:#f0e1ff
+            </div>
+        </div>
+        
+        <div class="description">
+            <h3>Classical VAR Approach Overview</h3>
+            <p><strong>Estimation Method:</strong> Ordinary Least Squares (OLS) / Maximum Likelihood Estimation</p>
+            <p><strong>Key Characteristics:</strong></p>
+            <ul>
+                <li><strong>Point Estimates:</strong> Parameters estimated without uncertainty quantification</li>
+                <li><strong>Frequentist Framework:</strong> No prior information incorporated into the model</li>
+                <li><strong>Deterministic Forecasts:</strong> Single-point predictions with confidence intervals based on asymptotic theory</li>
+                <li><strong>Performance Metrics:</strong> RMSE, MAE, MAPE for forecast accuracy</li>
+                <li><strong>Advantages:</strong> Computationally efficient, well-established theory, interpretable</li>
+                <li><strong>Limitations:</strong> May overfit with limited data, no regularization, parameter uncertainty not fully captured</li>
+            </ul>
+        </div>
+        
+        <div class="page-number">Page 1 of 2</div>
+    </div>
+    
+    <!-- Page 2: Bayesian VAR -->
+    <div class="page">
+        <h1>Bayesian VAR Model Development Workflow</h1>
+        
+        <div class="workflow-section">
+            <div class="mermaid">
+graph TD
+    A[Start: Data Collection] --> B[Import Libraries<br/>pandas, numpy, PyMC3/Stan]
+    B --> C[Load and Prepare Data]
+    C --> D[Exploratory Data Analysis<br/>Visualize time series]
+    
+    D --> E{Check for<br/>Missing Values?}
+    E -->|Yes| F[Handle Missing Data<br/>Imputation/Removal]
+    E -->|No| G[Test for Stationarity<br/>ADF Test for each series]
+    F --> G
+    
+    G --> H{All Series<br/>Stationary?}
+    H -->|No| I[Apply Differencing<br/>d-order integration]
+    I --> J[Re-test Stationarity]
+    J --> H
+    H -->|Yes| K[Cointegration Test<br/>Johansen Test]
+    
+    K --> L{Series<br/>Cointegrated?}
+    L -->|No| M[Consider Alternative Models<br/>or Transformations]
+    L -->|Yes| N[Model Selection<br/>Determine Optimal Lag Order]
+    
+    N --> O[Iteratively Fit Models<br/>with different lag orders p]
+    O --> P[Compare Information Criteria<br/>AIC, BIC, HQIC, FPE]
+    P --> Q[Select Best Lag Order]
+    
+    Q --> R1[Specify Prior Distributions<br/>Minnesota/Normal-Wishart priors]
+    R1 --> R2[Fit Bayesian VAR - BVAR<br/>MCMC/Gibbs Sampling]
+    R2 --> R3[Posterior Inference<br/>Parameter estimation with uncertainty]
+    R3 --> R4[Convergence Diagnostics<br/>Trace plots, Gelman-Rubin, ESS]
+    
+    R4 --> S1{Chains<br/>Converged?}
+    S1 -->|No| R5[Adjust MCMC settings<br/>Increase iterations/chains]
+    R5 --> R2
+    S1 -->|Yes| S[Model Diagnostics]
+    
+    S --> T[Test Residuals<br/>Autocorrelation, Normality]
+    
+    T --> U{Residuals<br/>White Noise?}
+    U -->|No| V[Adjust Model<br/>Refine specifications]
+    V --> R2
+    U -->|Yes| W[Granger Causality Test<br/>Analyze variable relationships]
+    
+    W --> X[Impulse Response Analysis<br/>IRF plots with credible bands]
+    X --> Y[Forecast Variance Decomposition<br/>FEVD analysis]
+    
+    Y --> Z2[Bayesian Predictive Distribution<br/>Credible intervals & density forecasts]
+    Z2 --> AA1[Evaluate Probabilistic Forecasts<br/>Log Score, CRPS, Coverage, Sharpness]
+    
+    AA1 --> AB{Performance<br/>Satisfactory?}
+    AB -->|No| AC[Model Refinement<br/>Review priors/transformations]
+    AC --> N
+    AB -->|Yes| AD[Inverse Transformation<br/>Roll back differencing if applied]
+    
+    AD --> AE[Final Results<br/>Interpretation & Reporting]
+    AE --> AF[End: Deploy Model<br/>or Further Analysis]
+    
+    style A fill:#e1f5e1
+    style AF fill:#ffe1e1
+    style Q fill:#fff4e1
+    style R1 fill:#ffd4e1
+    style R2 fill:#ffd4e1
+    style R3 fill:#ffd4e1
+    style R4 fill:#ffd4e1
+    style Z2 fill:#d4f1ff
+    style AE fill:#f0e1ff
+            </div>
+        </div>
+        
+        <div class="description">
+            <h3>Bayesian VAR Approach Overview</h3>
+            <p><strong>Estimation Method:</strong> Markov Chain Monte Carlo (MCMC) / Gibbs Sampling with Prior Distributions</p>
+            <p><strong>Key Characteristics:</strong></p>
+            <ul>
+                <li><strong>Posterior Distributions:</strong> Full uncertainty quantification for all parameters</li>
+                <li><strong>Prior Information:</strong> Minnesota priors for regularization and stability (shrinkage towards random walk)</li>
+                <li><strong>Probabilistic Forecasts:</strong> Complete predictive distributions with credible intervals</li>
+                <li><strong>Performance Metrics:</strong> CRPS (Continuous Ranked Probability Score), Log Score, coverage rates</li>
+                <li><strong>Advantages:</strong> Better with small samples, natural regularization, full uncertainty quantification, flexible modeling</li>
+                <li><strong>Considerations:</strong> Computationally intensive, requires convergence diagnostics, prior specification needed</li>
+            </ul>
+        </div>
+        
+        <div class="page-number">Page 2 of 2</div>
+    </div>
+    
+    <script>
+        mermaid.initialize({ 
+            startOnLoad: true,
+            theme: 'default',
+            flowchart: {
+                useMaxWidth: true,
+                htmlLabels: true,
+                curve: 'basis',
+                nodeSpacing: 35,
+                rankSpacing: 45
+            }
+        });
+    </script>
+</body>
+</html>

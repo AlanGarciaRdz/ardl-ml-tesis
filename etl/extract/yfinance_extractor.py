@@ -6,7 +6,7 @@ Extrae datos historicos de indices y commodities desde Yahoo Finance
 import pandas as pd
 import yfinance as yf
 from datetime import datetime, timedelta
-from typing import Optional, List
+from typing import List
 import logging
 
 logging.basicConfig(level=logging.INFO)

@@ -92,7 +92,10 @@
     "exportPdf": "Exportar como PDF",
     "exportExcel": "Exportar como Excel",
     "shareDashboard": "Compartir Panel",
-    "scheduleReports": "Programar Reportes"
+    "scheduleReports": "Programar Reportes",
+    "scrap_mxn": "Chatarra MXN",
+    "rebar_mxn": "Varilla MXN",
+    "showLines": "Mostrar líneas en el gráfico"
   },
   "dataExplorer": {
     "title": "Explorador de Datos",

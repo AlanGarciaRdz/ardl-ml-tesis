@@ -12,6 +12,7 @@ import axios from 'axios'
 import { useQuery } from '@tanstack/react-query'
 import 'katex/dist/katex.min.css'
 import { InlineMath, BlockMath } from 'react-katex'
+import { Switch } from '@/components/ui/switch'
 
 // Types for the API response
 interface MaterialPrice {
@@ -20,10 +21,14 @@ interface MaterialPrice {
   varilla_distribuidor: number
   varilla_credito: number
   precio_mercado: number,
+  scrap_mxn: number,
   scrap: number,
   gas: number,
+  gas_mxn: number,
   rebar: number,
+  rebar_mxn: number,
   hrcc1: number,
+  hrcc1_mxn: number,
   tipo_de_cambio: number
 }
 
@@ -110,7 +115,8 @@ const calculateCorrelation = async (request: CorrelationRequest): Promise<Correl
 export function Analytics() {
   const { t } = useTranslation()
   const [startDate, setStartDate] = useState('2025-01-01')
-  const [endDate, setEndDate] = useState('2025-09-23')
+  const today = new Date().toISOString().split('T')[0]
+  const [endDate, setEndDate] = useState(today)
   const [correlationField1, setCorrelationField1] = useState('varilla_distribuidor')
   const [correlationField2, setCorrelationField2] = useState('varilla_credito')
   const [correlationResult, setCorrelationResult] = useState<CorrelationResponse | null>(null)
@@ -119,6 +125,24 @@ export function Analytics() {
   const { isLoggedIn } = useAuth();
   const [material, setMaterial] = useState('');
   const [volumen, setVolumen] = useState('');
+
+  // Add state for line visibility - all visible by default
+  const [visibleLines, setVisibleLines] = useState({
+    scrap_mxn: true,
+    rebar_mxn: true,
+    precioMercado: true,
+    varillaDistribuidor: true,
+    varillaCredito: true,
+    precioMercadoValidation: true
+  })
+
+  // Toggle function for line visibility
+  const toggleLine = (lineKey: keyof typeof visibleLines) => {
+    setVisibleLines(prev => ({
+      ...prev,
+      [lineKey]: !prev[lineKey]
+    }))
+  }
 
   // Function to set date range based on preset buttons
   const setDateRange = (period: string) => {
@@ -193,7 +217,10 @@ export function Analytics() {
   const fieldOptions = [
     { value: 'varilla_distribuidor', label: t('analytics.varillaDistribuidor') },
     { value: 'varilla_credito', label: t('analytics.varillaCredito') },
-    { value: 'precio_mercado', label: t('analytics.precioMercado') }
+    { value: 'precio_mercado', label: t('analytics.precioMercado') },
+    { value: 'scrap_mxn', label: t('analytics.scrap_mxn') },
+    { value: 'rebar_mxn', label: t('analytics.rebar_mxn') },
+    { value: 'hrcc1_mxn', label: t('analytics.hrcc1_mxn') },
   ]
 
   return (
@@ -287,6 +314,75 @@ export function Analytics() {
             <CardDescription>{t('analytics.priceMovements', { startDate, endDate })}</CardDescription>
           </CardHeader>
           <CardContent>
+            {/* Add line visibility controls */}
+            <div className="mb-6 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
+              <Label className="text-sm font-medium mb-3 block">
+                {t('analytics.showLines') || 'Mostrar líneas en el gráfico'}
+              </Label>
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+                <div className="flex items-center space-x-2">
+                  <Switch
+                    id="scrap_mxn"
+                    checked={visibleLines.scrap_mxn}
+                    onCheckedChange={() => toggleLine('scrap_mxn')}
+                  />
+                  <Label htmlFor="scrap_mxn" className="text-sm cursor-pointer">
+                    {t('analytics.scrap_mxn') || 'Chatarra MXN'}
+                  </Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Switch
+                    id="rebar_mxn"
+                    checked={visibleLines.rebar_mxn}
+                    onCheckedChange={() => toggleLine('rebar_mxn')}
+                  />
+                  <Label htmlFor="rebar_mxn" className="text-sm cursor-pointer">
+                    {t('analytics.rebar_mxn') || 'Varilla MXN'}
+                  </Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Switch
+                    id="precioMercado"
+                    checked={visibleLines.precioMercado}
+                    onCheckedChange={() => toggleLine('precioMercado')}
+                  />
+                  <Label htmlFor="precioMercado" className="text-sm cursor-pointer">
+                    {t('analytics.precioMercado')}
+                  </Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Switch
+                    id="varillaDistribuidor"
+                    checked={visibleLines.varillaDistribuidor}
+                    onCheckedChange={() => toggleLine('varillaDistribuidor')}
+                  />
+                  <Label htmlFor="varillaDistribuidor" className="text-sm cursor-pointer">
+                    {t('analytics.varillaDistribuidor')}
+                  </Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Switch
+                    id="varillaCredito"
+                    checked={visibleLines.varillaCredito}
+                    onCheckedChange={() => toggleLine('varillaCredito')}
+                  />
+                  <Label htmlFor="varillaCredito" className="text-sm cursor-pointer">
+                    {t('analytics.varillaCredito')}
+                  </Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Switch
+                    id="precioMercadoValidation"
+                    checked={visibleLines.precioMercadoValidation}
+                    onCheckedChange={() => toggleLine('precioMercadoValidation')}
+                  />
+                  <Label htmlFor="precioMercadoValidation" className="text-sm cursor-pointer">
+                    {t('analytics.precioMercado')} (Validation)
+                  </Label>
+                </div>
+              </div>
+            </div>
+
             {isLoading ? (
               <div className="h-80 flex items-center justify-center">
                 <div className="flex items-center space-x-2">
@@ -313,8 +409,8 @@ export function Analytics() {
                       day: 'numeric' 
                     }),
                     fullDate: item.date,
-                    [t('analytics.varillaDistribuidor')]: item.varilla_distribuidor,
-                    [t('analytics.varillaCredito')]: item.varilla_credito,
+                    [t('analytics.scrap_mxn')]: item.scrap_mxn,
+                    [t('analytics.rebar_mxn')]: item.rebar_mxn,
                     [t('analytics.precioMercado')]: item.precio_mercado,
                     type: 'historical'
                   })) || [] 
@@ -386,38 +482,63 @@ export function Analytics() {
                           }}
                         />
                         <Legend />
-                        <Line 
-                          type="monotone" 
-                          dataKey={t('analytics.varillaDistribuidor')} 
-                          stroke="#3b82f6" 
-                          strokeWidth={2}
-                          dot={false}
-                        />
-                        <Line 
-                          type="monotone" 
-                          dataKey={t('analytics.varillaCredito')} 
-                          stroke="#10b981" 
-                          strokeWidth={2}
-                          dot={false}
-                        />
-                        <Line 
-                          type="monotone" 
-                          dataKey={t('analytics.precioMercado')} 
-                          stroke="#f59e0b" 
-                          strokeWidth={2}
-                          dot={false}
-                        />
-
-                      <Line 
-                          type="monotone" 
-                          dataKey={`${t('analytics.precioMercado')} (Validation)`}
-                          stroke="#ef4444" 
-                          strokeWidth={2}
-                          strokeDasharray="5 5"
-                          dot={{ fill: '#ef4444', strokeWidth: 2, r: 1 }}
-                          connectNulls={false}
-                          name={`${t('analytics.precioMercado')} (Validation)`}
-                        />
+                        {visibleLines.scrap_mxn && (
+                          <Line 
+                            type="monotone" 
+                            dataKey={t('analytics.scrap_mxn')} 
+                            stroke="#8b5cf6" 
+                            strokeWidth={2}
+                            dot={false}
+                          />
+                        )}
+                        {visibleLines.rebar_mxn && (
+                          <Line 
+                            type="monotone" 
+                            dataKey={t('analytics.rebar_mxn')} 
+                            stroke="#06b6d4" 
+                            strokeWidth={2}
+                            dot={false}
+                          />
+                        )}
+                        {visibleLines.varillaDistribuidor && (
+                          <Line 
+                            type="monotone" 
+                            dataKey={t('analytics.varillaDistribuidor')} 
+                            stroke="#3b82f6" 
+                            strokeWidth={2}
+                            dot={false}
+                          />
+                        )}
+                        {visibleLines.varillaCredito && (
+                          <Line 
+                            type="monotone" 
+                            dataKey={t('analytics.varillaCredito')} 
+                            stroke="#10b981" 
+                            strokeWidth={2}
+                            dot={false}
+                          />
+                        )}
+                        {visibleLines.precioMercado && (
+                          <Line 
+                            type="monotone" 
+                            dataKey={t('analytics.precioMercado')} 
+                            stroke="#f59e0b" 
+                            strokeWidth={2}
+                            dot={false}
+                          />
+                        )}
+                        {visibleLines.precioMercadoValidation && (
+                          <Line 
+                            type="monotone" 
+                            dataKey={`${t('analytics.precioMercado')} (Validation)`}
+                            stroke="#ef4444" 
+                            strokeWidth={2}
+                            strokeDasharray="5 5"
+                            dot={{ fill: '#ef4444', strokeWidth: 2, r: 1 }}
+                            connectNulls={false}
+                            name={`${t('analytics.precioMercado')} (Validation)`}
+                          />
+                        )}
                       </LineChart>
                     </ResponsiveContainer>
                   );

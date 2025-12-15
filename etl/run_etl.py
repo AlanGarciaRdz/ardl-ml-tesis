@@ -6,6 +6,9 @@ if __name__ == "__main__":
     data_yf = extract_yfinance()
     data_inv = extract_investiny()
     data_banxico = extract_banxico()
+
+    #https://tradingeconomics.com/commodity/scrap-steel steel scrap 
+    #https://tradingeconomics.com/commodity/steel   
     
     # df = transform_all(data_yf, data_inv, data_banxico)
     # load_to_postgres(df)

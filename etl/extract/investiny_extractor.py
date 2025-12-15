@@ -132,7 +132,7 @@ class InvestinyExtractor:
 # Main extraction function for ETL pipeline
 def extract_investiny(
     assets: List[str] = ['steel_scrap', 'rebar'],
-    days_back: int = 15
+    days_back: int = 120
 ) -> pd.DataFrame:
     """
     Funcion principal para extraer datos de Investiny para ETL pipeline

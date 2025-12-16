@@ -55,7 +55,8 @@ export function DataExplorer() {
   const [searchTerm] = useState('')
   const [currentPage, setCurrentPage] = useState(0)
   const [startDate, setStartDate] = useState('2025-01-01')
-  const [endDate, setEndDate] = useState('2025-09-23')
+  const today = new Date().toISOString().split('T')[0]
+  const [endDate, setEndDate] = useState(today)
   const pageSize = 50 
 
   // Fetch data using React Query
@@ -184,6 +185,30 @@ export function DataExplorer() {
         <Text size="2" color="gray">
           {isLoading ? 'Loading data...' : `Showing ${filteredData.length} of ${data?.total_count || 0} records`}
         </Text>
+
+        {/* Data Summary */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <Card size="2" className="custom-card">
+          <Heading size="3">Total Records</Heading>
+
+          <div className="text-2xl font-bold mt-2">{data?.total_count || 0}</div>
+          <Text size="1" color="gray">Historical records available</Text>
+        </Card>
+
+        <Card size="2" className="custom-card">
+          <Heading size="3">Date Range</Heading>
+          <div className="text-2xl font-bold mt-2">
+            {data?.data?.[0]?.date || 'N/A'} – {data?.data?.[data?.data?.length - 1]?.date || 'N/A'}
+          </div>
+          <Text size="1" color="gray">Data coverage period</Text>
+        </Card>
+
+        <Card size="2" className="custom-card">
+          <Heading size="3">Last Updated</Heading>
+          <div className="text-2xl font-bold mt-2">{data?.data?.[data?.data?.length - 1]?.date || 'N/A'}</div>
+          <Text size="1" color="gray">Most recent data</Text>
+        </Card>
+      </div>
         
         {isLoading ? (
           <div className="flex justify-center items-center py-8">
@@ -256,29 +281,7 @@ export function DataExplorer() {
         )}
       </Card>
 
-      {/* Data Summary */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Card size="2" className="custom-card">
-          <Heading size="3">Total Records</Heading>
-
-          <div className="text-2xl font-bold mt-2">{data?.total_count || 0}</div>
-          <Text size="1" color="gray">Historical records available</Text>
-        </Card>
-
-        <Card size="2" className="custom-card">
-          <Heading size="3">Date Range</Heading>
-          <div className="text-2xl font-bold mt-2">
-            {data?.data?.[0]?.date || 'N/A'} – {data?.data?.[data?.data?.length - 1]?.date || 'N/A'}
-          </div>
-          <Text size="1" color="gray">Data coverage period</Text>
-        </Card>
-
-        <Card size="2" className="custom-card">
-          <Heading size="3">Last Updated</Heading>
-          <div className="text-2xl font-bold mt-2">{data?.data?.[data?.data?.length - 1]?.date || 'N/A'}</div>
-          <Text size="1" color="gray">Most recent data</Text>
-        </Card>
-      </div>
+      
     </div>
   )
 }

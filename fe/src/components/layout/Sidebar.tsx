@@ -12,7 +12,7 @@ const navigation = [
   { name: 'Dashboard', href: '/dashboard', icon: Home },
   { name: 'Data Explorer', href: '/dashboard/data', icon: Database },
   { name: 'Analytics', href: '/dashboard/analytics', icon: BarChart3 },
-  { name: 'Forecasting', href: '/dashboard/forecasting', icon: TrendingUp },
+  // { name: 'Forecasting', href: '/dashboard/forecasting', icon: TrendingUp },
   { name: 'Settings', href: '/dashboard/settings', icon: Settings },
 ]
 

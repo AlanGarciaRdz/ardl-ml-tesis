@@ -29,7 +29,7 @@ interface MaterialPrice {
   rebar_mxn: number,
   hrcc1: number,
   hrcc1_mxn: number,
-  tipo_de_cambio: number
+  tipoDeCambio: number
 }
 
 interface ForecastPrice {
@@ -76,11 +76,11 @@ interface CorrelationResponse {
 }
 
 // API function to fetch data
-const fetchMaterialPrices = async (startDate?: string, endDate?: string, transform?: string): Promise<ApiResponse> => {
+const fetchMaterialPrices = async (startDate?: string, endDate?: string, transform?: string, forecast_periods?: string): Promise<ApiResponse> => {
   const params = new URLSearchParams({
     table_name: 'precios_materiales',
     limit: '200',
-    forecast_periods: '7',
+    forecast_periods: forecast_periods || '7',
     value_column: "precio_mercado",
     transform: transform || ''
   })
@@ -125,15 +125,25 @@ export function Analytics() {
   const { isLoggedIn } = useAuth();
   const [material, setMaterial] = useState('');
   const [volumen, setVolumen] = useState('');
+  const [showMXN, setShowMXN] = useState(true) // true = MXN, false = USD
 
   // Add state for line visibility - all visible by default
   const [visibleLines, setVisibleLines] = useState({
     scrap_mxn: true,
     rebar_mxn: true,
+    gas_mxn: true,
     precioMercado: true,
+    hrcc1_mxn: true,
+    
     varillaDistribuidor: true,
     varillaCredito: true,
-    precioMercadoValidation: true
+    precioMercadoValidation: true,
+
+    scrap: true,
+    gas: true,
+    rebar: true,
+    hrcc1: true,
+    tipoDeCambio: true
   })
 
   // Toggle function for line visibility
@@ -188,7 +198,7 @@ export function Analytics() {
     // Query for secondary chart (gas, scrap, rebar, hrcc1)
     const { data: secondaryData, isLoading: secondaryLoading, error: secondaryError, refetch: refetchSecondary } = useQuery({
       queryKey: ['materialPrices', startDate, endDate, 'secondary'],
-      queryFn: () => fetchMaterialPrices(startDate, endDate, 'sqrt'),
+      queryFn: () => fetchMaterialPrices(startDate, endDate, 'normalize', '1'), //["log", "sqrt", "normalize"
       refetchInterval: false,
       staleTime: 0,
       gcTime: 0,
@@ -218,9 +228,11 @@ export function Analytics() {
     { value: 'varilla_distribuidor', label: t('analytics.varillaDistribuidor') },
     { value: 'varilla_credito', label: t('analytics.varillaCredito') },
     { value: 'precio_mercado', label: t('analytics.precioMercado') },
+    { value: 'tipoDeCambio', label: t('analytics.tipoDeCambio') },    
     { value: 'scrap_mxn', label: t('analytics.scrap_mxn') },
     { value: 'rebar_mxn', label: t('analytics.rebar_mxn') },
     { value: 'hrcc1_mxn', label: t('analytics.hrcc1_mxn') },
+    { value: 'gas_mxn', label: t('analytics.gas_mxn') },
   ]
 
   return (
@@ -316,28 +328,129 @@ export function Analytics() {
           <CardContent>
             {/* Add line visibility controls */}
             <div className="mb-6 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
+              {/* Currency Toggle */}
+              <div className="mb-4 pb-4 border-b border-gray-300 dark:border-gray-600">
+                <Label className="text-sm font-medium mb-2 block">
+                  Moneda / Currency
+                </Label>
+                <div className="flex items-center space-x-4">
+                  <div className="flex items-center space-x-2">
+                    <Switch
+                      id="currency_toggle"
+                      checked={showMXN}
+                      onCheckedChange={setShowMXN}
+                    />
+                    <Label htmlFor="currency_toggle" className="text-sm cursor-pointer">
+                      {showMXN ? 'MXN (Pesos)' : 'USD (Dólares)'}
+                    </Label>
+                  </div>
+                  <span className="text-xs text-gray-500">
+                    Mostrando: {showMXN ? 'Valores en MXN' : 'Valores en USD'}
+                  </span>
+                </div>
+              </div>
+
               <Label className="text-sm font-medium mb-3 block">
                 {t('analytics.showLines') || 'Mostrar líneas en el gráfico'}
               </Label>
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+                {/* Show switches based on currency */}
+                {showMXN ? (
+                  <>
+                    <div className="flex items-center space-x-2">
+                      <Switch
+                        id="scrap_mxn"
+                        checked={visibleLines.scrap_mxn}
+                        onCheckedChange={() => toggleLine('scrap_mxn')}
+                      />
+                      <Label htmlFor="scrap_mxn" className="text-sm cursor-pointer">
+                        {t('analytics.scrap_mxn') || 'Chatarra MXN'}
+                      </Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Switch
+                        id="rebar_mxn"
+                        checked={visibleLines.rebar_mxn}
+                        onCheckedChange={() => toggleLine('rebar_mxn')}
+                      />
+                      <Label htmlFor="rebar_mxn" className="text-sm cursor-pointer">
+                        {t('analytics.rebar_mxn') || 'Varilla MXN'}
+                      </Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Switch
+                        id="gas_mxn"
+                        checked={visibleLines.gas_mxn}
+                        onCheckedChange={() => toggleLine('gas_mxn')}
+                      />
+                      <Label htmlFor="gas_mxn" className="text-sm cursor-pointer">
+                        {t('analytics.gas_mxn') || 'Gas MXN'}
+                      </Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Switch
+                        id="hrcc1_mxn"
+                        checked={visibleLines.hrcc1_mxn}
+                        onCheckedChange={() => toggleLine('hrcc1_mxn')}
+                      />
+                      <Label htmlFor="hrcc1_mxn" className="text-sm cursor-pointer">
+                        {t('analytics.hrcc1_mxn') || 'HRCC1 MXN'}
+                      </Label>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div className="flex items-center space-x-2">
+                      <Switch
+                        id="scrap"
+                        checked={visibleLines.scrap}
+                        onCheckedChange={() => toggleLine('scrap')}
+                      />
+                      <Label htmlFor="scrap" className="text-sm cursor-pointer">
+                        {t('analytics.scrap') || 'Chatarra USD'}
+                      </Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Switch
+                        id="rebar"
+                        checked={visibleLines.rebar}
+                        onCheckedChange={() => toggleLine('rebar')}
+                      />
+                      <Label htmlFor="rebar" className="text-sm cursor-pointer">
+                        {t('analytics.rebar') || 'Varilla USD'}
+                      </Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Switch
+                        id="gas"
+                        checked={visibleLines.gas}
+                        onCheckedChange={() => toggleLine('gas')}
+                      />
+                      <Label htmlFor="gas" className="text-sm cursor-pointer">
+                        {t('analytics.gas') || 'Gas USD'}
+                      </Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Switch
+                        id="hrcc1"
+                        checked={visibleLines.hrcc1}
+                        onCheckedChange={() => toggleLine('hrcc1')}
+                      />
+                      <Label htmlFor="hrcc1" className="text-sm cursor-pointer">
+                        {t('analytics.hrcc1') || 'HRCC1 USD'}
+                      </Label>
+                    </div>
+                  </>
+                )}
+                {/* These are always shown regardless of currency */}
                 <div className="flex items-center space-x-2">
                   <Switch
-                    id="scrap_mxn"
-                    checked={visibleLines.scrap_mxn}
-                    onCheckedChange={() => toggleLine('scrap_mxn')}
+                    id="tipoDeCambio"
+                    checked={visibleLines.tipoDeCambio}
+                    onCheckedChange={() => toggleLine('tipoDeCambio')}
                   />
-                  <Label htmlFor="scrap_mxn" className="text-sm cursor-pointer">
-                    {t('analytics.scrap_mxn') || 'Chatarra MXN'}
-                  </Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <Switch
-                    id="rebar_mxn"
-                    checked={visibleLines.rebar_mxn}
-                    onCheckedChange={() => toggleLine('rebar_mxn')}
-                  />
-                  <Label htmlFor="rebar_mxn" className="text-sm cursor-pointer">
-                    {t('analytics.rebar_mxn') || 'Varilla MXN'}
+                  <Label htmlFor="tipoDeCambio" className="text-sm cursor-pointer">
+                    {t('analytics.tipoDeCambio')}
                   </Label>
                 </div>
                 <div className="flex items-center space-x-2">
@@ -348,36 +461,6 @@ export function Analytics() {
                   />
                   <Label htmlFor="precioMercado" className="text-sm cursor-pointer">
                     {t('analytics.precioMercado')}
-                  </Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <Switch
-                    id="varillaDistribuidor"
-                    checked={visibleLines.varillaDistribuidor}
-                    onCheckedChange={() => toggleLine('varillaDistribuidor')}
-                  />
-                  <Label htmlFor="varillaDistribuidor" className="text-sm cursor-pointer">
-                    {t('analytics.varillaDistribuidor')}
-                  </Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <Switch
-                    id="varillaCredito"
-                    checked={visibleLines.varillaCredito}
-                    onCheckedChange={() => toggleLine('varillaCredito')}
-                  />
-                  <Label htmlFor="varillaCredito" className="text-sm cursor-pointer">
-                    {t('analytics.varillaCredito')}
-                  </Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <Switch
-                    id="precioMercadoValidation"
-                    checked={visibleLines.precioMercadoValidation}
-                    onCheckedChange={() => toggleLine('precioMercadoValidation')}
-                  />
-                  <Label htmlFor="precioMercadoValidation" className="text-sm cursor-pointer">
-                    {t('analytics.precioMercado')} (Validation)
                   </Label>
                 </div>
               </div>
@@ -409,11 +492,23 @@ export function Analytics() {
                       day: 'numeric' 
                     }),
                     fullDate: item.date,
+                    // MXN values
                     [t('analytics.scrap_mxn')]: item.scrap_mxn,
                     [t('analytics.rebar_mxn')]: item.rebar_mxn,
+                    [t('analytics.gas_mxn')]: item.gas_mxn,
+                    [t('analytics.hrcc1_mxn')]: item.hrcc1_mxn,
+                    // USD values
+                    [t('analytics.scrap')]: item.scrap,
+                    [t('analytics.rebar')]: item.rebar,
+                    [t('analytics.gas')]: item.gas,
+                    [t('analytics.hrcc1')]: item.hrcc1,
+                    // Other values (always shown)
                     [t('analytics.precioMercado')]: item.precio_mercado,
+                    [t('analytics.varillaDistribuidor')]: item.varilla_distribuidor,
+                    [t('analytics.varillaCredito')]: item.varilla_credito,
+                    [t('analytics.tipoDeCambio')]: item.tipoDeCambio,
                     type: 'historical'
-                  })) || [] 
+                  })) || []
 
                   // Calculate validation period (7 days before selected start date)
                   const validationData = [];
@@ -482,38 +577,91 @@ export function Analytics() {
                           }}
                         />
                         <Legend />
-                        {visibleLines.scrap_mxn && (
-                          <Line 
-                            type="monotone" 
-                            dataKey={t('analytics.scrap_mxn')} 
-                            stroke="#8b5cf6" 
-                            strokeWidth={2}
-                            dot={false}
-                          />
+                        {showMXN ? (
+                          <>
+                            {visibleLines.scrap_mxn && (
+                              <Line 
+                                type="monotone" 
+                                dataKey={t('analytics.scrap_mxn')} 
+                                stroke="#3b82f6"  
+                                strokeWidth={2}
+                                dot={false}
+                              />
+                            )}
+                            {visibleLines.rebar_mxn && (
+                              <Line 
+                                type="monotone" 
+                                dataKey={t('analytics.rebar_mxn')} 
+                                stroke="#06b6d4" 
+                                strokeWidth={2}
+                                dot={false}
+                              />
+                            )}
+                            {visibleLines.gas_mxn && (
+                              <Line 
+                                type="monotone" 
+                                dataKey={t('analytics.gas_mxn')} 
+                                stroke="#6aa84f" 
+                                strokeWidth={2}
+                                dot={false}
+                              />
+                            )}
+                            {visibleLines.hrcc1_mxn && (
+                              <Line 
+                                type="monotone" 
+                                dataKey={t('analytics.hrcc1_mxn')} 
+                                stroke="#741b47" 
+                                strokeWidth={2}
+                                dot={false}
+                              />
+                            )}
+                          </>
+                        ) : (
+                          <>
+                            {visibleLines.scrap && (
+                              <Line 
+                                type="monotone" 
+                                dataKey={t('analytics.scrap')} 
+                                stroke="#8b5cf6" 
+                                strokeWidth={2}
+                                dot={false}
+                              />
+                            )}
+                            {visibleLines.rebar && (
+                              <Line 
+                                type="monotone" 
+                                dataKey={t('analytics.rebar')} 
+                                stroke="#06b6d4" 
+                                strokeWidth={2}
+                                dot={false}
+                              />
+                            )}
+                            {visibleLines.gas && (
+                              <Line 
+                                type="monotone" 
+                                dataKey={t('analytics.gas')} 
+                                stroke="#6aa84f" 
+                                strokeWidth={2}
+                                dot={false}
+                              />
+                            )}
+                            {visibleLines.hrcc1 && (
+                              <Line 
+                                type="monotone" 
+                                dataKey={t('analytics.hrcc1')} 
+                                stroke="#741b47" 
+                                strokeWidth={2}
+                                dot={false}
+                              />
+                            )}
+                          </>
                         )}
-                        {visibleLines.rebar_mxn && (
+                        {/* Always show these regardless of currency */}
+                        {visibleLines.tipoDeCambio && (
                           <Line 
                             type="monotone" 
-                            dataKey={t('analytics.rebar_mxn')} 
-                            stroke="#06b6d4" 
-                            strokeWidth={2}
-                            dot={false}
-                          />
-                        )}
-                        {visibleLines.varillaDistribuidor && (
-                          <Line 
-                            type="monotone" 
-                            dataKey={t('analytics.varillaDistribuidor')} 
-                            stroke="#3b82f6" 
-                            strokeWidth={2}
-                            dot={false}
-                          />
-                        )}
-                        {visibleLines.varillaCredito && (
-                          <Line 
-                            type="monotone" 
-                            dataKey={t('analytics.varillaCredito')} 
-                            stroke="#10b981" 
+                            dataKey={t('analytics.tipoDeCambio')} 
+                            stroke="#10b981"  
                             strokeWidth={2}
                             dot={false}
                           />
@@ -527,18 +675,7 @@ export function Analytics() {
                             dot={false}
                           />
                         )}
-                        {visibleLines.precioMercadoValidation && (
-                          <Line 
-                            type="monotone" 
-                            dataKey={`${t('analytics.precioMercado')} (Validation)`}
-                            stroke="#ef4444" 
-                            strokeWidth={2}
-                            strokeDasharray="5 5"
-                            dot={{ fill: '#ef4444', strokeWidth: 2, r: 1 }}
-                            connectNulls={false}
-                            name={`${t('analytics.precioMercado')} (Validation)`}
-                          />
-                        )}
+                        
                       </LineChart>
                     </ResponsiveContainer>
                   );
@@ -547,19 +684,9 @@ export function Analytics() {
             )}
           </CardContent>
         </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Volatility Analysis</CardTitle>
-            <CardDescription>Price volatility patterns</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="h-80 flex items-center justify-center text-gray-500">
-              Chart placeholder - Volatility heatmap or chart
-            </div>
-          </CardContent>
-        </Card>
       </div>
+
+      
 
       {/* Gas, scrap,  Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-1 gap-12">
@@ -595,11 +722,21 @@ export function Analytics() {
                       day: 'numeric' 
                     }),
                     fullDate: item.date,
+                    // MXN values
+                    [t('analytics.scrap_mxn')]: item.scrap_mxn,
+                    [t('analytics.rebar_mxn')]: item.rebar_mxn,
+                    [t('analytics.gas_mxn')]: item.gas_mxn,
+                    [t('analytics.hrcc1_mxn')]: item.hrcc1_mxn,
+                    // USD values
                     [t('analytics.scrap')]: item.scrap,
-                    [t('analytics.gas')]: item.gas,
                     [t('analytics.rebar')]: item.rebar,
+                    [t('analytics.gas')]: item.gas,
                     [t('analytics.hrcc1')]: item.hrcc1,
-                    [t('analytics.tipoDeCambio')]: item.tipo_de_cambio,
+                    // Other values (always shown)
+                    [t('analytics.precioMercado')]: item.precio_mercado,
+                    [t('analytics.varillaDistribuidor')]: item.varilla_distribuidor,
+                    [t('analytics.varillaCredito')]: item.varilla_credito,
+                    [t('analytics.tipoDeCambio')]: item.tipoDeCambio,
                     type: 'historical'
                   })) || [] 
 
@@ -610,14 +747,14 @@ export function Analytics() {
                     const validationStartDate = new Date(startDate);
                     validationStartDate.setDate(validationStartDate.getDate() - 7);
                     
-                    // Filter historical data for the validation period
-                    validationData.push(...historicalData.filter(item => {
-                      const itemDate = new Date(item.fullDate);
-                      return itemDate >= validationStartDate && itemDate < startDate;
-                    }).map(item => ({
-                      ...item,
-                      type: 'validation'
-                    })));
+                    // // Filter historical data for the validation period
+                    // validationData.push(...historicalData.filter(item => {
+                    //   const itemDate = new Date(item.fullDate);
+                    //   return itemDate >= validationStartDate && itemDate < startDate;
+                    // }).map(item => ({
+                    //   ...item,
+                    //   type: 'validation'
+                    // })));
                   }
 
                  
@@ -631,12 +768,13 @@ export function Analytics() {
                       [t('analytics.varillaDistribuidor')]: null,
                       [t('analytics.varillaCredito')]: null,
                       [t('analytics.precioMercado')]: null,
-                      [`${t('analytics.precioMercado')} (Validation)`]: item.predicted_value,
+                      //[`${t('analytics.precioMercado')} (Validation)`]: item.predicted_value,
                       type: 'forecast'
                     };
                   }) || [];
                   
-                  const combinedData = [...historicalData, ...forecastData];
+                  //const combinedData = [...historicalData, ...forecastData];
+                  const combinedData = historicalData
                   return (
                     <ResponsiveContainer width="100%" height="100%">
                       <LineChart data={combinedData}>
@@ -670,34 +808,104 @@ export function Analytics() {
                           }}
                         />
                         <Legend />
-                        <Line 
-                          type="monotone" 
-                          dataKey={t('analytics.scrap')} 
-                          stroke="#3b82f6" 
-                          strokeWidth={2}
-                          dot={false}
-                        />
-                        <Line 
-                          type="monotone" 
-                          dataKey={t('analytics.tipoDeCambio')} 
-                          stroke="#10b981" 
-                          strokeWidth={2}
-                          dot={false}
-                        />
-                        <Line 
-                          type="monotone" 
-                          dataKey={t('analytics.gas')} 
-                          stroke="#f55500" 
-                          strokeWidth={2}
-                          dot={false}
-                        />
-                        <Line 
-                          type="monotone" 
-                          dataKey={t('analytics.hrcc1')} 
-                          stroke="#f59e0b" 
-                          strokeWidth={2}
-                          dot={false}
-                        />
+                        {showMXN ? (
+                          <>
+                            {visibleLines.scrap_mxn && (
+                              <Line 
+                                type="monotone" 
+                                dataKey={t('analytics.scrap_mxn')} 
+                                stroke="#3b82f6"  
+                                strokeWidth={2}
+                                dot={false}
+                              />
+                            )}
+                            {visibleLines.rebar_mxn && (
+                              <Line 
+                                type="monotone" 
+                                dataKey={t('analytics.rebar_mxn')} 
+                                stroke="#06b6d4" 
+                                strokeWidth={2}
+                                dot={false}
+                              />
+                            )}
+                            {visibleLines.gas_mxn && (
+                              <Line 
+                                type="monotone" 
+                                dataKey={t('analytics.gas_mxn')} 
+                                stroke="#6aa84f" 
+                                strokeWidth={2}
+                                dot={false}
+                              />
+                            )}
+                            {visibleLines.hrcc1_mxn && (
+                              <Line 
+                                type="monotone" 
+                                dataKey={t('analytics.hrcc1_mxn')} 
+                                stroke="#741b47" 
+                                strokeWidth={2}
+                                dot={false}
+                              />
+                            )}
+                          </>
+                        ) : (
+                          <>
+                            {visibleLines.scrap && (
+                              <Line 
+                                type="monotone" 
+                                dataKey={t('analytics.scrap')} 
+                                stroke="#8b5cf6" 
+                                strokeWidth={2}
+                                dot={false}
+                              />
+                            )}
+                            {visibleLines.rebar && (
+                              <Line 
+                                type="monotone" 
+                                dataKey={t('analytics.rebar')} 
+                                stroke="#06b6d4" 
+                                strokeWidth={2}
+                                dot={false}
+                              />
+                            )}
+                            {visibleLines.gas && (
+                              <Line 
+                                type="monotone" 
+                                dataKey={t('analytics.gas')} 
+                                stroke="#6aa84f" 
+                                strokeWidth={2}
+                                dot={false}
+                              />
+                            )}
+                            {visibleLines.hrcc1 && (
+                              <Line 
+                                type="monotone" 
+                                dataKey={t('analytics.hrcc1')} 
+                                stroke="#741b47" 
+                                strokeWidth={2}
+                                dot={false}
+                              />
+                            )}
+                          </>
+                        )}
+                        {/* Always show these regardless of currency */}
+                        {visibleLines.tipoDeCambio && (
+                          <Line 
+                            type="monotone" 
+                            dataKey={t('analytics.tipoDeCambio')} 
+                            stroke="#10b981"  
+                            strokeWidth={2}
+                            dot={false}
+                          />
+                        )}
+                        {visibleLines.precioMercado && (
+                          <Line 
+                            type="monotone" 
+                            dataKey={t('analytics.precioMercado')} 
+                            stroke="#f59e0b" 
+                            strokeWidth={2}
+                            dot={false}
+                          />
+                        )}
                       </LineChart>
                     </ResponsiveContainer>
                   );
@@ -707,17 +915,7 @@ export function Analytics() {
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Volatility Analysis</CardTitle>
-            <CardDescription>Price volatility patterns</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="h-80 flex items-center justify-center text-gray-500">
-              Chart placeholder - Volatility heatmap or chart
-            </div>
-          </CardContent>
-        </Card>
+       
       </div>
 
       {/* Correlation Calculator */}
@@ -807,6 +1005,8 @@ export function Analytics() {
         </CardContent>
       </Card>
 
+      
+
       {/* Statistical Insights */}
       <Card>
         <CardHeader>
@@ -882,6 +1082,19 @@ export function Analytics() {
           </div>
         </CardContent>
       </Card>
+
+
+      {/* <Card>
+          <CardHeader>
+            <CardTitle>Volatility Analysis</CardTitle>
+            <CardDescription>Price volatility patterns</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="h-80 flex items-center justify-center text-gray-500">
+              Chart placeholder - Volatility heatmap or chart
+            </div>
+          </CardContent>
+        </Card> */}
     </div>
   )
 }

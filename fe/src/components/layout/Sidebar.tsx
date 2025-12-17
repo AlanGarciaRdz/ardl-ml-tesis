@@ -4,7 +4,8 @@ import {
   Database,
   Settings,
   Home,
-  TrendingUp
+  TrendingUp,
+  TextQuote
 } from 'lucide-react'
 import logo from '@/assets/images/PITIAX-logo.png'
 
@@ -13,6 +14,7 @@ const navigation = [
   { name: 'Data Explorer', href: '/dashboard/data', icon: Database },
   { name: 'Analytics', href: '/dashboard/analytics', icon: BarChart3 },
   // { name: 'Forecasting', href: '/dashboard/forecasting', icon: TrendingUp },
+  {name : 'Quotes', href: '/dashboard/quote', icon: TextQuote},
   { name: 'Settings', href: '/dashboard/settings', icon: Settings },
 ]
 

@@ -113,6 +113,8 @@
     "dataTable": "Tabla de Datos",
     "noDataAvailable": "No hay datos disponibles",
     "loadingData": "Cargando datos...",
+    "lastUpdated": "Última Actualización",
+    "mostRecentData": "Últimos datos",
     "errorLoadingData": "Error cargando datos",
     "tryAgain": "Intentar de Nuevo",
     "showingRecords": "Mostrando {{count}} de {{total}} registros",

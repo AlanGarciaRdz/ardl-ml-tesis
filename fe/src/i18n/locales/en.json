@@ -108,6 +108,8 @@
     "dataTable": "Data Table",
     "noDataAvailable": "No data available",
     "loadingData": "Loading data...",
+    "lastUpdated": "Last Updated",
+    "mostRecentData": "Most recent data",
     "errorLoadingData": "Error loading data",
     "tryAgain": "Try Again",
     "showingRecords": "Showing {{count}} of {{total}} records",

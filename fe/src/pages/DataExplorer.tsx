@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query'
 import axios from 'axios'
 import { Card, Text, Heading, Button, TextField, Flex } from '@radix-ui/themes'
 import { Loader2 } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 // Types for the API response
 interface MaterialPrice {
@@ -52,6 +53,7 @@ const fetchMaterialPrices = async (params: {
 }
 
 export function DataExplorer() {
+  const { t } = useTranslation()
   const [searchTerm] = useState('')
   const [currentPage, setCurrentPage] = useState(0)
   const [startDate, setStartDate] = useState('2025-01-01')
@@ -99,13 +101,13 @@ export function DataExplorer() {
     return (
       <div className="space-y-6">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Data Explorer</h1>
-          <p className="text-gray-600">Explore and analyze material price data</p>
+          <h1 className="text-3xl font-bold text-gray-900">{t('dataExplorer.title')}</h1>
+          <p className="text-gray-600">{t('dataExplorer.subtitle')}</p>
         </div>
         
         <Card size="2" className="custom-card">
           <div className="text-center py-8">
-            <Text size="4" color="red">Error loading data</Text>
+            <Text size="4" color="red">{t('dataExplorer.errorLoadingData')}</Text>
             <Text size="2" color="gray" className="mt-2">
               {error instanceof Error ? error.message : 'An error occurred while fetching data'}
             </Text>
@@ -121,20 +123,17 @@ export function DataExplorer() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold text-gray-900">Data Explorer</h1>
-        <p className="text-gray-600">Explore and analyze material price data</p>
+        <h1 className="text-3xl font-bold text-gray-900">{t('dataExplorer.title')}</h1>
+        <p className="text-gray-600">{t('dataExplorer.subtitle')}</p>
       </div>
 
       {/* Search and Filters */}
       <Card size="2">
-        <Heading size="4">Search & Filters</Heading>
-        <Text size="2" color="gray">Find specific materials or filter by criteria</Text>
-        
         {/* Date Filters */}
-        <Flex gap="4" className="mt-4" direction={{ initial: 'column', sm: 'row' }}>
+        <Flex gap="4" className="mt-4" direction="row">
           <div className="flex-1">
-            <Text size="2" weight="medium" className="mb-2 block">Start Date</Text>
-            <TextField.Root 
+            <Text size="2" weight="medium" className="mb-2 block">{t('dataExplorer.startDate')}</Text>
+            <TextField.Root  
               type="date"
               value={startDate}
               onChange={(e) => setStartDate(e.target.value)}
@@ -142,78 +141,51 @@ export function DataExplorer() {
             />
           </div>
           <div className="flex-1">
-            <Text size="2" weight="medium" className="mb-2 block">End Date</Text>
-            <TextField.Root 
+            <Text size="2" weight="medium" className="mb-2 block">{t('dataExplorer.endDate')}</Text>
+            <TextField.Root  
               type="date"
               value={endDate}
               onChange={(e) => setEndDate(e.target.value)}
               placeholder="YYYY-MM-DD"
             />
           </div>
-          {/* <div className="flex items-end gap-2">
-            <Button onClick={handleDateFilter} disabled={isLoading}>
-              {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Filter className="h-4 w-4" />}
-              Apply Filter
-            </Button>
-            <Button variant="outline" onClick={handleClearFilters}>
-              Clear
-            </Button>
-          </div> */}
         </Flex>
-
-        {/* Search */}
-        {/* <Flex gap="4" className="mt-4" direction={{ initial: 'column', sm: 'row' }}>
-          <div className="flex-1 relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-            <TextField.Root 
-              placeholder="Search by date, scrap, gas, rebar, or hrcc1..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10"
-            />
-          </div>
-          <Button variant="outline">
-            <Download className="h-4 w-4 mr-2" />
-            Export
-          </Button>
-        </Flex> */}
       </Card>
 
       {/* Data Table */}
       <Card size="2">
-        <Heading size="4">Material Prices</Heading>
         <Text size="2" color="gray">
-          {isLoading ? 'Loading data...' : `Showing ${filteredData.length} of ${data?.total_count || 0} records`}
+          {isLoading ? t('dataExplorer.loadingData') : t('dataExplorer.showingRecords', { count: filteredData.length, total: data?.total_count || 0 })}
         </Text>
 
         {/* Data Summary */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <Card size="2" className="custom-card">
-          <Heading size="3">Total Records</Heading>
+          <Heading size="3">{t('dataExplorer.totalRecords')}</Heading>
 
           <div className="text-2xl font-bold mt-2">{data?.total_count || 0}</div>
-          <Text size="1" color="gray">Historical records available</Text>
+          <Text size="1" color="gray">{t('dataExplorer.historicalRecords')}</Text>
         </Card>
 
         <Card size="2" className="custom-card">
-          <Heading size="3">Date Range</Heading>
+          <Heading size="3">{t('dataExplorer.dateRange')}</Heading>
           <div className="text-2xl font-bold mt-2">
             {data?.data?.[0]?.date || 'N/A'} – {data?.data?.[data?.data?.length - 1]?.date || 'N/A'}
           </div>
-          <Text size="1" color="gray">Data coverage period</Text>
+          <Text size="1" color="gray">{t('dataExplorer.dataCoveragePeriod')}</Text>
         </Card>
 
         <Card size="2" className="custom-card">
-          <Heading size="3">Last Updated</Heading>
+          <Heading size="3">{t('dataExplorer.lastUpdated')}</Heading>
           <div className="text-2xl font-bold mt-2">{data?.data?.[data?.data?.length - 1]?.date || 'N/A'}</div>
-          <Text size="1" color="gray">Most recent data</Text>
+          <Text size="1" color="gray">{t('dataExplorer.mostRecentData')}</Text>
         </Card>
       </div>
         
         {isLoading ? (
           <div className="flex justify-center items-center py-8">
             <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
-            <Text className="ml-2">Loading data...</Text>
+            <Text className="ml-2">{t('dataExplorer.loadingData')}</Text>
           </div>
         ) : (
           <div className="overflow-x-auto mt-4">

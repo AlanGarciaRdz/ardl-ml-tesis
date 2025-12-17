@@ -21,7 +21,8 @@ async def get_forecast(
     end_date: Optional[str] = Query(None, description="End date filter (YYYY-MM-DD)"),
     forecast_periods: int = Query(7, description="Number of periods to forecast", ge=1, le=365),
     transform: str = Query("log", description="Transform the data", choices=["log", "sqrt", "normalize"]),
-    value_column: str = Query("value", description="Name of the column containing values to forecast")
+    value_column: str = Query("value", description="Name of the column containing values to forecast"),
+    train: bool = False
 ) -> Any:
     """
     Retrieve time series data from PostgreSQL and calculate simple forecast.

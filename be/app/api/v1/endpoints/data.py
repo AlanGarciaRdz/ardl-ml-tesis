@@ -43,12 +43,8 @@ async def get_time_series_data(
                 where_conditions.append("Date <= :end_date")
                 params['end_date'] = end_date
             
-            # Add WHERE clause if there are conditions
-            if where_conditions:
-                base_query += " WHERE " + " AND ".join(where_conditions)
-            
             # Add pagination
-            base_query += " ORDER BY Date LIMIT :limit OFFSET :offset"
+            base_query += " ORDER BY Date DESC LIMIT :limit OFFSET :offset"
             params['limit'] = limit
             params['offset'] = offset
             

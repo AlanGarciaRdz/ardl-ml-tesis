@@ -1,5 +1,7 @@
 import React from 'react';
 import { FileText, DollarSign, Coins, TrendingUp, ChevronDown } from 'lucide-react';
+import axios from 'axios';
+import { useQuery } from '@tanstack/react-query';
 
 interface UserStatsBarProps {
     cotizaciones?: number;
@@ -16,8 +18,13 @@ interface UserStatsBarProps {
     onVolumenChange?: (value: string) => void;
 }
 
+const fetchQuotesTotal = async (): Promise<{ total_cotizaciones: number }> => {
+  const response = await axios.get('http://127.0.0.1:8000/api/v1/quote/total/')
+  return response.data
+}
+
 const UserStatsBar: React.FC<UserStatsBarProps> = ({
-    cotizaciones = 10,
+    cotizaciones: propCotizaciones,
     comprado = 75000,
     tokens = 5,
     variacion = 1.6,
@@ -30,6 +37,16 @@ const UserStatsBar: React.FC<UserStatsBarProps> = ({
     onMaterialChange,
     onVolumenChange,
 }) => {
+  // Fetch quotes total using React Query
+  const { data: quotesData, isLoading: quotesLoading } = useQuery({
+    queryKey: ['quotesTotal'],
+    queryFn: () => fetchQuotesTotal(),
+    refetchInterval: 30000, // Refetch every 30 seconds
+    staleTime: 60000, // Consider data fresh for 1 minute
+  })
+
+  // Use API data if available, otherwise use prop value as fallback
+  const cotizaciones = quotesData?.total_cotizaciones ?? propCotizaciones ?? 0
   return (
     <div className="relative z-10 w-full bg-white border-b border-gray-200 shadow-sm">
       <div className="max-w-7xl mx-auto px-6 py-6">
@@ -41,7 +58,9 @@ const UserStatsBar: React.FC<UserStatsBarProps> = ({
               <FileText className="w-6 h-6 text-blue-600" />
             </div>
             <div>
-              <div className="text-3xl font-bold text-gray-800">{cotizaciones}</div>
+              <div className="text-3xl font-bold text-gray-800">
+                {quotesLoading ? '...' : cotizaciones}
+              </div>
               <div className="text-xs text-gray-500 uppercase tracking-wide">Cotizaciones</div>
             </div>
           </div>
@@ -87,9 +106,9 @@ const UserStatsBar: React.FC<UserStatsBarProps> = ({
         </div>
 
         {/* Project Details Section */}
-        <div className="bg-gradient-to-r from-blue-50 to-transparent rounded-xl p-4 border border-blue-200">
+        {/* <div className="bg-gradient-to-r from-blue-50 to-transparent rounded-xl p-4 border border-blue-200">
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
-            {/* CP */}
+             CP 
             <div className="flex flex-col">
               <label className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">
                 CP
@@ -103,7 +122,7 @@ const UserStatsBar: React.FC<UserStatsBarProps> = ({
               />
             </div>
 
-            {/* Nombre del Proyecto */}
+            {/* Nombre del Proyecto 
             <div className="flex flex-col">
               <label className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">
                 Nombre del Proyecto
@@ -117,7 +136,7 @@ const UserStatsBar: React.FC<UserStatsBarProps> = ({
               />
             </div>
 
-            {/* Material Dropdown */}
+            {/* Material Dropdown 
             <div className="flex flex-col">
               <label className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">
                 Material
@@ -138,7 +157,7 @@ const UserStatsBar: React.FC<UserStatsBarProps> = ({
               </div>
             </div>
 
-            {/* Volumen Dropdown */}
+            {/* Volumen Dropdown 
             <div className="flex flex-col">
               <label className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">
                 Volumen
@@ -159,7 +178,7 @@ const UserStatsBar: React.FC<UserStatsBarProps> = ({
               </div>
             </div>
           </div>
-        </div>
+        </div> */}
       </div>
     </div>
   );

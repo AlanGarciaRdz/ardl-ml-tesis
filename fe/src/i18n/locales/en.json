@@ -20,12 +20,13 @@
     "no": "No"
   },
   "navigation": {
-    "dashboard": "Dashboard",
-    "analytics": "Analytics",
-    "dataExplorer": "Data Explorer",
-    "settings": "Settings",
-    "landing": "Home"
-  },
+  "dashboard": "Dashboard",
+  "analytics": "Analytics", 
+  "dataExplorer": "Data Explorer",
+  "quotes": "Quotes",
+  "settings": "Settings",
+  "landing": "Home"
+},
   "dashboard": {
     "title": "Dashboard",
     "subtitle": "Overview of your time series data",
@@ -40,6 +41,7 @@
     "title": "Analytics",
     "subtitle": "Advanced data analysis and insights",
     "dateRangeFilter": "Date Range Filter",
+    "quickSelect": "Quick Select",
     "selectDateRange": "Select the date range for your analysis",
     "startDate": "Start Date",
     "endDate": "End Date",
@@ -57,6 +59,7 @@
     "dataPoints": "data points",
     "pearsonFormula": "Pearson Correlation Formula",
     "priceTrendsAnalysis": "Price Trends Analysis",
+    "titleCurrency": "Currency",
     "priceMovements": "Material price movements over time ({{startDate}} to {{endDate}})",
     "varillaDistribuidor": "Distributor Rod",
     "varillaCredito": "Credit Rod",
@@ -66,6 +69,8 @@
     "gas": "Gas",
     "rebar": "Rebar",
     "hrcc1": "HRCC1",
+    "hrcc1_mxn": "HRCC1 MXN",
+    "gas_mxn": "Gas MXN",
     "dataSummary": "Data Summary",
     "currentPriceStatistics": "Current price statistics",
     "statisticalInsights": "Statistical Insights",
@@ -92,7 +97,10 @@
     "exportPdf": "Export as PDF",
     "exportExcel": "Export as Excel",
     "shareDashboard": "Share Dashboard",
-    "scheduleReports": "Schedule Reports"
+    "scheduleReports": "Schedule Reports",
+    "scrap_mxn": "Scrap MXN",
+    "rebar_mxn": "Rebar MXN",
+    "showLines": "Show lines in the chart"
   },
   "dataExplorer": {
     "title": "Data Explorer",

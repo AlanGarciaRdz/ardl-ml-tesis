@@ -9,6 +9,7 @@ interface ShippingResult {
   region: string;
   estado: string;
   tarifaTransporte: number;
+  tarifaPrecioBaseTn: number;
   precioBase: number;
   chatarra: number;
   varilla: number;
@@ -31,7 +32,7 @@ const fetchMarketPrices = async () => {
 
   return {
     chatarra: data.scrap_mxn || data.scrap,
-    varilla: data.rebar_mxn || data.rebar || data.varilla_distribuidor,
+    varilla: data.rebar_mxn || data.rebar || data.precio_mercado,
     gas: data.gas_mxn || data.gas,
     hrcct: data.hrcc1_mxn || data.hrcc1,
     tipoCambio: data.tipo_de_cambio,
@@ -44,14 +45,14 @@ const ShippingCalculator = () => {
   const [formData, setFormData] = useState({
     codigoPostal: '',
     peso: '',
-    material: 'Chatarra'
+    material: 'Varilla'
   });
 
   const [result, setResult] = useState<ShippingResult | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const materials = ['Chatarra', 'Varilla', 'Gas', 'HRCCT'];
+  const materials = ['Varilla'];
 
   // Fetch market prices using React Query
   const { data: marketData, isLoading: marketDataLoading, error: marketDataError } = useQuery({
@@ -95,7 +96,8 @@ const ShippingCalculator = () => {
         hrcct: apiResult.market_prices.hrcc1_mxn,
         tipoCambio: apiResult.tipo_cambio,
         precioTotal: apiResult.precio_total,
-        marketPrices: apiResult.market_prices
+        marketPrices: apiResult.market_prices,
+        tarifaPrecioBaseTn: apiResult.tarifa_precio_base_tn
       };
 
       setResult(transformedResult);
@@ -133,7 +135,7 @@ const ShippingCalculator = () => {
   };
 
   const resetForm = () => {
-    setFormData({ codigoPostal: '', peso: '', material: 'Chatarra' });
+    setFormData({ codigoPostal: '', peso: '', material: 'Varilla' });
     setResult(null);
     setError(null);
     setStep(1);
@@ -148,10 +150,10 @@ const ShippingCalculator = () => {
             <Calculator className="w-12 h-12 text-indigo-600" />
           </div>
           <h1 className="text-4xl font-bold text-gray-800 mb-2">
-            Calculadora de Envío
+            Cotización
           </h1>
           <p className="text-gray-600">
-            Ingresa tu código postal y peso para calcular el costo de transporte
+            Ingresa tu código postal y Toneladas de material para obtener una cotización
           </p>
         </div>
 
@@ -227,7 +229,7 @@ const ShippingCalculator = () => {
               <div>
                 <label className="flex items-center text-sm font-semibold text-gray-700 mb-2">
                   <Package className="w-5 h-5 mr-2 text-indigo-600" />
-                  Peso (kg)
+                  Toneladas (Tn)
                 </label>
                 <input
                   type="number"
@@ -238,7 +240,7 @@ const ShippingCalculator = () => {
                   step="0.01"
                   className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-indigo-500 focus:outline-none text-lg"
                 />
-                <p className="mt-1 text-sm text-gray-500">Peso mínimo: 15 kg</p>
+                <p className="mt-1 text-sm text-gray-500">Peso mínimo: 15 Toneladas</p>
               </div>
 
               <div>
@@ -283,7 +285,7 @@ const ShippingCalculator = () => {
                 </div>
                 <div className="flex justify-between items-center pb-3 border-b">
                   <span className="text-gray-600 font-medium">Peso:</span>
-                  <span className="text-xl font-bold text-gray-800">{formData.peso} kg</span>
+                  <span className="text-xl font-bold text-gray-800">{formData.peso} Toneladas</span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-gray-600 font-medium">Material:</span>
@@ -350,28 +352,28 @@ const ShippingCalculator = () => {
                   Desglose de Costos
                 </h3>
                 <div className="space-y-3">
-                  <div className="flex justify-between items-center pb-3 border-b">
+                  {/* <div className="flex justify-between items-center pb-3 border-b">
                     <span className="text-gray-600">Precio Base ({formData.material}):</span>
                     <span className="font-semibold text-gray-800">
                       ${result.precioBase.toLocaleString('es-MX', {minimumFractionDigits: 2})} MXN
                     </span>
-                  </div>
+                  </div> */}
                   <div className="flex justify-between items-center pb-3 border-b">
-                    <span className="text-gray-600">KG Solicitados:</span>
+                    <span className="text-gray-600">Tonelada Solicitados:</span>
                     <span className="font-semibold text-gray-800">
-                      {formData.peso} kg
+                      {formData.peso} Toneladas
                     </span>
                   </div>
-                  <div className="flex justify-between items-center pb-3 border-b">
+                  {/* <div className="flex justify-between items-center pb-3 border-b">
                     <span className="text-gray-600">Tarifa de Transporte:</span>
                     <span className="font-semibold text-gray-800">
                       ${result.tarifaTransporte.toLocaleString('es-MX', {minimumFractionDigits: 2})} MXN
                     </span>
-                  </div>
+                  </div> */}
                   <div className="flex justify-between items-center pb-3 border-b">
-                    <span className="text-gray-600">Tipo de Cambio:</span>
+                    <span className="text-gray-600">Precio base por Tonelada</span>
                     <span className="font-semibold text-gray-800">
-                      ${result.tipoCambio.toFixed(2)} MXN/USD
+                    ${result.tarifaPrecioBaseTn?.toLocaleString('es-MX', {minimumFractionDigits: 2})} MXN
                     </span>
                   </div>
                   <div className="flex justify-between items-center pt-3">
@@ -414,8 +416,12 @@ const ShippingCalculator = () => {
                 <p className="font-bold text-gray-800">${marketData.chatarra.toLocaleString('es-MX', { minimumFractionDigits: 2 })}</p>
               </div>
               <div className="text-center">
+                <p className="text-sm text-gray-600 mb-1">Tipo Cambio</p>
+                <p className="font-bold text-gray-800">${marketData.tipoCambio.toFixed(2)}</p>
+              </div>
+              <div className="text-center">
                 <p className="text-sm text-gray-600 mb-1">Varilla</p>
-                <p className="font-bold text-gray-800">${marketData.varilla.toLocaleString('es-MX', { minimumFractionDigits: 2 })}</p>
+                <p className="font-bold text-gray-800">${marketData.precioBase.toLocaleString('es-MX', { minimumFractionDigits: 2 })}</p>
               </div>
               <div className="text-center">
                 <p className="text-sm text-gray-600 mb-1">Gas</p>
@@ -425,10 +431,7 @@ const ShippingCalculator = () => {
                 <p className="text-sm text-gray-600 mb-1">HRCCT</p>
                 <p className="font-bold text-gray-800">${marketData.hrcct.toLocaleString('es-MX', { minimumFractionDigits: 2 })}</p>
               </div>
-              <div className="text-center">
-                <p className="text-sm text-gray-600 mb-1">Tipo Cambio</p>
-                <p className="font-bold text-gray-800">${marketData.tipoCambio.toFixed(2)}</p>
-              </div>
+              
             </div>
           ) : null}
         </div>

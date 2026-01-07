@@ -24,7 +24,8 @@
     "analytics": "Análisis",
     "dataExplorer": "Explorador de Datos",
     "settings": "Configuración",
-    "landing": "Inicio"
+    "landing": "Inicio",
+    "quotes": "Cotizaciones"
   },
   "dashboard": {
     "title": "Panel de Control",
@@ -40,6 +41,7 @@
     "title": "Análisis",
     "subtitle": "Análisis avanzado de datos e insights",
     "dateRangeFilter": "Filtro de Rango de Fechas",
+    "quickSelect": "Selección Rápida",
     "selectDateRange": "Selecciona el rango de fechas para tu análisis",
     "startDate": "Fecha de Inicio",
     "endDate": "Fecha de Fin",
@@ -57,6 +59,7 @@
     "dataPoints": "puntos de datos",
     "pearsonFormula": "Fórmula de Correlación de Pearson",
     "priceTrendsAnalysis": "Análisis de Tendencias de Precios",
+    "titleCurrency": "Moneda",
     "priceMovements": "Movimientos de precios de materiales a lo largo del tiempo ({{startDate}} a {{endDate}})",
     "varillaDistribuidor": "Varilla Distribuidor",
     "varillaCredito": "Varilla Crédito",

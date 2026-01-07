@@ -3,6 +3,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy import text
 from app.core.database import get_database_connection
 from app.schemas.time_series import TimeSeriesData, TimeSeriesResponse
+from app.services.forecast_service import ForecastService
 import logging
 import pandas as pd
 import numpy as np
@@ -11,6 +12,7 @@ from datetime import datetime, timedelta
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
+forecast_service = ForecastService()
 
 @router.get("/")
 async def get_forecast(
@@ -20,29 +22,18 @@ async def get_forecast(
     start_date: Optional[str] = Query(None, description="Start date filter (YYYY-MM-DD)"),
     end_date: Optional[str] = Query(None, description="End date filter (YYYY-MM-DD)"),
     forecast_periods: int = Query(7, description="Number of periods to forecast", ge=1, le=365),
-    transform: str = Query("log", description="Transform the data", choices=["log", "sqrt", "normalize"]),
-    value_column: str = Query("value", description="Name of the column containing values to forecast"),
-    train: bool = False
+    transform: str = Query("log", description="Transform the data", choices=["log", "sqrt", "normalize", "none"]),
+    value_column: str = Query("scrap_mxn", description="Name of the column containing values to forecast"),
+    model_type: str = Query("lstm", description="Type of model to use for forecasting", 
+                           pattern="^(lstm|arima|simple_linear)$"),
+    use_trained_model: bool = Query(True, description="Use trained model if available, otherwise train on-the-fly")
 ) -> Any:
     """
-    Retrieve time series data from PostgreSQL and calculate simple forecast.
-    
-    Args:
-        table_name: The name of the table containing time series data
-        limit: Maximum number of records to return
-        offset: Number of records to skip
-        start_date: Optional start date filter
-        end_date: Optional end date filter
-        forecast_periods: Number of future periods to forecast
-        value_column: Name of the column containing numeric values to forecast
-    
-    Returns:
-        TimeSeriesResponse containing the data, forecast, and metadata
+    Retrieve time series data and generate forecast using trained models.
     """
     try:
         with get_database_connection() as conn:
             # Build the base query
-            
             base_query = f"SELECT * FROM {table_name}"
             where_conditions = []
             params = {}
@@ -60,7 +51,7 @@ async def get_forecast(
                 base_query += " WHERE " + " AND ".join(where_conditions)
             
             # Add pagination
-            base_query += " ORDER BY Date LIMIT :limit OFFSET :offset"
+            base_query += " ORDER BY Date DESC LIMIT :limit OFFSET :offset"
             params['limit'] = limit
             params['offset'] = offset
             
@@ -76,45 +67,39 @@ async def get_forecast(
             count_result = conn.execute(text(count_query), {k: v for k, v in params.items() if k not in ['limit', 'offset']})
             total_count = count_result.scalar()
             
-            
             if not data:
                 raise HTTPException(status_code=404, detail=f"Table '{table_name}' not found or no data available")
             
-            # Transform all columns except date and year
-            exclude_columns = ['date', 'year']
+            # Apply transformations if needed
+            exclude_columns = ['date', 'year', 'Date']
             if transform in ["log", "sqrt"]:
-                # Simple transformations - apply directly
                 for item in data:
                     for key, value in item.items():
-                        if key not in exclude_columns and isinstance(value, (int, float)):
+                        if key.lower() not in exclude_columns and isinstance(value, (int, float)):
                             if transform == "log":
-                                item[key] = np.log(value)
+                                item[key] = np.log(value) if value > 0 else 0
                             elif transform == "sqrt":
-                                item[key] = np.sqrt(value)
-            elif transform == "normalize":
-                # First, calculate mean and std for each numeric column
-                column_stats = {}
-                for key in data[0].keys():
-                    if key not in exclude_columns:
-                        values = [item[key] for item in data if isinstance(item.get(key), (int, float))]
-                        if values:
-                            column_stats[key] = {
-                                'mean': np.mean(values),
-                                'std': np.std(values)
-                            }
-                
-                # Then apply normalization to each item
-                for item in data:
-                    for key, value in item.items():
-                        if key not in exclude_columns and isinstance(value, (int, float)):
-                            if column_stats[key]['std'] != 0:  # Avoid division by zero
-                                item[key] = (value - column_stats[key]['mean']) / column_stats[key]['std']
-                            else:
-                                item[key] = 0  # If std is 0, all values are the same
-                
-            # Calculate forecast
-            forecast_data = calculate_simple_forecast(data, forecast_periods, value_column)
-            print(forecast_data)
+                                item[key] = np.sqrt(value) if value >= 0 else 0
+            
+            # Generate forecast
+            forecast_data = []
+            
+            if use_trained_model and model_type != "simple_linear":
+                try:
+                    # Try to use trained model
+                    forecast_data = forecast_service.generate_forecast(
+                        table_name=table_name,
+                        model_type=model_type,
+                        value_column=value_column,
+                        forecast_periods=forecast_periods
+                    )
+                except (ValueError, FileNotFoundError) as e:
+                    # Fallback to simple linear if model not found
+                    logger.warning(f"Trained model not found, using simple linear: {str(e)}")
+                    forecast_data = calculate_simple_forecast(data, forecast_periods, value_column)
+            else:
+                # Use simple linear regression
+                forecast_data = calculate_simple_forecast(data, forecast_periods, value_column)
             
             return {
                 "data": data,
@@ -124,6 +109,8 @@ async def get_forecast(
                 "limit": limit,
                 "offset": offset,
                 "forecast_periods": forecast_periods,
+                "model_type": model_type,
+                "value_column": value_column,
                 "message": "Data and forecast retrieved successfully"
             }
         
@@ -134,41 +121,31 @@ async def get_forecast(
         )
 
 def calculate_simple_forecast(data: List[Dict], periods: int, value_column: str) -> List[Dict]:
-    """
-    Calculate simple linear regression forecast based on historical data.
-    
-    Args:
-        data: List of dictionaries containing historical data
-        periods: Number of future periods to forecast
-        value_column: Name of the column containing values to forecast
-    
-    Returns:
-        List of dictionaries containing forecast data
-    """
+    """Calculate simple linear regression forecast (fallback method)"""
     if not data:
         return []
     
-    # Convert to DataFrame for easier manipulation
     df = pd.DataFrame(data)
-
-    print("----")
-    print(value_column)
     
-    # Ensure we have date and value columns
-    if 'date' not in df.columns or value_column not in df.columns:
+    # Handle date column
+    date_col = 'date' if 'date' in df.columns else 'Date'
+    if date_col not in df.columns:
         raise HTTPException(
             status_code=400, 
-            detail=f"Required columns 'Date' and '{value_column}' not found in data"
+            detail=f"Required column '{date_col}' not found in data"
         )
     
-    # Convert date column to datetime and sort
-    df['date'] = pd.to_datetime(df['date'])
-    df = df.sort_values('date')
-
+    if value_column not in df.columns:
+        raise HTTPException(
+            status_code=400, 
+            detail=f"Required column '{value_column}' not found in data"
+        )
     
+    df[date_col] = pd.to_datetime(df[date_col])
+    df = df.sort_values(date_col)
     
     # Prepare data for linear regression
-    df['days'] = (df['date'] - df['date'].min()).dt.days
+    df['days'] = (df[date_col] - df[date_col].min()).dt.days
     
     X = df[['days']].values
     y = df[value_column].values
@@ -182,19 +159,15 @@ def calculate_simple_forecast(data: List[Dict], periods: int, value_column: str)
     model.fit(X, y)
     
     # Generate future dates
-    DayInterval = 7
-    last_date = df['date'].max()
-
-    future_dates = [last_date + timedelta(days=i*DayInterval) for i in range(periods)]
-    future_days = [(date - df['date'].min()).days for date in future_dates]
+    day_interval = 7
+    last_date = df[date_col].max()
     
+    future_dates = [last_date + timedelta(days=i*day_interval) for i in range(1, periods + 1)]
+    future_days = [(date - df[date_col].min()).days for date in future_dates]
     
     # Make predictions
     future_X = np.array(future_days).reshape(-1, 1)
     predictions = model.predict(future_X)
-
-    
-    print(predictions)
     
     # Create forecast data structure
     forecast_data = []
@@ -204,7 +177,7 @@ def calculate_simple_forecast(data: List[Dict], periods: int, value_column: str)
             'period': i + 1,
             'predicted_value': float(prediction),
             'confidence_interval': {
-                'lower': float(prediction * 0.9),  # Simple 10% confidence interval
+                'lower': float(prediction * 0.9),
                 'upper': float(prediction * 1.1)
             }
         })

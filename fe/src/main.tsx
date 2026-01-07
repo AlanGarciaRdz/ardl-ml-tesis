@@ -15,6 +15,12 @@ const queryClient = new QueryClient({
   },
 })
 
+if (typeof window !== 'undefined') {
+  if (!localStorage.getItem('userRole')) {
+    localStorage.setItem('userRole', 'user')
+  }
+}
+
 
 const basename = '/acero';//import.meta.env.PROD ? '/acero' : '/'
 

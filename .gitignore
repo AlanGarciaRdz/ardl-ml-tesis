@@ -206,3 +206,12 @@ tmp/
 *.swp
 *.swo
 *~
+
+# ML model artifacts (do not commit trained weights / scalers)
+be/app/model_registry/
+*.h5
+*.keras
+*.npy
+*.npz
+*.pkl
+*.joblib

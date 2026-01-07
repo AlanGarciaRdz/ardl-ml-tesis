@@ -34,6 +34,7 @@ class ShippingCalculationResponse(BaseModel):
     
     # Prices
     precio_material_mxn: float
+    tarifa_precio_base_tn: float
     tarifa_transporte: float
     precio_total: float
     
@@ -310,12 +311,18 @@ async def calcular_envio(
         }
         
         tarifa_transporte = get_tarifa_by_weight(request.peso, tarifas)
+        print(f"Tarifa transporte: {tarifa_transporte}")
         
         # 4. Get material price
-        precio_material = get_material_price(request.material, precios)
-        
+        #precio_material = get_material_price(request.material, precios)
+        precio_material = get_material_price('scrap_mxn', precios)
+        print(f"Precio material: {precio_material}")
         # 5. Calculate total
-        precio_total = (((precio_material  *2) / .93))+ tarifa_transporte
+        tarifa_precio_base_tn = precio_material + tarifa_transporte
+        print(f"Tarifa precio base por Tn: {tarifa_precio_base_tn}")
+        
+        precio_total = (request.peso * tarifa_precio_base_tn)
+        print(f"Precio total: {precio_total}")
         
         # 6. Save quotation
         #firebase_uid = current_user.uid if current_user else None
@@ -348,6 +355,7 @@ async def calcular_envio(
             # Prices
             precio_material_mxn=precio_material,
             tarifa_transporte=tarifa_transporte,
+            tarifa_precio_base_tn=tarifa_precio_base_tn,
             precio_total=precio_total,
             
             # Market data
@@ -377,6 +385,7 @@ async def calcular_envio(
         raise
     except Exception as e:
         conn.rollback()
+        logger.error(f"Error completo: {str(e)}", exc_info=True)  
         raise HTTPException(status_code=500, detail=f"Error al calcular envío: {str(e)}")
     finally:
         conn.close()

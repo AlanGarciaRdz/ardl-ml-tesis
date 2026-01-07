@@ -72,14 +72,33 @@ async def get_forecast(
             
             # Apply transformations if needed
             exclude_columns = ['date', 'year', 'Date']
-            if transform in ["log", "sqrt"]:
-                for item in data:
-                    for key, value in item.items():
-                        if key.lower() not in exclude_columns and isinstance(value, (int, float)):
-                            if transform == "log":
-                                item[key] = np.log(value) if value > 0 else 0
-                            elif transform == "sqrt":
-                                item[key] = np.sqrt(value) if value >= 0 else 0
+            if transform in ["log", "sqrt", "normalize"]:
+                if transform == "normalize":  # add
+                    numeric_keys = sorted({
+                        k for item in data for k, v in item.items()
+                        if k.lower() not in exclude_columns and isinstance(v, (int, float))
+                    })
+
+                    cols = {
+                        k: np.array([item.get(k, np.nan) for item in data], dtype=float)
+                        for k in numeric_keys
+                    }
+                    mins = {k: np.nanmin(arr) for k, arr in cols.items()}
+                    maxs = {k: np.nanmax(arr) for k, arr in cols.items()}
+
+                    for i, item in enumerate(data):
+                        for k in numeric_keys:
+                            v = cols[k][i]
+                            denom = (maxs[k] - mins[k])
+                            item[k] = float((v - mins[k]) / denom) if denom and np.isfinite(v) else 0.0
+                else:
+                    for item in data:
+                        for key, value in item.items():
+                            if key.lower() not in exclude_columns and isinstance(value, (int, float)):
+                                if transform == "log":
+                                    item[key] = np.log(value) if value > 0 else 0
+                                elif transform == "sqrt":
+                                    item[key] = np.sqrt(value) if value >= 0 else 0
             
             # Generate forecast
             forecast_data = []

@@ -29,7 +29,7 @@ interface MaterialPrice {
   rebar_mxn: number,
   hrcc1: number,
   hrcc1_mxn: number,
-  tipoDeCambio: number
+  tipo_de_cambio: number
 }
 
 interface ForecastPrice {
@@ -134,6 +134,7 @@ export function Analytics() {
   const [correlationField2, setCorrelationField2] = useState('varilla_credito')
   const [correlationResult, setCorrelationResult] = useState<CorrelationResponse | null>(null)
   const [isCalculatingCorrelation, setIsCalculatingCorrelation] = useState(false)
+  const [normalization, setNormalization] = useState<'none' | 'log' | 'sqrt' | 'normalize'>('normalize')
 
   const [selectedModel, setSelectedModel] = useState('lstm')
 
@@ -234,8 +235,8 @@ export function Analytics() {
 
   // Query for secondary chart (gas, scrap, rebar, hrcc1)
   const { data: secondaryData, isLoading: secondaryLoading, error: secondaryError, refetch: refetchSecondary } = useQuery({
-    queryKey: ['materialPrices', startDate, endDate, 'secondary'],
-    queryFn: () => fetchMaterialPrices(startDate, endDate, 'normalize', '1'), //["log", "sqrt", "normalize"
+    queryKey: ['materialPrices', startDate, endDate, 'secondary', normalization],
+    queryFn: () => fetchMaterialPrices(startDate, endDate, normalization, '1'),
     refetchInterval: false,
     staleTime: 0,
     gcTime: 0,
@@ -573,7 +574,7 @@ export function Analytics() {
                     [t('analytics.precioMercado')]: item.precio_mercado,
                     [t('analytics.varillaDistribuidor')]: item.varilla_distribuidor,
                     [t('analytics.varillaCredito')]: item.varilla_credito,
-                    [t('analytics.tipoDeCambio')]: item.tipoDeCambio,
+                    [t('analytics.tipoDeCambio')]: item.tipo_de_cambio,
                     type: 'historical'
                   })) || []
 
@@ -798,10 +799,26 @@ export function Analytics() {
       {/* Normalized Charts */}
       {userRole === 'admin' && (
         <div className="grid grid-cols-1 lg:grid-cols-1 gap-12">
+
           <Card>
             <CardHeader>
               <CardTitle>{t('analytics.priceTrendsAnalysisNormalized')}</CardTitle>
               <CardDescription>{t('analytics.priceMovements', { startDate, endDate })}</CardDescription>
+              <div className="grid grid-cols-1 lg:grid-cols-1 gap-12">
+                <div className="mt-3 flex items-center gap-2"> 
+                  <Label htmlFor="normalization" className="text-sm">Normalization</Label>
+                  <select
+                    id="normalization"
+                    value={normalization}
+                    onChange={(e) => setNormalization(e.target.value as 'none' | 'log' | 'sqrt' | 'normalize')}
+                    className="h-9 rounded-md border border-gray-300 bg-white px-3 text-sm"
+                  >
+                    <option value="normalize">0–1 (min-max)</option>
+                    <option value="log">Log</option>
+                    <option value="sqrt">Sqrt</option>
+                  </select>
+                </div>
+              </div>
             </CardHeader>
             <CardContent>
               {secondaryLoading ? (
@@ -844,7 +861,7 @@ export function Analytics() {
                       [t('analytics.precioMercado')]: item.precio_mercado,
                       [t('analytics.varillaDistribuidor')]: item.varilla_distribuidor,
                       [t('analytics.varillaCredito')]: item.varilla_credito,
-                      [t('analytics.tipoDeCambio')]: item.tipoDeCambio,
+                      [t('analytics.tipoDeCambio')]: item.tipo_de_cambio,
                       type: 'historical'
                     })) || []
 

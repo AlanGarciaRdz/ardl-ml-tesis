@@ -16,7 +16,7 @@ const navigation = [
   { nameKey: 'navigation.dataExplorer', href: '/dashboard/data', icon: Database, roles: ['admin'] },
   { nameKey: 'navigation.analytics', href: '/dashboard/analytics', icon: BarChart3, roles: [ 'user'] },
   // { nameKey: 'Forecasting', href: '/dashboard/forecasting', icon: TrendingUp },
-  {nameKey : 'navigation.quotes', href: '/dashboard/quote', icon: TextQuote, roles: [ 'admin'] },
+  {nameKey : 'navigation.quotes', href: '/dashboard/quote', icon: TextQuote, roles: [ 'admin', 'user'] },
   { nameKey: 'navigation.settings', href: '/dashboard/settings', icon: Settings, roles: [ 'admin'] },
 ]
 

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Calculator, MapPin, Package, TrendingUp, DollarSign } from 'lucide-react';
 import axios from 'axios';
 import { useQuery } from '@tanstack/react-query';
@@ -40,6 +40,10 @@ const fetchMarketPrices = async () => {
   };
 };
 
+
+
+  
+
 const ShippingCalculator = () => {
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
@@ -51,7 +55,7 @@ const ShippingCalculator = () => {
   const [result, setResult] = useState<ShippingResult | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
+  const [userRole, setUserRole] = useState<string>('user')
   const materials = ['Varilla'];
 
   // Fetch market prices using React Query
@@ -141,6 +145,11 @@ const ShippingCalculator = () => {
     setStep(1);
   };
 
+  useEffect(() => {
+    const role = localStorage.getItem('userRole') || 'user'
+    setUserRole(role)
+  }, [])
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-6">
       <div className="max-w-4xl mx-auto">
@@ -213,7 +222,7 @@ const ShippingCalculator = () => {
               <div>
                 <label className="flex items-center text-sm font-semibold text-gray-700 mb-2">
                   <MapPin className="w-5 h-5 mr-2 text-indigo-600" />
-                  Código Postal
+                  Código postal de entrega (a donde enviaremos el acero)
                 </label>
                 <input
                   type="text"
@@ -223,7 +232,7 @@ const ShippingCalculator = () => {
                   maxLength={5}
                   className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-indigo-500 focus:outline-none text-lg"
                 />
-                <p className="mt-1 text-sm text-gray-500">Ingresa los 5 dígitos de tu código postal</p>
+                <p className="mt-1 text-sm text-gray-500">Codigo postal de entrega</p>
               </div>
 
               <div>
@@ -396,6 +405,7 @@ const ShippingCalculator = () => {
         </div>
 
         {/* Market Info Footer */}
+        {userRole === 'admin' && (
         <div className="mt-8 bg-white rounded-lg shadow-md p-6">
           <h3 className="font-semibold text-gray-900 mb-4 flex items-center">
             <TrendingUp className="w-5 h-5 mr-2 text-indigo-600" />
@@ -435,6 +445,7 @@ const ShippingCalculator = () => {
             </div>
           ) : null}
         </div>
+        )}
       </div>
     </div>
   );

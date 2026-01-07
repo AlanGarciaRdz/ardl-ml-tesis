@@ -59,6 +59,7 @@
     "dataPoints": "data points",
     "pearsonFormula": "Pearson Correlation Formula",
     "priceTrendsAnalysis": "Price Trends Analysis",
+    "priceTrendsAnalysisNormalized": "Price Trends Analysis (Normalized scale: log / sqrt / other)",
     "titleCurrency": "Currency",
     "priceMovements": "Material price movements over time ({{startDate}} to {{endDate}})",
     "varillaDistribuidor": "Distributor Rod",

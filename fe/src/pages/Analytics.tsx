@@ -1,4 +1,4 @@
-import { useState , useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { useAuth } from '@/hooks/useAuth'
 import UserStatsBar from '../components/shared/UserStatsBar';
 import { useTranslation } from 'react-i18next'
@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import {  RefreshCw, Calculator } from 'lucide-react'
+import { RefreshCw, Calculator } from 'lucide-react'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
 import axios from 'axios'
 import { useQuery } from '@tanstack/react-query'
@@ -81,15 +81,15 @@ const fetchMaterialPrices = async (startDate?: string, endDate?: string, transfo
     table_name: 'precios_materiales',
     limit: '200',
     forecast_periods: forecast_periods || '18',
-    value_column: "scrap_mxn",  
+    value_column: "scrap_mxn",
     transform: transform || 'none',
-    model_type: modelType || 'lstm',  
-    use_trained_model: 'true'  
+    model_type: modelType || 'lstm',
+    use_trained_model: 'true'
   })
-  
+
   if (startDate) params.append('start_date', startDate)
   if (endDate) params.append('end_date', endDate)
-  
+
   //const response = await axios.get(`http://127.0.0.1:8000/api/v1/data/?${params}`)
   const response = await axios.get(`http://127.0.0.1:8000/api/v1/forecast/?${params}`)
   console.log(response)
@@ -125,7 +125,7 @@ export function Analytics() {
     return sixMonthsAgo.toISOString().split('T')[0]
   }
 
-  
+
 
   const [startDate, setStartDate] = useState(getSixMonthsAgo())
   const today = new Date().toISOString().split('T')[0]
@@ -134,7 +134,7 @@ export function Analytics() {
   const [correlationField2, setCorrelationField2] = useState('varilla_credito')
   const [correlationResult, setCorrelationResult] = useState<CorrelationResponse | null>(null)
   const [isCalculatingCorrelation, setIsCalculatingCorrelation] = useState(false)
-  
+
   const [selectedModel, setSelectedModel] = useState('lstm')
 
   const { isLoggedIn } = useAuth();
@@ -149,7 +149,7 @@ export function Analytics() {
     gas_mxn: true,
     precioMercado: true,
     hrcc1_mxn: true,
-    
+
     varillaDistribuidor: true,
     varillaCredito: true,
     precioMercadoValidation: true,
@@ -232,20 +232,20 @@ export function Analytics() {
     gcTime: 0, // Don't cache results
   })
 
-    // Query for secondary chart (gas, scrap, rebar, hrcc1)
-    const { data: secondaryData, isLoading: secondaryLoading, error: secondaryError, refetch: refetchSecondary } = useQuery({
-      queryKey: ['materialPrices', startDate, endDate, 'secondary'],
-      queryFn: () => fetchMaterialPrices(startDate, endDate, 'normalize', '1'), //["log", "sqrt", "normalize"
-      refetchInterval: false,
-      staleTime: 0,
-      gcTime: 0,
-    })
+  // Query for secondary chart (gas, scrap, rebar, hrcc1)
+  const { data: secondaryData, isLoading: secondaryLoading, error: secondaryError, refetch: refetchSecondary } = useQuery({
+    queryKey: ['materialPrices', startDate, endDate, 'secondary'],
+    queryFn: () => fetchMaterialPrices(startDate, endDate, 'normalize', '1'), //["log", "sqrt", "normalize"
+    refetchInterval: false,
+    staleTime: 0,
+    gcTime: 0,
+  })
 
-  
+
 
   const handleCorrelationCalculation = async () => {
     if (!data?.data) return
-    
+
     setIsCalculatingCorrelation(true)
     try {
       const result = await calculateCorrelation({
@@ -265,7 +265,7 @@ export function Analytics() {
     { value: 'varilla_distribuidor', label: t('analytics.varillaDistribuidor') },
     { value: 'varilla_credito', label: t('analytics.varillaCredito') },
     { value: 'precio_mercado', label: t('analytics.precioMercado') },
-    { value: 'tipoDeCambio', label: t('analytics.tipoDeCambio') },    
+    { value: 'tipoDeCambio', label: t('analytics.tipoDeCambio') },
     { value: 'scrap_mxn', label: t('analytics.scrap_mxn') },
     { value: 'rebar_mxn', label: t('analytics.rebar_mxn') },
     { value: 'hrcc1_mxn', label: t('analytics.hrcc1_mxn') },
@@ -298,80 +298,80 @@ export function Analytics() {
 
       {/* Date Filters */}
       {userRole === 'admin' && (
-      <Card>
-        <CardHeader>
-          <CardTitle>{t('analytics.dateRangeFilter')}</CardTitle>
-          <CardDescription>{t('analytics.selectDateRange')}</CardDescription>
-        </CardHeader>
-        <CardContent>
-          {/* Preset Date Range Buttons */}
-          <div className="mb-4">
-            <Label className="text-sm font-medium text-gray-700 mb-2 block">
-              {t('analytics.quickSelect') || 'Quick Select'}
-            </Label>
-            <div className="flex flex-wrap gap-2">
-              {['5D', '1M', '6M', 'YTD', '1Y', '5Y'].map((period) => (
-                <Button
-                  key={period}
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setDateRange(period)}
-                  className="text-xs"
-                >
-                  {period}
-                </Button>
-              ))}
+        <Card>
+          <CardHeader>
+            <CardTitle>{t('analytics.dateRangeFilter')}</CardTitle>
+            <CardDescription>{t('analytics.selectDateRange')}</CardDescription>
+          </CardHeader>
+          <CardContent>
+            {/* Preset Date Range Buttons */}
+            <div className="mb-4">
+              <Label className="text-sm font-medium text-gray-700 mb-2 block">
+                {t('analytics.quickSelect') || 'Quick Select'}
+              </Label>
+              <div className="flex flex-wrap gap-2">
+                {['5D', '1M', '6M', 'YTD', '1Y', '5Y'].map((period) => (
+                  <Button
+                    key={period}
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setDateRange(period)}
+                    className="text-xs"
+                  >
+                    {period}
+                  </Button>
+                ))}
+              </div>
             </div>
-          </div>
 
-          {/* Manual Date Selection */}
-          <div className="flex flex-wrap gap-4 items-end">
-            <div className="flex flex-col space-y-2">
-              <Label htmlFor="start-date">{t('analytics.startDate')}</Label>
-              <Input
-                id="start-date"
-                type="date"
-                value={startDate}
-                onChange={(e) => setStartDate(e.target.value)}
-                className="w-40"
-              />
+            {/* Manual Date Selection */}
+            <div className="flex flex-wrap gap-4 items-end">
+              <div className="flex flex-col space-y-2">
+                <Label htmlFor="start-date">{t('analytics.startDate')}</Label>
+                <Input
+                  id="start-date"
+                  type="date"
+                  value={startDate}
+                  onChange={(e) => setStartDate(e.target.value)}
+                  className="w-40"
+                />
+              </div>
+              <div className="flex flex-col space-y-2">
+                <Label htmlFor="end-date">{t('analytics.endDate')}</Label>
+                <Input
+                  id="end-date"
+                  type="date"
+                  value={endDate}
+                  onChange={(e) => setEndDate(e.target.value)}
+                  className="w-40"
+                />
+              </div>
+              <Button onClick={() => refetch()} disabled={isLoading}>
+                <RefreshCw className={`h-4 w-4 mr-2 ${isLoading ? 'animate-spin' : ''}`} />
+                {t('analytics.updateData')}
+              </Button>
             </div>
-            <div className="flex flex-col space-y-2">
-              <Label htmlFor="end-date">{t('analytics.endDate')}</Label>
-              <Input
-                id="end-date"
-                type="date"
-                value={endDate}
-                onChange={(e) => setEndDate(e.target.value)}
-                className="w-40"
-              />
-            </div>
-            <Button onClick={() => refetch()} disabled={isLoading}>
-              <RefreshCw className={`h-4 w-4 mr-2 ${isLoading ? 'animate-spin' : ''}`} />
-              {t('analytics.updateData')}
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
       )}
 
       {/* // Add dropdown in the UI */}
       {userRole === 'admin' && (
-      <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          Model Type
-        </label>
-        <select
-          value={selectedModel}
-          onChange={(e) => setSelectedModel(e.target.value)}
-          className="border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-        >
-          <option value="lstm">LSTM (Neural Network)</option>
-          <option value="simple_linear">Simple Linear</option>
-        </select>
-      </div>
+        <div className="mb-4">
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Model Type
+          </label>
+          <select
+            value={selectedModel}
+            onChange={(e) => setSelectedModel(e.target.value)}
+            className="border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            <option value="lstm">LSTM (Neural Network)</option>
+            <option value="simple_linear">Simple Linear</option>
+          </select>
+        </div>
       )}
-      
+
 
       {/* Main Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-1 gap-12">
@@ -386,7 +386,7 @@ export function Analytics() {
               {/* Currency Toggle */}
               <div className="mb-4 pb-4 border-b border-gray-300 dark:border-gray-600">
                 <Label className="text-sm font-medium mb-2 block">
-                {t('analytics.titleCurrency')}
+                  {t('analytics.titleCurrency')}
                 </Label>
                 <div className="flex items-center space-x-4">
                   <div className="flex items-center space-x-2">
@@ -413,17 +413,17 @@ export function Analytics() {
                 {/* Show switches based on currency */}
                 {showMXN ? (
                   <>
-                  {userRole === 'admin' && (
-                    <div className="flex items-center space-x-2">
-                      <Switch
-                        id="scrap_mxn"
-                        checked={visibleLines.scrap_mxn}
-                        onCheckedChange={() => toggleLine('scrap_mxn')}
-                      />
-                      <Label htmlFor="scrap_mxn" className="text-sm cursor-pointer">
-                        {t('analytics.scrap_mxn') || 'Chatarra MXN'}
-                      </Label>
-                    </div>
+                    {userRole === 'admin' && (
+                      <div className="flex items-center space-x-2">
+                        <Switch
+                          id="scrap_mxn"
+                          checked={visibleLines.scrap_mxn}
+                          onCheckedChange={() => toggleLine('scrap_mxn')}
+                        />
+                        <Label htmlFor="scrap_mxn" className="text-sm cursor-pointer">
+                          {t('analytics.scrap_mxn') || 'Chatarra MXN'}
+                        </Label>
+                      </div>
                     )}
                     {/* <div className="flex items-center space-x-2">
                       <Switch
@@ -436,28 +436,28 @@ export function Analytics() {
                       </Label>
                     </div> */}
                     {userRole === 'admin' && (
-                    <div className="flex items-center space-x-2">
-                      <Switch
-                        id="gas_mxn"
-                        checked={visibleLines.gas_mxn}
-                        onCheckedChange={() => toggleLine('gas_mxn')}
-                      />
-                      <Label htmlFor="gas_mxn" className="text-sm cursor-pointer">
-                        {t('analytics.gas_mxn') || 'Gas MXN'}
-                      </Label>
-                    </div>
+                      <div className="flex items-center space-x-2">
+                        <Switch
+                          id="gas_mxn"
+                          checked={visibleLines.gas_mxn}
+                          onCheckedChange={() => toggleLine('gas_mxn')}
+                        />
+                        <Label htmlFor="gas_mxn" className="text-sm cursor-pointer">
+                          {t('analytics.gas_mxn') || 'Gas MXN'}
+                        </Label>
+                      </div>
                     )}
                     {userRole === 'admin' && (
-                    <div className="flex items-center space-x-2">
-                      <Switch
-                        id="hrcc1_mxn"
-                        checked={visibleLines.hrcc1_mxn}
-                        onCheckedChange={() => toggleLine('hrcc1_mxn')}
-                      />
-                      <Label htmlFor="hrcc1_mxn" className="text-sm cursor-pointer">
-                        {t('analytics.hrcc1_mxn') || 'HRCC1 MXN'}
-                      </Label>
-                    </div>
+                      <div className="flex items-center space-x-2">
+                        <Switch
+                          id="hrcc1_mxn"
+                          checked={visibleLines.hrcc1_mxn}
+                          onCheckedChange={() => toggleLine('hrcc1_mxn')}
+                        />
+                        <Label htmlFor="hrcc1_mxn" className="text-sm cursor-pointer">
+                          {t('analytics.hrcc1_mxn') || 'HRCC1 MXN'}
+                        </Label>
+                      </div>
                     )}
                   </>
                 ) : (
@@ -508,18 +508,18 @@ export function Analytics() {
 
                 {/* These are always shown regardless of currency */}
                 {userRole === 'admin' && (
-                <div className="flex items-center space-x-2">
-                  <Switch
-                    id="tipoDeCambio"
-                    checked={visibleLines.tipoDeCambio}
-                    onCheckedChange={() => toggleLine('tipoDeCambio')}
-                  />
-                  <Label htmlFor="tipoDeCambio" className="text-sm cursor-pointer">
-                    {t('analytics.tipoDeCambio')}
-                  </Label>
-                </div>
+                  <div className="flex items-center space-x-2">
+                    <Switch
+                      id="tipoDeCambio"
+                      checked={visibleLines.tipoDeCambio}
+                      onCheckedChange={() => toggleLine('tipoDeCambio')}
+                    />
+                    <Label htmlFor="tipoDeCambio" className="text-sm cursor-pointer">
+                      {t('analytics.tipoDeCambio')}
+                    </Label>
+                  </div>
                 )}
-                
+
                 <div className="flex items-center space-x-2">
                   <Switch
                     id="precioMercado"
@@ -554,9 +554,9 @@ export function Analytics() {
                 {(() => {
                   // Transform data for the chart
                   const historicalData = data?.data?.map(item => ({
-                    date: new Date(item.date).toLocaleDateString('es-MX', { 
-                      month: 'short', 
-                      day: 'numeric' 
+                    date: new Date(item.date).toLocaleDateString('es-MX', {
+                      month: 'short',
+                      day: 'numeric'
                     }),
                     fullDate: item.date,
                     // MXN values
@@ -583,7 +583,7 @@ export function Analytics() {
                     const startDate = new Date(data.startDate);
                     const validationStartDate = new Date(startDate);
                     validationStartDate.setDate(validationStartDate.getDate() - 7);
-                    
+
                     // Filter historical data for the validation period
                     validationData.push(...historicalData.filter(item => {
                       const itemDate = new Date(item.fullDate);
@@ -594,12 +594,12 @@ export function Analytics() {
                     })));
                   }
 
-                 
+
                   const forecastData = data?.forecast?.map((item) => {
                     return {
-                      date: new Date(item.date).toLocaleDateString('es-MX', { 
-                        month: 'short', 
-                        day: 'numeric' 
+                      date: new Date(item.date).toLocaleDateString('es-MX', {
+                        month: 'short',
+                        day: 'numeric'
                       }),
                       fullDate: item.date,
                       [t('analytics.scrap_mxn')]: item.predicted_value,  // ✅ Correct key for forecasted column
@@ -619,7 +619,7 @@ export function Analytics() {
                       type: 'forecast'
                     };
                   }) || [];
-                  
+
                   const combinedData = [...historicalData, ...forecastData].sort((a, b) => {
                     return new Date(a.fullDate).getTime() - new Date(b.fullDate).getTime();
                   });
@@ -627,38 +627,38 @@ export function Analytics() {
                     <ResponsiveContainer width="100%" height="100%">
                       <LineChart data={combinedData}>
                         <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis 
-                          dataKey="date" 
+                        <XAxis
+                          dataKey="date"
                           tick={{ fontSize: 12 }}
                           angle={-45}
                           textAnchor="end"
                           height={60}
                         />
-                        <YAxis 
+                        <YAxis
                           tick={{ fontSize: 12 }}
                           tickFormatter={(value) => `$${value.toLocaleString()}`}
-                          domain={['dataMin - 100', 'dataMax + 100']}
+                          domain={[(dataMin: number) => dataMin * 0.95, (dataMax: number) => dataMax * 1.05]}
                           allowDataOverflow
                         />
                         {/* Secondary Y-Axis for exchange rate */}
-                        <YAxis 
+                        <YAxis
                           yAxisId="right"
                           orientation="right"
                           tick={{ fontSize: 12 }}
                           tickFormatter={(value) => `${value.toFixed(2)}`}
-                          domain={['dataMin - 1', 'dataMax + 1']}
+                          domain={[(dataMin: number) => dataMin * 0.99, (dataMax: number) => dataMax * 1.01]}
                           allowDataOverflow
                         />
-                        <Tooltip 
+                        <Tooltip
                           formatter={(value: number, name: string) => [
-                            `$${value.toLocaleString()}`, 
+                            `$${value.toLocaleString()}`,
                             name
                           ]}
                           labelFormatter={(label, payload) => {
                             if (payload && payload[0]) {
                               const dataType = payload[0].payload.type;
-                              const typeLabel = dataType === 'forecast' ? ' (Forecast)' : 
-                                               dataType === 'validation' ? ' (Validation)' : '';
+                              const typeLabel = dataType === 'forecast' ? ' (Forecast)' :
+                                dataType === 'validation' ? ' (Validation)' : '';
                               return `Date: ${payload[0].payload.fullDate}${typeLabel}`;
                             }
                             return label
@@ -668,53 +668,53 @@ export function Analytics() {
                         {showMXN ? (
                           <>
                             {visibleLines.scrap_mxn && (
-                              <Line 
+                              <Line
                                 yAxisId="right"
-                                type="monotone" 
-                                dataKey={t('analytics.scrap_mxn')} 
-                                stroke="#3b82f6"  
+                                type="monotone"
+                                dataKey={t('analytics.scrap_mxn')}
+                                stroke="#3b82f6"
                                 strokeWidth={2}
                                 dot={false}
                               />
                             )}
                             {visibleLines.scrap_mxn && (
-                                <Line 
-                                  yAxisId="right"
-                                  type="monotone" 
-                                  dataKey={`${t('analytics.scrap_mxn')} (Forecast)`} 
-                                  stroke="#ef4444"  // Red color for forecast
-                                  strokeWidth={3}
-                                  strokeDasharray="5 5"  // Dashed line
-                                  dot={{ fill: '#ef4444', strokeWidth: 2, r: 4 }}
-                                  connectNulls={false}  // Don't connect to null values
-                                />
-                              )}
-                            {visibleLines.rebar_mxn && (
-                              <Line 
+                              <Line
                                 yAxisId="right"
-                                type="monotone" 
-                                dataKey={t('analytics.rebar_mxn')} 
-                                stroke="#06b6d4" 
+                                type="monotone"
+                                dataKey={`${t('analytics.scrap_mxn')} (Forecast)`}
+                                stroke="#ef4444"  // Red color for forecast
+                                strokeWidth={3}
+                                strokeDasharray="5 5"  // Dashed line
+                                dot={{ fill: '#ef4444', strokeWidth: 2, r: 4 }}
+                                connectNulls={false}  // Don't connect to null values
+                              />
+                            )}
+                            {visibleLines.rebar_mxn && (
+                              <Line
+                                yAxisId="right"
+                                type="monotone"
+                                dataKey={t('analytics.rebar_mxn')}
+                                stroke="#06b6d4"
                                 strokeWidth={2}
                                 dot={false}
                               />
                             )}
                             {visibleLines.gas_mxn && (
-                              <Line 
+                              <Line
                                 yAxisId="right"
-                                type="monotone" 
-                                dataKey={t('analytics.gas_mxn')} 
-                                stroke="#6aa84f" 
+                                type="monotone"
+                                dataKey={t('analytics.gas_mxn')}
+                                stroke="#6aa84f"
                                 strokeWidth={2}
                                 dot={false}
                               />
                             )}
                             {visibleLines.hrcc1_mxn && (
-                              <Line 
+                              <Line
                                 yAxisId="right"
-                                type="monotone" 
-                                dataKey={t('analytics.hrcc1_mxn')} 
-                                stroke="#741b47" 
+                                type="monotone"
+                                dataKey={t('analytics.hrcc1_mxn')}
+                                stroke="#741b47"
                                 strokeWidth={2}
                                 dot={false}
                               />
@@ -723,38 +723,38 @@ export function Analytics() {
                         ) : (
                           <>
                             {visibleLines.scrap && (
-                              <Line 
+                              <Line
                                 yAxisId="left"
-                                type="monotone" 
-                                dataKey={t('analytics.scrap')} 
-                                stroke="#8b5cf6" 
+                                type="monotone"
+                                dataKey={t('analytics.scrap')}
+                                stroke="#8b5cf6"
                                 strokeWidth={2}
                                 dot={false}
                               />
                             )}
                             {visibleLines.rebar && (
-                              <Line 
-                                type="monotone" 
-                                dataKey={t('analytics.rebar')} 
-                                stroke="#06b6d4" 
+                              <Line
+                                type="monotone"
+                                dataKey={t('analytics.rebar')}
+                                stroke="#06b6d4"
                                 strokeWidth={2}
                                 dot={false}
                               />
                             )}
                             {visibleLines.gas && (
-                              <Line 
-                                type="monotone" 
-                                dataKey={t('analytics.gas')} 
-                                stroke="#6aa84f" 
+                              <Line
+                                type="monotone"
+                                dataKey={t('analytics.gas')}
+                                stroke="#6aa84f"
                                 strokeWidth={2}
                                 dot={false}
                               />
                             )}
                             {visibleLines.hrcc1 && (
-                              <Line 
-                                type="monotone" 
-                                dataKey={t('analytics.hrcc1')} 
-                                stroke="#741b47" 
+                              <Line
+                                type="monotone"
+                                dataKey={t('analytics.hrcc1')}
+                                stroke="#741b47"
                                 strokeWidth={2}
                                 dot={false}
                               />
@@ -763,26 +763,26 @@ export function Analytics() {
                         )}
                         {/* Always show these regardless of currency */}
                         {visibleLines.tipoDeCambio && (
-                          <Line 
+                          <Line
                             yAxisId="right"
-                            type="monotone" 
-                            dataKey={t('analytics.tipoDeCambio')} 
-                            stroke="#10b981"  
+                            type="monotone"
+                            dataKey={t('analytics.tipoDeCambio')}
+                            stroke="#10b981"
                             strokeWidth={2}
                             dot={false}
                           />
                         )}
                         {visibleLines.precioMercado && (
-                          <Line 
+                          <Line
                             yAxisId="right"
-                            type="monotone" 
-                            dataKey={t('analytics.precioMercado')} 
-                            stroke="#f59e0b" 
+                            type="monotone"
+                            dataKey={t('analytics.precioMercado')}
+                            stroke="#f59e0b"
                             strokeWidth={2}
                             dot={false}
                           />
                         )}
-                        
+
                       </LineChart>
                     </ResponsiveContainer>
                   );
@@ -793,393 +793,377 @@ export function Analytics() {
         </Card>
       </div>
 
-      
 
-      {/* Gas, scrap,  Charts */}
+
+      {/* Normalized Charts */}
       {userRole === 'admin' && (
-      <div className="grid grid-cols-1 lg:grid-cols-1 gap-12">
-        <Card>
-          <CardHeader>
-            <CardTitle>{t('analytics.priceTrendsAnalysis')}</CardTitle>
-            <CardDescription>{t('analytics.priceMovements', { startDate, endDate })}</CardDescription>
-          </CardHeader>
-          <CardContent>
-            {secondaryLoading ? (
-              <div className="h-80 flex items-center justify-center">
-                <div className="flex items-center space-x-2">
-                  <RefreshCw className="h-4 w-4 animate-spin" />
-                  <span>{t('common.loading')}</span>
+        <div className="grid grid-cols-1 lg:grid-cols-1 gap-12">
+          <Card>
+            <CardHeader>
+              <CardTitle>{t('analytics.priceTrendsAnalysisNormalized')}</CardTitle>
+              <CardDescription>{t('analytics.priceMovements', { startDate, endDate })}</CardDescription>
+            </CardHeader>
+            <CardContent>
+              {secondaryLoading ? (
+                <div className="h-80 flex items-center justify-center">
+                  <div className="flex items-center space-x-2">
+                    <RefreshCw className="h-4 w-4 animate-spin" />
+                    <span>{t('common.loading')}</span>
+                  </div>
                 </div>
-              </div>
-            ) : secondaryError ? (
-              <div className="h-80 flex items-center justify-center text-red-500">
-                <div className="text-center">
-                  <p>{t('errors.serverError')}</p>
-                  <Button variant="outline" onClick={() => refetchSecondary()} className="mt-2">
-                    {t('common.refresh')}
-                  </Button>
+              ) : secondaryError ? (
+                <div className="h-80 flex items-center justify-center text-red-500">
+                  <div className="text-center">
+                    <p>{t('errors.serverError')}</p>
+                    <Button variant="outline" onClick={() => refetchSecondary()} className="mt-2">
+                      {t('common.refresh')}
+                    </Button>
+                  </div>
                 </div>
-              </div>
-            ) : (
-              <div className="h-80">
-                {(() => {
-                  // Transform data for the chart
-                  const historicalData = secondaryData?.data?.map(item => ({
-                    date: new Date(item.date).toLocaleDateString('es-MX', { 
-                      month: 'short', 
-                      day: 'numeric' 
-                    }),
-                    fullDate: item.date,
-                    // MXN values
-                    [t('analytics.scrap_mxn')]: item.scrap_mxn,
-                    [t('analytics.rebar_mxn')]: item.rebar_mxn,
-                    [t('analytics.gas_mxn')]: item.gas_mxn,
-                    [t('analytics.hrcc1_mxn')]: item.hrcc1_mxn,
-                    // USD values
-                    [t('analytics.scrap')]: item.scrap,
-                    [t('analytics.rebar')]: item.rebar,
-                    [t('analytics.gas')]: item.gas,
-                    [t('analytics.hrcc1')]: item.hrcc1,
-                    // Other values (always shown)
-                    [t('analytics.precioMercado')]: item.precio_mercado,
-                    [t('analytics.varillaDistribuidor')]: item.varilla_distribuidor,
-                    [t('analytics.varillaCredito')]: item.varilla_credito,
-                    [t('analytics.tipoDeCambio')]: item.tipoDeCambio,
-                    type: 'historical'
-                  })) || [] 
-
-                  // Calculate validation period (7 days before selected start date)
-                  const validationData = [];
-                  if (historicalData.length > 0 && data?.startDate) {
-                    const startDate = new Date(data.startDate);
-                    const validationStartDate = new Date(startDate);
-                    validationStartDate.setDate(validationStartDate.getDate() - 7);
-                    
-                    // // Filter historical data for the validation period
-                    // validationData.push(...historicalData.filter(item => {
-                    //   const itemDate = new Date(item.fullDate);
-                    //   return itemDate >= validationStartDate && itemDate < startDate;
-                    // }).map(item => ({
-                    //   ...item,
-                    //   type: 'validation'
-                    // })));
-                  }
-
-                 
-                  const forecastData = data?.forecast?.map((item) => {
-                    return {
-                      date: new Date(item.date).toLocaleDateString('es-MX', { 
-                        month: 'short', 
-                        day: 'numeric' 
+              ) : (
+                <div className="h-80">
+                  {(() => {
+                    // Transform data for the chart
+                    const historicalData = secondaryData?.data?.map(item => ({
+                      date: new Date(item.date).toLocaleDateString('es-MX', {
+                        month: 'short',
+                        day: 'numeric'
                       }),
                       fullDate: item.date,
-                      [t('analytics.varillaDistribuidor')]: null,
-                      [t('analytics.varillaCredito')]: null,
-                      [t('analytics.precioMercado')]: null,
-                      //[`${t('analytics.precioMercado')} (Validation)`]: item.predicted_value,
-                      type: 'forecast'
-                    };
-                  }) || [];
-                  
-                  const combinedData = [...historicalData, ...forecastData];
-                  //onst combinedData = historicalData
-                  return (
-                    <ResponsiveContainer width="100%" height="100%">
-                      <LineChart data={combinedData}>
-                        <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis 
-                          dataKey="date" 
-                          tick={{ fontSize: 12 }}
-                          angle={-45}
-                          textAnchor="end"
-                          height={60}
-                        />
-                        <YAxis 
-                          tick={{ fontSize: 12 }}
-                          tickFormatter={(value) => `$${value.toLocaleString()}`}
-                          domain={['dataMin - .9', 'dataMax + .9']}
-                          allowDataOverflow
-                        />
-                        <Tooltip 
-                          formatter={(value: number, name: string) => [
-                            `$${value.toLocaleString()}`, 
-                            name
-                          ]}
-                          labelFormatter={(label, payload) => {
-                            if (payload && payload[0]) {
-                              const dataType = payload[0].payload.type;
-                              const typeLabel = dataType === 'forecast' ? ' (Forecast)' : 
-                                               dataType === 'validation' ? ' (Validation)' : '';
-                              return `Date: ${payload[0].payload.fullDate}${typeLabel}`;
-                            }
-                            return label
-                          }}
-                        />
-                        <Legend />
-                        {showMXN ? (
-                          <>
-                            {visibleLines.scrap_mxn && (
-                              <Line 
-                                type="monotone" 
-                                dataKey={t('analytics.scrap_mxn')} 
-                                stroke="#3b82f6"  
-                                strokeWidth={2}
-                                dot={false}
-                              />
-                            )}
-                            {visibleLines.rebar_mxn && (
-                              <Line 
-                                type="monotone" 
-                                dataKey={t('analytics.rebar_mxn')} 
-                                stroke="#06b6d4" 
-                                strokeWidth={2}
-                                dot={false}
-                              />
-                            )}
-                            {visibleLines.gas_mxn && (
-                              <Line 
-                                type="monotone" 
-                                dataKey={t('analytics.gas_mxn')} 
-                                stroke="#6aa84f" 
-                                strokeWidth={2}
-                                dot={false}
-                              />
-                            )}
-                            {visibleLines.hrcc1_mxn && (
-                              <Line 
-                                type="monotone" 
-                                dataKey={t('analytics.hrcc1_mxn')} 
-                                stroke="#741b47" 
-                                strokeWidth={2}
-                                dot={false}
-                              />
-                            )}
-                          </>
-                        ) : (
-                          <>
-                            {visibleLines.scrap && (
-                              <Line 
-                                type="monotone" 
-                                dataKey={t('analytics.scrap')} 
-                                stroke="#8b5cf6" 
-                                strokeWidth={2}
-                                dot={false}
-                              />
-                            )}
-                            {visibleLines.rebar && (
-                              <Line 
-                                type="monotone" 
-                                dataKey={t('analytics.rebar')} 
-                                stroke="#06b6d4" 
-                                strokeWidth={2}
-                                dot={false}
-                              />
-                            )}
-                            {visibleLines.gas && (
-                              <Line 
-                                type="monotone" 
-                                dataKey={t('analytics.gas')} 
-                                stroke="#6aa84f" 
-                                strokeWidth={2}
-                                dot={false}
-                              />
-                            )}
-                            {visibleLines.hrcc1 && (
-                              <Line 
-                                type="monotone" 
-                                dataKey={t('analytics.hrcc1')} 
-                                stroke="#741b47" 
-                                strokeWidth={2}
-                                dot={false}
-                              />
-                            )}
-                          </>
-                        )}
-                        {/* Always show these regardless of currency */}
-                        {visibleLines.tipoDeCambio && (
-                          <Line 
-                            type="monotone" 
-                            dataKey={t('analytics.tipoDeCambio')} 
-                            stroke="#10b981"  
-                            strokeWidth={2}
-                            dot={false}
-                          />
-                        )}
-                        {visibleLines.precioMercado && (
-                          <Line 
-                            type="monotone" 
-                            dataKey={t('analytics.precioMercado')} 
-                            stroke="#f59e0b" 
-                            strokeWidth={2}
-                            dot={false}
-                          />
-                        )}
-                      </LineChart>
-                    </ResponsiveContainer>
-                  );
-                })()}
-              </div>
-            )}
-          </CardContent>
-        </Card>
+                      // MXN values
+                      [t('analytics.scrap_mxn')]: item.scrap_mxn,
+                      [t('analytics.rebar_mxn')]: item.rebar_mxn,
+                      [t('analytics.gas_mxn')]: item.gas_mxn,
+                      [t('analytics.hrcc1_mxn')]: item.hrcc1_mxn,
+                      // USD values
+                      [t('analytics.scrap')]: item.scrap,
+                      [t('analytics.rebar')]: item.rebar,
+                      [t('analytics.gas')]: item.gas,
+                      [t('analytics.hrcc1')]: item.hrcc1,
+                      // Other values (always shown)
+                      [t('analytics.precioMercado')]: item.precio_mercado,
+                      [t('analytics.varillaDistribuidor')]: item.varilla_distribuidor,
+                      [t('analytics.varillaCredito')]: item.varilla_credito,
+                      [t('analytics.tipoDeCambio')]: item.tipoDeCambio,
+                      type: 'historical'
+                    })) || []
 
-       
-      </div>
+
+                    const forecastData = data?.forecast?.map((item) => {
+                      return {
+                        date: new Date(item.date).toLocaleDateString('es-MX', {
+                          month: 'short',
+                          day: 'numeric'
+                        }),
+                        fullDate: item.date,
+                        [t('analytics.varillaDistribuidor')]: null,
+                        [t('analytics.varillaCredito')]: null,
+                        [t('analytics.precioMercado')]: null,
+                        //[`${t('analytics.precioMercado')} (Validation)`]: item.predicted_value,
+                        type: 'forecast'
+                      };
+                    }) || [];
+
+                    const combinedData = [...historicalData, ...forecastData]
+                      .sort((a, b) => new Date(a.fullDate).getTime() - new Date(b.fullDate).getTime());
+                    //const combinedData = historicalData
+                    return (
+                      <ResponsiveContainer width="100%" height="100%">
+                        <LineChart data={combinedData}>
+                          <CartesianGrid strokeDasharray="3 3" />
+                          <XAxis
+                            dataKey="date"
+                            tick={{ fontSize: 12 }}
+                            angle={-45}
+                            textAnchor="end"
+                            height={60}
+                          />
+                          <YAxis
+                            tick={{ fontSize: 12 }}
+                            tickFormatter={(value) => `$${value.toLocaleString()}`}
+                            domain={[(dataMin: number) => dataMin * 0.99, (dataMax: number) => dataMax * 1.01]}
+                            allowDataOverflow
+                          />
+                          <Tooltip
+                            formatter={(value: number, name: string) => [
+                              `$${value.toLocaleString()}`,
+                              name
+                            ]}
+                            labelFormatter={(label, payload) => {
+                              if (payload && payload[0]) {
+                                const dataType = payload[0].payload.type;
+                                const typeLabel = dataType === 'forecast' ? ' (Forecast)' :
+                                  dataType === 'validation' ? ' (Validation)' : '';
+                                return `Date: ${payload[0].payload.fullDate}${typeLabel}`;
+                              }
+                              return label
+                            }}
+                          />
+                          <Legend />
+                          {showMXN ? (
+                            <>
+                              {visibleLines.scrap_mxn && (
+                                <Line
+                                  type="monotone"
+                                  dataKey={t('analytics.scrap_mxn')}
+                                  stroke="#3b82f6"
+                                  strokeWidth={2}
+                                  dot={false}
+                                />
+                              )}
+                              {visibleLines.rebar_mxn && (
+                                <Line
+                                  type="monotone"
+                                  dataKey={t('analytics.rebar_mxn')}
+                                  stroke="#06b6d4"
+                                  strokeWidth={2}
+                                  dot={false}
+                                />
+                              )}
+                              {visibleLines.gas_mxn && (
+                                <Line
+                                  type="monotone"
+                                  dataKey={t('analytics.gas_mxn')}
+                                  stroke="#6aa84f"
+                                  strokeWidth={2}
+                                  dot={false}
+                                />
+                              )}
+                              {visibleLines.hrcc1_mxn && (
+                                <Line
+                                  type="monotone"
+                                  dataKey={t('analytics.hrcc1_mxn')}
+                                  stroke="#741b47"
+                                  strokeWidth={2}
+                                  dot={false}
+                                />
+                              )}
+                            </>
+                          ) : (
+                            <>
+                              {visibleLines.scrap && (
+                                <Line
+                                  type="monotone"
+                                  dataKey={t('analytics.scrap')}
+                                  stroke="#8b5cf6"
+                                  strokeWidth={2}
+                                  dot={false}
+                                />
+                              )}
+                              {visibleLines.rebar && (
+                                <Line
+                                  type="monotone"
+                                  dataKey={t('analytics.rebar')}
+                                  stroke="#06b6d4"
+                                  strokeWidth={2}
+                                  dot={false}
+                                />
+                              )}
+                              {visibleLines.gas && (
+                                <Line
+                                  type="monotone"
+                                  dataKey={t('analytics.gas')}
+                                  stroke="#6aa84f"
+                                  strokeWidth={2}
+                                  dot={false}
+                                />
+                              )}
+                              {visibleLines.hrcc1 && (
+                                <Line
+                                  type="monotone"
+                                  dataKey={t('analytics.hrcc1')}
+                                  stroke="#741b47"
+                                  strokeWidth={2}
+                                  dot={false}
+                                />
+                              )}
+                            </>
+                          )}
+                          {/* Always show these regardless of currency */}
+                          {visibleLines.tipoDeCambio && (
+                            <Line
+                              type="monotone"
+                              dataKey={t('analytics.tipoDeCambio')}
+                              stroke="#10b981"
+                              strokeWidth={2}
+                              dot={false}
+                            />
+                          )}
+                          {visibleLines.precioMercado && (
+                            <Line
+                              type="monotone"
+                              dataKey={t('analytics.precioMercado')}
+                              stroke="#f59e0b"
+                              strokeWidth={2}
+                              dot={false}
+                            />
+                          )}
+                        </LineChart>
+                      </ResponsiveContainer>
+                    );
+                  })()}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+
+        </div>
       )}
 
       {/* Correlation Calculator */}
       {userRole === 'admin' && (
-      <Card>
-        <CardHeader>
-          <CardTitle>{t('analytics.correlationAnalysis')}</CardTitle>
-          <CardDescription>{t('analytics.correlationDescription')}</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            <div className="flex flex-wrap gap-4 items-end">
-              <div className="flex flex-col space-y-2">
-                <Label htmlFor="field1">{t('analytics.firstField')}</Label>
-                <select
-                  id="field1"
-                  value={correlationField1}
-                  onChange={(e) => setCorrelationField1(e.target.value)}
-                  className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+        <Card>
+          <CardHeader>
+            <CardTitle>{t('analytics.correlationAnalysis')}</CardTitle>
+            <CardDescription>{t('analytics.correlationDescription')}</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <div className="flex flex-wrap gap-4 items-end">
+                <div className="flex flex-col space-y-2">
+                  <Label htmlFor="field1">{t('analytics.firstField')}</Label>
+                  <select
+                    id="field1"
+                    value={correlationField1}
+                    onChange={(e) => setCorrelationField1(e.target.value)}
+                    className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    {fieldOptions.map(option => (
+                      <option key={option.value} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className="flex flex-col space-y-2">
+                  <Label htmlFor="field2">{t('analytics.secondField')}</Label>
+                  <select
+                    id="field2"
+                    value={correlationField2}
+                    onChange={(e) => setCorrelationField2(e.target.value)}
+                    className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    {fieldOptions.map(option => (
+                      <option key={option.value} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <Button
+                  onClick={handleCorrelationCalculation}
+                  disabled={isCalculatingCorrelation || !data?.data}
                 >
-                  {fieldOptions.map(option => (
-                    <option key={option.value} value={option.value}>
-                      {option.label}
-                    </option>
-                  ))}
-                </select>
+                  <Calculator className={`h-4 w-4 mr-2 ${isCalculatingCorrelation ? 'animate-spin' : ''}`} />
+                  {t('analytics.calculateCorrelation')}
+                </Button>
               </div>
-              <div className="flex flex-col space-y-2">
-                <Label htmlFor="field2">{t('analytics.secondField')}</Label>
-                <select
-                  id="field2"
-                  value={correlationField2}
-                  onChange={(e) => setCorrelationField2(e.target.value)}
-                  className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                  {fieldOptions.map(option => (
-                    <option key={option.value} value={option.value}>
-                      {option.label}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <Button 
-                onClick={handleCorrelationCalculation}
-                disabled={isCalculatingCorrelation || !data?.data}
-              >
-                <Calculator className={`h-4 w-4 mr-2 ${isCalculatingCorrelation ? 'animate-spin' : ''}`} />
-                {t('analytics.calculateCorrelation')}
-              </Button>
+
+              {correlationResult && (
+                <div className="mt-4 p-4 bg-blue-50 rounded-lg">
+                  <h4 className="font-semibold text-blue-900 mb-2">{t('analytics.correlationResults')}</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <p className="text-sm text-gray-600">{t('analytics.correlationCoefficient')}:</p>
+                      <p className="text-2xl font-bold text-blue-600">
+                        {correlationResult.correlation_coefficient.toFixed(6)}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-600">{t('analytics.interpretation')}:</p>
+                      <p className="text-sm font-medium text-blue-800">
+                        {correlationResult.interpretation}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-600">{t('analytics.pValue')}:</p>
+                      <p className="text-sm font-medium">
+                        {correlationResult.p_value.toFixed(6)}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-600">{t('analytics.sampleSize')}:</p>
+                      <p className="text-sm font-medium">
+                        {correlationResult.sample_size} {t('analytics.dataPoints')}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="mt-3">
+                    <p className="text-sm text-gray-600 mb-2">{t('analytics.pearsonFormula')}:</p>
+                    <InlineMath math="r = \frac{\sum_{i=1}^{n}(x_i - \bar{x})(y_i - \bar{y})}{\sqrt{\sum_{i=1}^{n}(x_i - \bar{x})^2 \sum_{i=1}^{n}(y_i - \bar{y})^2}}" />
+                  </div>
+                </div>
+              )}
             </div>
-            
-            {correlationResult && (
-              <div className="mt-4 p-4 bg-blue-50 rounded-lg">
-                <h4 className="font-semibold text-blue-900 mb-2">{t('analytics.correlationResults')}</h4>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <p className="text-sm text-gray-600">{t('analytics.correlationCoefficient')}:</p>
-                    <p className="text-2xl font-bold text-blue-600">
-                      {correlationResult.correlation_coefficient.toFixed(6)}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-600">{t('analytics.interpretation')}:</p>
-                    <p className="text-sm font-medium text-blue-800">
-                      {correlationResult.interpretation}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-600">{t('analytics.pValue')}:</p>
-                    <p className="text-sm font-medium">
-                      {correlationResult.p_value.toFixed(6)}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-600">{t('analytics.sampleSize')}:</p>
-                    <p className="text-sm font-medium">
-                      {correlationResult.sample_size} {t('analytics.dataPoints')}
-                    </p>
-                  </div>
-                </div>
-                <div className="mt-3">
-                  <p className="text-sm text-gray-600 mb-2">{t('analytics.pearsonFormula')}:</p>
-                  <InlineMath math="r = \frac{\sum_{i=1}^{n}(x_i - \bar{x})(y_i - \bar{y})}{\sqrt{\sum_{i=1}^{n}(x_i - \bar{x})^2 \sum_{i=1}^{n}(y_i - \bar{y})^2}}" />
-                </div>
-              </div>
-            )}
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
       )}
 
-      
+
 
       {/* Statistical Insights */}
       {userRole === 'admin' && (
-      <Card>
-        <CardHeader>
-          <CardTitle>Statistical Insights</CardTitle>
-          <CardDescription>Key metrics and correlations</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="text-center">
-              <div className="text-2xl font-bold text-blue-600">0.43337</div>
-              <p className="text-sm text-gray-600">Correlation Coefficient</p>
-              <p className="text-xs text-gray-500">Gas vs. Rebar </p>
-              <div className="mt-2 text-xs text-gray-400">
-               {/* Pearson correlation formula */}
-                <BlockMath math={
-                  String.raw`r = \frac{\text{Cov}(X,Y)}{\sigma_X \cdot \sigma_Y}`
-                } />
+        <Card>
+          <CardHeader>
+            <CardTitle>Statistical Insights</CardTitle>
+            <CardDescription>Key metrics and correlations</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="text-center">
+                <div className="text-2xl font-bold text-blue-600">0.43337</div>
+                <p className="text-sm text-gray-600">Correlation Coefficient</p>
+                <p className="text-xs text-gray-500">Gas vs. Rebar </p>
+                <div className="mt-2 text-xs text-gray-400">
+                  {/* Pearson correlation formula */}
+                  <BlockMath math={
+                    String.raw`r = \frac{\text{Cov}(X,Y)}{\sigma_X \cdot \sigma_Y}`
+                  } />
+                </div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-green-600">12.3%</div>
+                <p className="text-sm text-gray-600">Annual Volatility</p>
+                <p className="text-xs text-gray-500">Average across materials</p>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-purple-600">0.92</div>
+                <p className="text-sm text-gray-600">R² Score</p>
+                <p className="text-xs text-gray-500">Forecast accuracy</p>
               </div>
             </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-green-600">12.3%</div>
-              <p className="text-sm text-gray-600">Annual Volatility</p>
-              <p className="text-xs text-gray-500">Average across materials</p>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-purple-600">0.92</div>
-              <p className="text-sm text-gray-600">R² Score</p>
-              <p className="text-xs text-gray-500">Forecast accuracy</p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
       )}
 
       {/* Advanced Analytics */}
       {userRole === 'admin' && (
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>Seasonal Patterns</CardTitle>
-            <CardDescription>Recurring price patterns</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="h-64 flex items-center justify-center text-gray-500">
-              Chart placeholder - Seasonal decomposition
-            </div>
-          </CardContent>
-        </Card>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Seasonal Patterns</CardTitle>
+              <CardDescription>Recurring price patterns</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="h-64 flex items-center justify-center text-gray-500">
+                Chart placeholder - Seasonal decomposition
+              </div>
+            </CardContent>
+          </Card>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Material Clusters</CardTitle>
-            <CardDescription>Grouping by price behavior</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="h-64 flex items-center justify-center text-gray-500">
-              Chart placeholder - Clustering analysis
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+          <Card>
+            <CardHeader>
+              <CardTitle>Material Clusters</CardTitle>
+              <CardDescription>Grouping by price behavior</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="h-64 flex items-center justify-center text-gray-500">
+                Chart placeholder - Clustering analysis
+              </div>
+            </CardContent>
+          </Card>
+        </div>
       )}
 
       {/* Export Options */}
@@ -1190,7 +1174,7 @@ export function Analytics() {
         </CardHeader>
         <CardContent>
           <div className="flex flex-wrap gap-2">
-            {/* <Button variant="outline">{t('analytics.exportPdf')}</Button> */}
+            {/* git <Button variant="outline">{t('analytics.exportPdf')}</Button> */}
             <Button variant="outline">{t('analytics.exportExcel')}</Button>
             {/* <Button variant="outline">{t('analytics.shareDashboard')}</Button>
             <Button variant="outline">{t('analytics.scheduleReports')}</Button> */}

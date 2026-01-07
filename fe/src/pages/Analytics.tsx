@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useAuth } from '@/hooks/useAuth'
 import UserStatsBar from '../components/shared/UserStatsBar';
 import { useTranslation } from 'react-i18next'
@@ -243,6 +243,34 @@ export function Analytics() {
   })
 
 
+  const correlationMatrix = useMemo(() => { 
+    const rows = data?.data ?? []
+    if (rows.length < 2) return null
+  
+    const exclude = new Set(['id', 'date', 'Date', 'year'])
+    const keys = Object.keys(rows[0] ?? {}).filter((k) => {
+      if (exclude.has(k)) return false
+      return typeof (rows[0] as any)[k] === 'number'
+    })
+  
+    const pearson = (keyA: string, keyB: string) => {
+      let n = 0, sumX = 0, sumY = 0, sumXX = 0, sumYY = 0, sumXY = 0
+      for (const r of rows) {
+        const x = Number((r as any)[keyA])
+        const y = Number((r as any)[keyB])
+        if (!Number.isFinite(x) || !Number.isFinite(y)) continue
+        n++
+        sumX += x; sumY += y
+        sumXX += x * x; sumYY += y * y
+        sumXY += x * y
+      }
+      const denom = Math.sqrt((n * sumXX - sumX * sumX) * (n * sumYY - sumY * sumY))
+      return denom ? (n * sumXY - sumX * sumY) / denom : NaN
+    }
+  
+    const matrix = keys.map((k1) => keys.map((k2) => pearson(k1, k2)))
+    return { keys, matrix }
+  }, [data?.data])
 
   const handleCorrelationCalculation = async () => {
     if (!data?.data) return
@@ -1036,7 +1064,40 @@ export function Analytics() {
             <CardDescription>{t('analytics.correlationDescription')}</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
+          {correlationMatrix && ( // add right AFTER the existing </CardContent> of CorrelationAnalysis (after line ~1116)
+          <CardContent>
+            <div className="text-sm font-semibold mb-2">Correlation matrix (Pearson)</div>
+            <div className="overflow-auto">
+              <table className="min-w-max border-collapse text-xs">
+                <thead>
+                  <tr>
+                    <th className="sticky left-0 bg-white border px-2 py-1 text-left"> </th>
+                    {correlationMatrix.keys.map((k) => (
+                      <th key={k} className="border px-2 py-1 text-left whitespace-nowrap">{k}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {correlationMatrix.keys.map((rowKey, i) => (
+                    <tr key={rowKey}>
+                      <td className="sticky left-0 bg-white border px-2 py-1 font-medium whitespace-nowrap">{rowKey}</td>
+                      {correlationMatrix.matrix[i].map((v, j) => (
+                        <td
+                          key={`${rowKey}-${j}`}
+                          className="border px-2 py-1 text-center"
+                          style={{ backgroundColor: `rgba(59,130,246,${Number.isFinite(v) ? Math.min(Math.abs(v), 1) * 0.35 : 0})` }}
+                        >
+                          {Number.isFinite(v) ? v.toFixed(2) : '—'}
+                        </td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </CardContent>
+        )}
+            {/* <div className="space-y-4">
               <div className="flex flex-wrap gap-4 items-end">
                 <div className="flex flex-col space-y-2">
                   <Label htmlFor="field1">{t('analytics.firstField')}</Label>
@@ -1112,7 +1173,7 @@ export function Analytics() {
                   </div>
                 </div>
               )}
-            </div>
+            </div> */}
           </CardContent>
         </Card>
       )}
@@ -1120,7 +1181,7 @@ export function Analytics() {
 
 
       {/* Statistical Insights */}
-      {userRole === 'admin' && (
+      {userRole === 'adminHidden' && (
         <Card>
           <CardHeader>
             <CardTitle>Statistical Insights</CardTitle>
@@ -1155,7 +1216,7 @@ export function Analytics() {
       )}
 
       {/* Advanced Analytics */}
-      {userRole === 'admin' && (
+      {userRole === 'adminHidden' && (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <Card>
             <CardHeader>

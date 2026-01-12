@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { Calculator, MapPin, Package, TrendingUp, DollarSign } from 'lucide-react';
 import axios from 'axios';
 import { useQuery } from '@tanstack/react-query';
+import { ForecastChart, ApiResponse } from '@/components/charts/ForecastChart';
+import { VolumeTierAnalysis, getSuggestedVolume } from '@/components/quote/VolumeTierAnalysis';
 
 // Types
 interface ShippingResult {
@@ -40,6 +42,22 @@ const fetchMarketPrices = async () => {
   };
 };
 
+// API function to fetch forecast data
+const fetchForecastData = async (): Promise<ApiResponse> => {
+  const params = new URLSearchParams({
+    table_name: 'precios_materiales',
+    limit: '20',
+    forecast_periods: '18',
+    value_column: 'scrap_mxn',
+    transform: 'none',
+    model_type: 'lstm',
+    use_trained_model: 'true'
+  });
+
+  const response = await axios.get(`http://127.0.0.1:8000/api/v1/forecast/?${params}`);
+  return response.data;
+};
+
 
 
   
@@ -56,6 +74,7 @@ const ShippingCalculator = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [userRole, setUserRole] = useState<string>('user')
+  const [suggestedVolume, setSuggestedVolume] = useState<number | null>(null);
   const materials = ['Varilla'];
 
   // Fetch market prices using React Query
@@ -63,6 +82,14 @@ const ShippingCalculator = () => {
     queryKey: ['marketPrices'],
     queryFn: fetchMarketPrices,
     refetchInterval: 300000, // Refetch every 5 minutes
+    staleTime: 600000, // Consider data fresh for 10 minutes
+  });
+
+  // Fetch forecast data for Step 2.5
+  const { data: forecastData, isLoading: forecastLoading } = useQuery({
+    queryKey: ['forecast', 'quote'],
+    queryFn: fetchForecastData,
+    enabled: step === 2.5 || step === 2, // Fetch when entering step 2
     staleTime: 600000, // Consider data fresh for 10 minutes
   });
   
@@ -138,6 +165,25 @@ const ShippingCalculator = () => {
     }
   };
 
+  const handleConfirm = () => {
+    // Calculate suggested volume for next tier
+    const currentVolume = parseFloat(formData.peso);
+    const suggested = getSuggestedVolume(currentVolume);
+    setSuggestedVolume(suggested);
+    setStep(2.5);
+  };
+
+  const handleContinueWithOriginal = () => {
+    calculateShipping();
+  };
+
+  const handleAcceptSuggestion = () => {
+    if (suggestedVolume) {
+      setFormData({ ...formData, peso: suggestedVolume.toString() });
+    }
+    calculateShipping();
+  };
+
   const resetForm = () => {
     setFormData({ codigoPostal: '', peso: '', material: 'Varilla' });
     setResult(null);
@@ -168,7 +214,7 @@ const ShippingCalculator = () => {
 
         {/* Progress Steps */}
         <div className="flex items-center justify-center mb-8">
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-2">
             <div className={`flex items-center ${step >= 1 ? 'text-indigo-600' : 'text-gray-400'}`}>
               <div className={`w-10 h-10 rounded-full flex items-center justify-center border-2 ${
                 step >= 1 ? 'border-indigo-600 bg-indigo-600 text-white' : 'border-gray-300'
@@ -177,7 +223,7 @@ const ShippingCalculator = () => {
               </div>
               <span className="ml-2 font-medium hidden sm:inline">Datos</span>
             </div>
-            <div className={`w-16 h-1 ${step >= 2 ? 'bg-indigo-600' : 'bg-gray-300'}`}></div>
+            <div className={`w-12 h-1 ${step >= 2 ? 'bg-indigo-600' : 'bg-gray-300'}`}></div>
             <div className={`flex items-center ${step >= 2 ? 'text-indigo-600' : 'text-gray-400'}`}>
               <div className={`w-10 h-10 rounded-full flex items-center justify-center border-2 ${
                 step >= 2 ? 'border-indigo-600 bg-indigo-600 text-white' : 'border-gray-300'
@@ -186,12 +232,21 @@ const ShippingCalculator = () => {
               </div>
               <span className="ml-2 font-medium hidden sm:inline">Confirmar</span>
             </div>
-            <div className={`w-16 h-1 ${step >= 3 ? 'bg-indigo-600' : 'bg-gray-300'}`}></div>
+            <div className={`w-12 h-1 ${step >= 2.5 ? 'bg-indigo-600' : 'bg-gray-300'}`}></div>
+            <div className={`flex items-center ${step >= 2.5 ? 'text-indigo-600' : 'text-gray-400'}`}>
+              <div className={`w-10 h-10 rounded-full flex items-center justify-center border-2 ${
+                step >= 2.5 ? 'border-indigo-600 bg-indigo-600 text-white' : 'border-gray-300'
+              }`}>
+                3
+              </div>
+              <span className="ml-2 font-medium hidden sm:inline">Análisis</span>
+            </div>
+            <div className={`w-12 h-1 ${step >= 3 ? 'bg-indigo-600' : 'bg-gray-300'}`}></div>
             <div className={`flex items-center ${step >= 3 ? 'text-indigo-600' : 'text-gray-400'}`}>
               <div className={`w-10 h-10 rounded-full flex items-center justify-center border-2 ${
                 step >= 3 ? 'border-indigo-600 bg-indigo-600 text-white' : 'border-gray-300'
               }`}>
-                3
+                4
               </div>
               <span className="ml-2 font-medium hidden sm:inline">Resultado</span>
             </div>
@@ -310,13 +365,82 @@ const ShippingCalculator = () => {
                   Modificar
                 </button>
               <button
-                onClick={calculateShipping}
+                onClick={handleConfirm}
                 disabled={loading || marketDataLoading}
                 className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-200 disabled:opacity-50"
               >
-                {loading ? 'Calculando...' : marketDataLoading ? 'Cargando precios...' : 'Confirmar'}
+                {loading ? 'Calculando...' : marketDataLoading ? 'Cargando precios...' : 'Continuar'}
               </button>
               </div>
+            </div>
+          )}
+
+          {/* Step 2.5: Forecast & Tier Analysis */}
+          {step === 2.5 && (
+            <div className="space-y-6">
+              <div className="text-center mb-6">
+                <h2 className="text-2xl font-bold text-gray-800 mb-2">Análisis de Precios y Volumen</h2>
+                <p className="text-gray-600">Optimiza tu compra con nuestra recomendación</p>
+              </div>
+
+              {/* Forecast Chart */}
+              <div className="bg-white rounded-lg border border-gray-200 p-4">
+                <h3 className="text-lg font-semibold text-gray-800 mb-4">Proyección de Precios</h3>
+                {forecastLoading ? (
+                  <div className="h-64 flex items-center justify-center">
+                    <div className="text-gray-500">Cargando pronósticos...</div>
+                  </div>
+                ) : forecastData ? (
+                  <div className="h-64">
+                    <ForecastChart 
+                      data={forecastData}
+                      showMXN={true}
+                      visibleLines={{ precioMercado: true }}
+                      height={256}
+                      simplified={true}
+                    />
+                  </div>
+                ) : (
+                  <div className="h-64 flex items-center justify-center text-gray-500">
+                    No hay datos de pronóstico disponibles
+                  </div>
+                )}
+              </div>
+
+              {/* Volume Tier Analysis */}
+              {marketData && (
+                <VolumeTierAnalysis 
+                  currentVolume={parseFloat(formData.peso)}
+                  basePricePerTon={marketData.precioBase}
+                />
+              )}
+
+              {/* Action Buttons */}
+              <div className="flex flex-col sm:flex-row gap-4">
+                <button
+                  onClick={handleContinueWithOriginal}
+                  disabled={loading}
+                  className="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-4 px-6 rounded-lg transition-colors duration-200 disabled:opacity-50"
+                >
+                  Continuar con {formData.peso} Toneladas
+                </button>
+                {suggestedVolume && (
+                  <button
+                    onClick={handleAcceptSuggestion}
+                    disabled={loading}
+                    className="flex-1 bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-700 hover:to-blue-700 text-white font-semibold py-4 px-6 rounded-lg transition-colors duration-200 disabled:opacity-50 shadow-lg"
+                  >
+                    Actualizar a {suggestedVolume} Toneladas ⭐
+                  </button>
+                )}
+              </div>
+
+              <button
+                onClick={() => setStep(2)}
+                className="w-full text-gray-600 hover:text-gray-800 text-sm underline"
+              >
+                ← Volver a modificar datos
+              </button>
             </div>
           )}
 

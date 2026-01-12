@@ -228,7 +228,12 @@ class LSTMModel(BaseForecastModel):
         model_path = os.path.join(path, 'model.h5')
         if not os.path.exists(model_path):
             raise FileNotFoundError(f"Model file not found: {model_path}")
-        self.model = load_model(model_path)
+        
+        # Load model without compiling to avoid metric deserialization issues
+        self.model = load_model(model_path, compile=False)
+        
+        # Recompile the model with current Keras version
+        self.model.compile(optimizer='adam', loss='mse', metrics=['mae'])
         
         # Load scaler
         scaler_path = os.path.join(path, 'scaler.pkl')

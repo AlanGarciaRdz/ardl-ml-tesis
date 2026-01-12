@@ -13,6 +13,7 @@ import { useQuery } from '@tanstack/react-query'
 import 'katex/dist/katex.min.css'
 import { InlineMath, BlockMath } from 'react-katex'
 import { Switch } from '@/components/ui/switch'
+import { ForecastChart } from '@/components/charts/ForecastChart'
 
 // Types for the API response
 interface MaterialPrice {
@@ -36,7 +37,9 @@ interface ForecastPrice {
   id: number,
   date: string,
   period: number,
-  predicted_value: number,
+  predicted_value_bajista: number,
+  predicted_value_conservador: number,
+  predicted_value_alza: number,
   confidence_interval: {
     lower: number,
     upper: number
@@ -76,12 +79,12 @@ interface CorrelationResponse {
 }
 
 // API function to fetch data
-const fetchMaterialPrices = async (startDate?: string, endDate?: string, transform?: string, forecast_periods?: string, modelType?: string): Promise<ApiResponse> => {
+const fetchMaterialPrices = async (startDate?: string, endDate?: string, transform?: string, forecast_periods?: string, modelType?: string, value_column?: string): Promise<ApiResponse> => {
   const params = new URLSearchParams({
     table_name: 'precios_materiales',
     limit: '200',
     forecast_periods: forecast_periods || '18',
-    value_column: "scrap_mxn",
+    value_column: value_column || "scrap_mxn",
     transform: transform || 'none',
     model_type: modelType || 'lstm',
     use_trained_model: 'true'
@@ -227,7 +230,7 @@ export function Analytics() {
 
   const { data, isLoading, error, refetch } = useQuery({
     queryKey: ['materialPrices', startDate, endDate],
-    queryFn: () => fetchMaterialPrices(startDate, endDate, 'none', '18', selectedModel),
+    queryFn: () => fetchMaterialPrices(startDate, endDate, 'none', '18', selectedModel, 'scrap_mxn'),
     refetchInterval: false,
     staleTime: 0, // Force refetch when dates change
     gcTime: 0, // Don't cache results
@@ -580,242 +583,15 @@ export function Analytics() {
               </div>
             ) : (
               <div className="h-80">
-                {(() => {
-                  // Transform data for the chart
-                  const historicalData = data?.data?.map(item => ({
-                    date: new Date(item.date).toLocaleDateString('es-MX', {
-                      month: 'short',
-                      day: 'numeric'
-                    }),
-                    fullDate: item.date,
-                    // MXN values
-                    [t('analytics.scrap_mxn')]: item.scrap_mxn,
-                    [t('analytics.rebar_mxn')]: item.rebar_mxn,
-                    [t('analytics.gas_mxn')]: item.gas_mxn,
-                    [t('analytics.hrcc1_mxn')]: item.hrcc1_mxn,
-                    // USD values
-                    [t('analytics.scrap')]: item.scrap,
-                    [t('analytics.rebar')]: item.rebar,
-                    [t('analytics.gas')]: item.gas,
-                    [t('analytics.hrcc1')]: item.hrcc1,
-                    // Other values (always shown)
-                    [t('analytics.precioMercado')]: item.precio_mercado,
-                    [t('analytics.varillaDistribuidor')]: item.varilla_distribuidor,
-                    [t('analytics.varillaCredito')]: item.varilla_credito,
-                    [t('analytics.tipoDeCambio')]: item.tipo_de_cambio,
-                    type: 'historical'
-                  })) || []
-
-                  // Calculate validation period (7 days before selected start date)
-                  const validationData = [];
-                  if (historicalData.length > 0 && data?.startDate) {
-                    const startDate = new Date(data.startDate);
-                    const validationStartDate = new Date(startDate);
-                    validationStartDate.setDate(validationStartDate.getDate() - 7);
-
-                    // Filter historical data for the validation period
-                    validationData.push(...historicalData.filter(item => {
-                      const itemDate = new Date(item.fullDate);
-                      return itemDate >= validationStartDate && itemDate < startDate;
-                    }).map(item => ({
-                      ...item,
-                      type: 'validation'
-                    })));
-                  }
-
-
-                  const forecastData = data?.forecast?.map((item) => {
-                    return {
-                      date: new Date(item.date).toLocaleDateString('es-MX', {
-                        month: 'short',
-                        day: 'numeric'
-                      }),
-                      fullDate: item.date,
-                      [t('analytics.scrap_mxn')]: item.predicted_value,  // ✅ Correct key for forecasted column
-                      [t('analytics.rebar_mxn')]: null,  // Keep other columns null or undefined
-                      [t('analytics.gas_mxn')]: null,
-                      [t('analytics.hrcc1_mxn')]: null,
-                      // USD values
-                      [t('analytics.scrap')]: null,
-                      [t('analytics.rebar')]: null,
-                      [t('analytics.gas')]: null,
-                      [t('analytics.hrcc1')]: null,
-                      // Other values
-                      [t('analytics.precioMercado')]: null,
-                      [t('analytics.varillaDistribuidor')]: null,
-                      [t('analytics.varillaCredito')]: null,
-                      [t('analytics.tipoDeCambio')]: null,
-                      type: 'forecast'
-                    };
-                  }) || [];
-
-                  const combinedData = [...historicalData, ...forecastData].sort((a, b) => {
-                    return new Date(a.fullDate).getTime() - new Date(b.fullDate).getTime();
-                  });
-                  return (
-                    <ResponsiveContainer width="100%" height="100%">
-                      <LineChart data={combinedData}>
-                        <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis
-                          dataKey="date"
-                          tick={{ fontSize: 12 }}
-                          angle={-45}
-                          textAnchor="end"
-                          height={60}
-                        />
-                        <YAxis
-                          tick={{ fontSize: 12 }}
-                          tickFormatter={(value) => `$${value.toLocaleString()}`}
-                          domain={[(dataMin: number) => dataMin * 0.95, (dataMax: number) => dataMax * 1.05]}
-                          allowDataOverflow
-                        />
-                        {/* Secondary Y-Axis for exchange rate */}
-                        <YAxis
-                          yAxisId="right"
-                          orientation="right"
-                          tick={{ fontSize: 12 }}
-                          tickFormatter={(value) => `${value.toFixed(2)}`}
-                          domain={[(dataMin: number) => dataMin * 0.99, (dataMax: number) => dataMax * 1.01]}
-                          allowDataOverflow
-                        />
-                        <Tooltip
-                          formatter={(value: number, name: string) => [
-                            `$${value.toLocaleString()}`,
-                            name
-                          ]}
-                          labelFormatter={(label, payload) => {
-                            if (payload && payload[0]) {
-                              const dataType = payload[0].payload.type;
-                              const typeLabel = dataType === 'forecast' ? ' (Forecast)' :
-                                dataType === 'validation' ? ' (Validation)' : '';
-                              return `Date: ${payload[0].payload.fullDate}${typeLabel}`;
-                            }
-                            return label
-                          }}
-                        />
-                        <Legend />
-                        {showMXN ? (
-                          <>
-                            {visibleLines.scrap_mxn && (
-                              <Line
-                                yAxisId="right"
-                                type="monotone"
-                                dataKey={t('analytics.scrap_mxn')}
-                                stroke="#3b82f6"
-                                strokeWidth={2}
-                                dot={false}
-                              />
-                            )}
-                            {visibleLines.scrap_mxn && (
-                              <Line
-                                yAxisId="right"
-                                type="monotone"
-                                dataKey={`${t('analytics.scrap_mxn')} (Forecast)`}
-                                stroke="#ef4444"  // Red color for forecast
-                                strokeWidth={3}
-                                strokeDasharray="5 5"  // Dashed line
-                                dot={{ fill: '#ef4444', strokeWidth: 2, r: 4 }}
-                                connectNulls={false}  // Don't connect to null values
-                              />
-                            )}
-                            {visibleLines.rebar_mxn && (
-                              <Line
-                                yAxisId="right"
-                                type="monotone"
-                                dataKey={t('analytics.rebar_mxn')}
-                                stroke="#06b6d4"
-                                strokeWidth={2}
-                                dot={false}
-                              />
-                            )}
-                            {visibleLines.gas_mxn && (
-                              <Line
-                                yAxisId="right"
-                                type="monotone"
-                                dataKey={t('analytics.gas_mxn')}
-                                stroke="#6aa84f"
-                                strokeWidth={2}
-                                dot={false}
-                              />
-                            )}
-                            {visibleLines.hrcc1_mxn && (
-                              <Line
-                                yAxisId="right"
-                                type="monotone"
-                                dataKey={t('analytics.hrcc1_mxn')}
-                                stroke="#741b47"
-                                strokeWidth={2}
-                                dot={false}
-                              />
-                            )}
-                          </>
-                        ) : (
-                          <>
-                            {visibleLines.scrap && (
-                              <Line
-                                yAxisId="left"
-                                type="monotone"
-                                dataKey={t('analytics.scrap')}
-                                stroke="#8b5cf6"
-                                strokeWidth={2}
-                                dot={false}
-                              />
-                            )}
-                            {visibleLines.rebar && (
-                              <Line
-                                type="monotone"
-                                dataKey={t('analytics.rebar')}
-                                stroke="#06b6d4"
-                                strokeWidth={2}
-                                dot={false}
-                              />
-                            )}
-                            {visibleLines.gas && (
-                              <Line
-                                type="monotone"
-                                dataKey={t('analytics.gas')}
-                                stroke="#6aa84f"
-                                strokeWidth={2}
-                                dot={false}
-                              />
-                            )}
-                            {visibleLines.hrcc1 && (
-                              <Line
-                                type="monotone"
-                                dataKey={t('analytics.hrcc1')}
-                                stroke="#741b47"
-                                strokeWidth={2}
-                                dot={false}
-                              />
-                            )}
-                          </>
-                        )}
-                        {/* Always show these regardless of currency */}
-                        {visibleLines.tipoDeCambio && (
-                          <Line
-                            yAxisId="right"
-                            type="monotone"
-                            dataKey={t('analytics.tipoDeCambio')}
-                            stroke="#10b981"
-                            strokeWidth={2}
-                            dot={false}
-                          />
-                        )}
-                        {visibleLines.precioMercado && (
-                          <Line
-                            yAxisId="right"
-                            type="monotone"
-                            dataKey={t('analytics.precioMercado')}
-                            stroke="#f59e0b"
-                            strokeWidth={2}
-                            dot={false}
-                          />
-                        )}
-
-                      </LineChart>
-                    </ResponsiveContainer>
-                  );
-                })()}
+                <ForecastChart 
+                  data={data}
+                  showMXN={showMXN}
+                  visibleLines={visibleLines}
+                  height={320}
+                  simplified={false}
+                  startDate={startDate}
+                  endDate={endDate}
+                />
               </div>
             )}
           </CardContent>

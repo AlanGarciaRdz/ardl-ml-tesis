@@ -103,7 +103,9 @@ async def get_forecast(
             # Generate forecast
             forecast_data = []
             
-            if use_trained_model and model_type != "simple_linear":
+            if model_type == "empirical": 
+                forecast_data = calculate_empirical_forecast(data, forecast_periods, value_column)
+            elif  model_type == "lstm":
                 try:
                     # Try to use trained model
                     forecast_data = forecast_service.generate_forecast(
@@ -112,12 +114,12 @@ async def get_forecast(
                         value_column=value_column,
                         forecast_periods=forecast_periods
                     )
+                    print(forecast_data)
                 except (ValueError, FileNotFoundError) as e:
                     # Fallback to simple linear if model not found
                     logger.warning(f"Trained model not found, using simple linear: {str(e)}")
-                    forecast_data = calculate_simple_forecast(data, forecast_periods, value_column)
+                    forecast_data = calculate_empirical_forecast(data, forecast_periods, value_column)
             else:
-                # Use simple linear regression
                 forecast_data = calculate_simple_forecast(data, forecast_periods, value_column)
             
             return {
@@ -194,11 +196,57 @@ def calculate_simple_forecast(data: List[Dict], periods: int, value_column: str)
         forecast_data.append({
             'date': date.strftime('%Y-%m-%d'),
             'period': i + 1,
-            'predicted_value': float(prediction),
+            'predicted_value_bajista': float(prediction) * 2 / 0.95,  #( .95 bajista , .93 conservador .90  alza ) 
+            'predicted_value_conservador': float(prediction) * 2 / 0.93,
+            'predicted_value_alza': float(prediction) *2 / 0.90,
             'confidence_interval': {
                 'lower': float(prediction * 0.9),
                 'upper': float(prediction * 1.1)
             }
         })
     
+    return forecast_data
+
+
+# rename the function
+def calculate_empirical_forecast(data: List[Dict], periods: int, value_column: str) -> List[Dict]:
+    # replace the regression part with this empirical logic (keep your date handling)
+    df = pd.DataFrame(data)
+
+    date_col = 'date' if 'date' in df.columns else 'Date'
+    if date_col not in df.columns:
+        raise HTTPException(status_code=400, detail=f"Required column '{date_col}' not found in data")
+
+    base_col = 'scrap_mxn' if 'scrap_mxn' in df.columns else value_column  # add (use scrap_mxn for the empirical formula)
+    if base_col not in df.columns:
+        raise HTTPException(status_code=400, detail=f"Required column '{base_col}' not found in data")
+
+    df[date_col] = pd.to_datetime(df[date_col])
+    df = df.sort_values(date_col)
+
+    last_val = df[base_col].dropna().iloc[-1]  
+    base_price = float(last_val) * 2.0         
+
+    day_interval = 7
+    last_date = df[date_col].max()
+    future_dates = [last_date + timedelta(days=i*day_interval) for i in range(1, periods + 1)]
+
+    forecast_data = []
+    for i, date in enumerate(future_dates):
+        bajista = base_price / 0.95
+        conservador = base_price / 0.93
+        alza = base_price / 0.90
+
+        forecast_data.append({
+            'date': date.strftime('%Y-%m-%d'),
+            'period': i + 1,
+            'predicted_value_bajista': float(bajista),
+            'predicted_value_conservador': float(conservador),
+            'predicted_value_alza': float(alza),
+            'confidence_interval': {
+                'lower': float(conservador * 0.9),
+                'upper': float(conservador * 1.1)
+            }
+        })
+
     return forecast_data

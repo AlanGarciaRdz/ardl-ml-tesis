@@ -52,7 +52,9 @@ class ForecastService:
             forecast_data.append({
                 'date': forecast_date.strftime('%Y-%m-%d'),
                 'period': i + 1,
-                'predicted_value': float(prediction),
+                'predicted_value_bajista': float(prediction) * 2 / 0.95,
+                'predicted_value_conservador': float(prediction) * 2 / 0.93,
+                'predicted_value_alza': float(prediction) * 2 / 0.90,
                 'confidence_interval': {
                     'lower': float(prediction * 0.9),  # Simple 10% interval
                     'upper': float(prediction * 1.1)

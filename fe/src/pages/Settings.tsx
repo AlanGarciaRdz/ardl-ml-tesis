@@ -46,7 +46,7 @@ export function Settings() {
 
   useEffect(() => {
     // Load user's phone number if available
-    debugger;
+    
     const loadUserData = async () => {
       if (user) {
         const userData = await getUserData(user);
@@ -170,12 +170,12 @@ export function Settings() {
             <Label htmlFor="db-password">Password</Label>
             <Input id="db-password" type="password" />
           </div>
-          <div className="flex gap-2">
-            <Button>
+          <div className="flex flex-col sm:flex-row gap-2">
+            <Button className="w-full sm:w-auto">
               <Save className="h-4 w-4 mr-2" />
               Save Database Settings
             </Button>
-            <Button variant="outline">
+            <Button variant="outline" className="w-full sm:w-auto">
               <RefreshCw className="h-4 w-4 mr-2" />
               Test Connection
             </Button>
@@ -227,7 +227,7 @@ export function Settings() {
           <CardDescription>Customize your dashboard experience</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <Label htmlFor="language">Language</Label>
               <select 
@@ -379,7 +379,7 @@ export function Settings() {
 
       {/* Save All Settings */}
       <div className="flex justify-end">
-        <Button size="lg">
+        <Button size="lg" className="w-full sm:w-auto">
           <Save className="h-4 w-4 mr-2" />
           Save All Settings
         </Button>

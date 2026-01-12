@@ -4,7 +4,7 @@ import { useAuth } from '@/contexts/AuthContext'
 import { RegistrationForm } from './RegistrationForm';
 import UserStatsBar from '../components/shared/UserStatsBar';
 import { Button } from '@radix-ui/themes'
-import { BarChart3, Database, TrendingUp, Shield, Globe, Factory, Zap, Users, Award, LogOut } from 'lucide-react'  //ChevronRight
+import { BarChart3, Database, TrendingUp, Shield, Globe, Factory, Zap, Users, Award, LogOut, Menu, X } from 'lucide-react'  //ChevronRight
 import logo from '@/assets/images/PITIAX-logo.png'
 import socio1 from '@/assets/images/socios/ACC.png'
 import socio2 from '@/assets/images/socios/ACEROS OCOTLAN.png'
@@ -23,6 +23,7 @@ export function Landing() {
   const [cp, setCP] = useState('');
   const [nombreProyecto, setNombreProyecto] = useState('');
   const [showRegistrationForm, setShowRegistrationForm] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const navigate = useNavigate()
 
 
@@ -106,12 +107,14 @@ export function Landing() {
       </div>
 
       {/* Navigation */}
-      <nav className="sticky top-0 z-50 px-6 py-4 backdrop-blur-md bg-white/90 border-b border-[#2596be]/20">
+      <nav className="sticky top-0 z-50 px-4 sm:px-6 py-4 backdrop-blur-md bg-white/90 border-b border-[#2596be]/20">
         <div className="max-w-7xl mx-auto flex justify-between items-center">
           <div className="flex items-center space-x-3">
             <img src={logo} alt="Pitiax Logo" className="w-21 h-16 object-contain" />
           </div>
-          <div className="flex items-center space-x-6">
+          
+          {/* Desktop Navigation - Hidden on mobile */}
+          <div className="hidden md:flex items-center space-x-6">
             <button
               onClick={() => scrollToSection('quien-soy')}
               className="text-gray-800 hover:text-[#27348B] transition-colors duration-300 text-[16px] font-medium">
@@ -138,7 +141,6 @@ export function Landing() {
               Tu plan en acción
             </button>
 
-
             {isLoggedIn ? (
               <div className="flex items-center gap-2">
                 <span className="text-[16px] text-gray-700">
@@ -158,7 +160,124 @@ export function Landing() {
               </Button>
             )}
           </div>
+
+          {/* Mobile Menu Button */}
+          <button
+            onClick={() => setMobileMenuOpen(true)}
+            className="md:hidden p-2 rounded-md text-gray-800 hover:bg-gray-100"
+            aria-label="Abrir menú"
+          >
+            <Menu className="h-6 w-6" />
+          </button>
         </div>
+
+        {/* Mobile Menu Overlay */}
+        {mobileMenuOpen && (
+          <div className="fixed inset-0 z-50 md:hidden">
+            {/* Backdrop */}
+            <div 
+              className="absolute inset-0 bg-black opacity-50"
+              onClick={() => setMobileMenuOpen(false)}
+            />
+            
+            {/* Menu Panel */}
+            <div className="absolute right-0 top-0 h-full w-64 bg-white shadow-xl">
+              <div className="flex flex-col h-full">
+                {/* Header */}
+                <div className="flex items-center justify-between p-4 border-b">
+                  <span className="text-lg font-semibold text-gray-800">Menú</span>
+                  <button
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="p-2 rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-100"
+                    aria-label="Cerrar menú"
+                  >
+                    <X className="h-6 w-6" />
+                  </button>
+                </div>
+
+                {/* Navigation Links */}
+                <nav className="flex-1 px-4 py-6 space-y-4 overflow-y-auto">
+                  <button
+                    onClick={() => {
+                      scrollToSection('quien-soy');
+                      setMobileMenuOpen(false);
+                    }}
+                    className="w-full text-left py-3 px-4 text-gray-800 hover:bg-gray-100 rounded-lg transition-colors text-base font-medium"
+                  >
+                    ¿Quién soy?
+                  </button>
+                  <button
+                    onClick={() => {
+                      scrollToSection('que-hago');
+                      setMobileMenuOpen(false);
+                    }}
+                    className="w-full text-left py-3 px-4 text-gray-800 hover:bg-gray-100 rounded-lg transition-colors text-base font-medium"
+                  >
+                    ¿Qué hago?
+                  </button>
+                  <button
+                    onClick={() => {
+                      scrollToSection('socios');
+                      setMobileMenuOpen(false);
+                    }}
+                    className="w-full text-left py-3 px-4 text-gray-800 hover:bg-gray-100 rounded-lg transition-colors text-base font-medium"
+                  >
+                    Mis socios
+                  </button>
+                  <button
+                    onClick={() => {
+                      scrollToSection('futuro');
+                      setMobileMenuOpen(false);
+                    }}
+                    className="w-full text-left py-3 px-4 text-gray-800 hover:bg-gray-100 rounded-lg transition-colors text-base font-medium"
+                  >
+                    Hablemos del futuro
+                  </button>
+                  <button
+                    onClick={() => {
+                      scrollToSection('futuro');
+                      setMobileMenuOpen(false);
+                    }}
+                    className="w-full text-left py-3 px-4 text-gray-800 hover:bg-gray-100 rounded-lg transition-colors text-base font-medium"
+                  >
+                    Tu plan en acción
+                  </button>
+
+                  <div className="border-t pt-4 mt-4">
+                    {isLoggedIn ? (
+                      <div className="space-y-3">
+                        <div className="px-4 py-2 text-sm text-gray-600">
+                          {user?.displayName || 'User'}
+                        </div>
+                        <Button
+                          variant="ghost"
+                          onClick={() => {
+                            logout();
+                            setMobileMenuOpen(false);
+                          }}
+                          className="w-full justify-start"
+                        >
+                          <LogOut className="h-5 w-5 mr-2" />
+                          Cerrar Sesión
+                        </Button>
+                      </div>
+                    ) : (
+                      <Button
+                        onClick={() => {
+                          handleLogin();
+                          setMobileMenuOpen(false);
+                        }}
+                        className="w-full bg-[#27348B] text-white hover:bg-[#36A9E1]"
+                      >
+                        Sign In
+                      </Button>
+                    )}
+                  </div>
+                </nav>
+              </div>
+            </div>
+          </div>
+        )}
       </nav>
 
       {/* Stats Bar - Only show when logged in */}
@@ -180,23 +299,23 @@ export function Landing() {
       )}
 
       {/* Hero Section */}
-      <div className="relative z-10 px-6 py-24">
+      <div className="relative z-10 px-4 sm:px-6 py-12 md:py-24">
         <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-12 items-center">
             <div>
-              <div className="inline-flex items-center px-4 py-2 rounded-full bg-white/20 border border-white/30 mb-6">
+              <div className="inline-flex items-center px-3 sm:px-4 py-2 rounded-full bg-white/20 border border-white/30 mb-4 md:mb-6">
                 <Globe className="w-4 h-4 text-white mr-2" />
-                <span className="text-sm text-white font-medium">Enfocado en el Mercado Mexicano</span>
+                <span className="text-xs sm:text-sm text-white font-medium">Enfocado en el Mercado Mexicano</span>
               </div>
 
-              <h1 className="text-5xl lg:text-7xl font-bold mb-6 leading-tight text-white drop-shadow-lg">
+              <h1 className="text-4xl sm:text-5xl lg:text-7xl font-bold mb-4 md:mb-6 leading-tight text-white drop-shadow-lg">
                 Analítica de
                 <span className="block text-white">
                   Precios de Acero
                 </span>
               </h1>
 
-              <p className="text-xl text-white/95 mb-8 leading-relaxed max-w-lg drop-shadow-md">
+              <p className="text-lg sm:text-xl text-white/95 mb-6 md:mb-8 leading-relaxed max-w-lg drop-shadow-md">
                 Plataforma líder en México para análisis de precios de acero en tiempo real,
                 tendencias del mercado y predicciones inteligentes.
               </p>
@@ -219,7 +338,7 @@ export function Landing() {
               </div>
 
               {/* Trust Indicators */}
-              <div className="flex items-center space-x-6 text-sm text-white/90">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-3 sm:space-y-0 sm:space-x-6 text-sm text-white/90">
                 <div className="flex items-center">
                   <Users className="w-4 h-4 mr-2 text-white" />
                   <span className="font-medium">500+ Empresas</span>
@@ -232,8 +351,8 @@ export function Landing() {
             </div>
 
             {/* Hero Visual */}
-            <div className="relative">
-              <div className="bg-white/90 backdrop-blur-md rounded-3xl p-8 border border-[#2596be]/20 shadow-2xl">
+            <div className="relative mt-8 lg:mt-0">
+              <div className="bg-white/90 backdrop-blur-md rounded-3xl p-4 sm:p-8 border border-[#2596be]/20 shadow-2xl">
                 <div className="mb-6">
                   <div className="flex items-center justify-between mb-4">
                     <h3 className="text-lg font-semibold text-gray-800">Precio del Acero - Tiempo Real</h3>
@@ -284,11 +403,11 @@ export function Landing() {
       </div>
 
       {/* Who Am I Section */}
-      <div id="quien-soy" className="relative z-10 px-6 py-20">
+      <div id="quien-soy" className="relative z-10 px-4 sm:px-6 py-12 md:py-20">
         <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-12 items-center">
             <div>
-              <h2 className="text-4xl lg:text-5xl font-bold text-white mb-8 drop-shadow-lg">
+              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-6 md:mb-8 drop-shadow-lg">
                 ¿Quién soy?
               </h2>
               <div className="space-y-6 text-lg text-white/95 leading-relaxed">
@@ -319,9 +438,9 @@ export function Landing() {
       </div>
 
       {/* Stats Section */}
-      <div id="que-hago" className="relative z-10 px-6 py-16">
+      <div id="que-hago" className="relative z-10 px-4 sm:px-6 py-12 md:py-16">
         <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8">
             <div className="text-center group cursor-pointer">
               <div className="w-16 h-16 bg-gradient-to-br from-[#27348B] to-[#36A9E1] rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg">
                 <Database className="w-8 h-8 text-white" />
@@ -358,10 +477,10 @@ export function Landing() {
       </div>
 
       {/* Features Section */}
-      <div className="relative z-10 px-6 py-20">
+      <div className="relative z-10 px-4 sm:px-6 py-12 md:py-20">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl lg:text-5xl font-bold text-white mb-6">
+          <div className="text-center mb-12 md:mb-16">
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4 md:mb-6">
               ¿Qué hago?
             </h2>
             <p className="text-xl text-white max-w-3xl mx-auto">
@@ -539,9 +658,9 @@ export function Landing() {
       </div>
 
       {/* Interactive Dashboard Preview */}
-      <div className="relative z-10 px-6 py-20">
+      <div className="relative z-10 px-4 sm:px-6 py-12 md:py-20">
         <div className="max-w-7xl mx-auto text-center">
-          <h2 className="text-4xl font-bold text-white mb-6">
+          <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4 md:mb-6">
             Dashboard en Acción
           </h2>
           <p className="text-xl text-white/90 mb-12">
@@ -617,10 +736,10 @@ export function Landing() {
       </div>
 
       {/* CTA Section */}
-      <div id="futuro" className="relative z-10 px-6 py-24">
+      <div id="futuro" className="relative z-10 px-4 sm:px-6 py-12 md:py-24">
         <div className="max-w-4xl mx-auto text-center">
-          <div className="bg-white/90 backdrop-blur-md rounded-3xl p-12 border border-[#2596be]/20 shadow-2xl">
-            <h2 className="text-4xl lg:text-5xl font-bold text-gray-800 mb-6">
+          <div className="bg-white/90 backdrop-blur-md rounded-3xl p-6 sm:p-8 md:p-12 border border-[#2596be]/20 shadow-2xl">
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-800 mb-4 md:mb-6">
               ¿Listo para Revolucionar tu
               <span className="bg-gradient-to-r from-[#2596be] to-[#2ca6e1] bg-clip-text text-transparent"> Análisis?</span>
             </h2>
@@ -665,7 +784,7 @@ export function Landing() {
       </div>
 
       {/* Footer */}
-      <footer className="relative z-10 px-6 py-12 border-t border-[#2596be]/20 bg-white/80">
+      <footer className="relative z-10 px-4 sm:px-6 py-8 md:py-12 border-t border-[#2596be]/20 bg-white/80">
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <div className="flex items-center space-x-3 mb-4 md:mb-0">

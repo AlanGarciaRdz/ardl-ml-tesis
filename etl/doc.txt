@@ -1,2 +1,23 @@
 cd /Users/alangarcia/Documents/Alan/Maestria/Tesis/projecto/etl
 streamlit run load/insert_precios_ui.py
+
+steel
+https://www.tradingview.com/chart/3uHnve12/?symbol=LME%3ASC1%21
+
+gas
+https://www.tradingview.com/symbols/NYMEX-NG1!/
+https://finance.yahoo.com/quote/NG%3DF/?guccounter=1&guce_referrer=aHR0cHM6Ly93d3cuZ29vZ2xlLmNvbS8&guce_referrer_sig=AQAAAGQIV7KsxXBPbVsYhwnSai2BG8GCVV5GzUF1ScJB4A4ByLdqmw7O7rUZeZYD9bCYPobcLlpIRo9EgqgVWlWt6P1l1aCHBky_wagWVBZ41-xGQxgXFqY2T9mh0o1IMQ_c9WhL7MJ_XkiF17YZAcZJHzStVgy7QsGbA5Aeavrerd7d
+
+rebar 
+https://tradingeconomics.com/commodity/steel   to high
+https://www.lme.com/metals/ferrous/lme-steel-rebar-fob-turkey-platts#Trading+day+summary stoped 2 months
+https://es.tradingview.com/symbols/LME-SR1%21/forward-curve/  keep equual USE THIS
+
+
+
+hrcc1 
+https://mx.investing.com/commodities/us-steel-coil-futures-streaming-chart
+
+
+tipo cambio banxico 
+https://www.banxico.org.mx/SieAPIRest/service/v1/series/SF43718/datos/2025-01-12/2026-06-01?token=ba0d7cf7cf4649f0555b9dddeef6de755b534ddb3d5d6ab0a364a8a6de29cc93

@@ -143,27 +143,30 @@ export function ForecastChart({
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis
           dataKey="date"
-          tick={{ fontSize: 12 }}
-          angle={-45}
+          tick={{ fontSize: 10 }}
+          angle={-60}
           textAnchor="end"
-          height={60}
+          height={80}
+          interval="preserveStartEnd"
         />
         <YAxis
            yAxisId="left"
-          tick={{ fontSize: 12 }}
+          tick={{ fontSize: 10 }}
           tickFormatter={(value) => `$${value.toLocaleString()}`}
           domain={[(dataMin: number) => dataMin * 0.95, (dataMax: number) => dataMax * 1.05]}
           allowDataOverflow
+          width={65}
         />
         {/* Secondary Y-Axis for exchange rate */}
         {!simplified && (
           <YAxis
             yAxisId="right"
             orientation="right"
-            tick={{ fontSize: 12 }}
+            tick={{ fontSize: 10 }}
             tickFormatter={(value) => `${value.toFixed(2)}`}
             domain={[(dataMin: number) => dataMin * 0.99, (dataMax: number) => dataMax * 1.01]}
             allowDataOverflow
+            width={50}
           />
         )}
         <Tooltip

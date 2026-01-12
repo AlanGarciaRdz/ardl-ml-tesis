@@ -252,58 +252,76 @@ const ShippingCalculator = () => {
   }, [])
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-6">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4 sm:p-6">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
-        <div className="text-center mb-8">
-          <div className="flex items-center justify-center mb-4">
-            <Calculator className="w-12 h-12 text-indigo-600" />
+        <div className="text-center mb-6 md:mb-8">
+          <div className="flex items-center justify-center mb-3 md:mb-4">
+            <Calculator className="w-10 h-10 sm:w-12 sm:h-12 text-indigo-600" />
           </div>
-          <h1 className="text-4xl font-bold text-gray-800 mb-2">
+          <h1 className="text-3xl sm:text-4xl font-bold text-gray-800 mb-2">
             Cotización
           </h1>
-          <p className="text-gray-600">
+          <p className="text-sm sm:text-base text-gray-600 px-4">
             Ingresa tu código postal y Toneladas de material para obtener una cotización
           </p>
         </div>
 
         {/* Progress Steps */}
-        <div className="flex items-center justify-center mb-8">
-          <div className="flex items-center space-x-2">
-            <div className={`flex items-center ${step >= 1 ? 'text-indigo-600' : 'text-gray-400'}`}>
-              <div className={`w-10 h-10 rounded-full flex items-center justify-center border-2 ${
-                step >= 1 ? 'border-indigo-600 bg-indigo-600 text-white' : 'border-gray-300'
+        <div className="flex items-center justify-center mb-6 md:mb-8 px-2">
+          <div className="flex items-center space-x-1 sm:space-x-2">
+            {/* Step 1 */}
+            <div className="flex flex-col items-center">
+              <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center border-2 ${
+                step >= 1 ? 'border-indigo-600 bg-indigo-600 text-white' : 'border-gray-300 text-gray-400'
               }`}>
-                1
+                <span className="text-xs sm:text-base font-medium">1</span>
               </div>
-              <span className="ml-2 font-medium hidden sm:inline">Datos</span>
+              <span className={`mt-1 text-xs sm:text-sm font-medium ${step >= 1 ? 'text-indigo-600' : 'text-gray-400'}`}>
+                Datos
+              </span>
             </div>
-            <div className={`w-12 h-1 ${step >= 2 ? 'bg-indigo-600' : 'bg-gray-300'}`}></div>
-            <div className={`flex items-center ${step >= 2 ? 'text-indigo-600' : 'text-gray-400'}`}>
-              <div className={`w-10 h-10 rounded-full flex items-center justify-center border-2 ${
-                step >= 2 ? 'border-indigo-600 bg-indigo-600 text-white' : 'border-gray-300'
+            
+            <div className={`w-8 sm:w-12 h-1 ${step >= 2 ? 'bg-indigo-600' : 'bg-gray-300'}`}></div>
+            
+            {/* Step 2 */}
+            <div className="flex flex-col items-center">
+              <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center border-2 ${
+                step >= 2 ? 'border-indigo-600 bg-indigo-600 text-white' : 'border-gray-300 text-gray-400'
               }`}>
-                2
+                <span className="text-xs sm:text-base font-medium">2</span>
               </div>
-              <span className="ml-2 font-medium hidden sm:inline">Confirmar</span>
+              <span className={`mt-1 text-xs sm:text-sm font-medium ${step >= 2 ? 'text-indigo-600' : 'text-gray-400'}`}>
+                Confirmar
+              </span>
             </div>
-            <div className={`w-12 h-1 ${step >= 2.5 ? 'bg-indigo-600' : 'bg-gray-300'}`}></div>
-            <div className={`flex items-center ${step >= 2.5 ? 'text-indigo-600' : 'text-gray-400'}`}>
-              <div className={`w-10 h-10 rounded-full flex items-center justify-center border-2 ${
-                step >= 2.5 ? 'border-indigo-600 bg-indigo-600 text-white' : 'border-gray-300'
+            
+            <div className={`w-8 sm:w-12 h-1 ${step >= 2.5 ? 'bg-indigo-600' : 'bg-gray-300'}`}></div>
+            
+            {/* Step 3 */}
+            <div className="flex flex-col items-center">
+              <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center border-2 ${
+                step >= 2.5 ? 'border-indigo-600 bg-indigo-600 text-white' : 'border-gray-300 text-gray-400'
               }`}>
-                3
+                <span className="text-xs sm:text-base font-medium">3</span>
               </div>
-              <span className="ml-2 font-medium hidden sm:inline">Análisis</span>
+              <span className={`mt-1 text-xs sm:text-sm font-medium ${step >= 2.5 ? 'text-indigo-600' : 'text-gray-400'}`}>
+                Análisis
+              </span>
             </div>
-            <div className={`w-12 h-1 ${step >= 3 ? 'bg-indigo-600' : 'bg-gray-300'}`}></div>
-            <div className={`flex items-center ${step >= 3 ? 'text-indigo-600' : 'text-gray-400'}`}>
-              <div className={`w-10 h-10 rounded-full flex items-center justify-center border-2 ${
-                step >= 3 ? 'border-indigo-600 bg-indigo-600 text-white' : 'border-gray-300'
+            
+            <div className={`w-8 sm:w-12 h-1 ${step >= 3 ? 'bg-indigo-600' : 'bg-gray-300'}`}></div>
+            
+            {/* Step 4 */}
+            <div className="flex flex-col items-center">
+              <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center border-2 ${
+                step >= 3 ? 'border-indigo-600 bg-indigo-600 text-white' : 'border-gray-300 text-gray-400'
               }`}>
-                4
+                <span className="text-xs sm:text-base font-medium">4</span>
               </div>
-              <span className="ml-2 font-medium hidden sm:inline">Resultado</span>
+              <span className={`mt-1 text-xs sm:text-sm font-medium ${step >= 3 ? 'text-indigo-600' : 'text-gray-400'}`}>
+                Resultado
+              </span>
             </div>
           </div>
         </div>
@@ -325,7 +343,7 @@ const ShippingCalculator = () => {
         )}
 
         {/* Main Card */}
-        <div className="bg-white rounded-2xl shadow-xl p-8">
+        <div className="bg-white rounded-2xl shadow-xl p-4 sm:p-6 md:p-8">
           {/* Step 1: Input */}
           {step === 1 && (
             <div className="space-y-6">
@@ -429,20 +447,20 @@ const ShippingCalculator = () => {
                 </div>
               </div>
 
-              <div className="flex space-x-4">
+              <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4">
                 <button
                   onClick={() => setStep(1)}
                   className="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-3 px-6 rounded-lg transition-colors duration-200"
                 >
                   Modificar
                 </button>
-              <button
-                onClick={handleConfirm}
-                disabled={loading || marketDataLoading}
-                className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-200 disabled:opacity-50"
-              >
-                {loading ? 'Calculando...' : marketDataLoading ? 'Cargando precios...' : 'Continuar'}
-              </button>
+                <button
+                  onClick={handleConfirm}
+                  disabled={loading || marketDataLoading}
+                  className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-200 disabled:opacity-50"
+                >
+                  {loading ? 'Calculando...' : marketDataLoading ? 'Cargando precios...' : 'Continuar'}
+                </button>
               </div>
             </div>
           )}
@@ -538,60 +556,48 @@ const ShippingCalculator = () => {
 
               {/* Location Info */}
               <div className="bg-indigo-50 rounded-lg p-6 mb-4">
-                <h3 className="font-semibold text-indigo-900 mb-3 flex items-center">
-                  <MapPin className="w-5 h-5 mr-2" />
+                <h3 className="font-semibold text-indigo-900 mb-3 flex items-center text-sm sm:text-base">
+                  <MapPin className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
                   Ubicación
                 </h3>
-                <div className="space-y-2 text-sm">
+                <div className="space-y-2 text-xs sm:text-sm">
                   <div className="flex justify-between">
                     <span className="text-gray-600">Municipio:</span>
-                    <span className="font-semibold text-gray-800">{result.municipio}</span>
+                    <span className="font-semibold text-gray-800 text-right">{result.municipio}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-600">Región:</span>
-                    <span className="font-semibold text-gray-800">{result.region}</span>
+                    <span className="font-semibold text-gray-800 text-right">{result.region}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-600">Estado:</span>
-                    <span className="font-semibold text-gray-800">{result.estado}</span>
+                    <span className="font-semibold text-gray-800 text-right">{result.estado}</span>
                   </div>
                 </div>
               </div>
 
               {/* Price Breakdown */}
-              <div className="bg-gray-50 rounded-lg p-6">
-                <h3 className="font-semibold text-gray-900 mb-4 flex items-center">
-                  <TrendingUp className="w-5 h-5 mr-2" />
+              <div className="bg-gray-50 rounded-lg p-4 sm:p-6">
+                <h3 className="font-semibold text-gray-900 mb-4 flex items-center text-sm sm:text-base">
+                  <TrendingUp className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
                   Desglose de Costos
                 </h3>
                 <div className="space-y-3">
-                  {/* <div className="flex justify-between items-center pb-3 border-b">
-                    <span className="text-gray-600">Precio Base ({formData.material}):</span>
-                    <span className="font-semibold text-gray-800">
-                      ${result.precioBase.toLocaleString('es-MX', {minimumFractionDigits: 2})} MXN
-                    </span>
-                  </div> */}
-                  <div className="flex justify-between items-center pb-3 border-b">
+                  <div className="flex justify-between items-center pb-3 border-b text-xs sm:text-sm">
                     <span className="text-gray-600">Tonelada Solicitados:</span>
                     <span className="font-semibold text-gray-800">
                       {formData.peso} Toneladas
                     </span>
                   </div>
-                  {/* <div className="flex justify-between items-center pb-3 border-b">
-                    <span className="text-gray-600">Tarifa de Transporte:</span>
-                    <span className="font-semibold text-gray-800">
-                      ${result.tarifaTransporte.toLocaleString('es-MX', {minimumFractionDigits: 2})} MXN
-                    </span>
-                  </div> */}
-                  <div className="flex justify-between items-center pb-3 border-b">
+                  <div className="flex justify-between items-center pb-3 border-b text-xs sm:text-sm">
                     <span className="text-gray-600">Precio base por Tonelada</span>
                     <span className="font-semibold text-gray-800">
                     ${result.tarifaPrecioBaseTn?.toLocaleString('es-MX', {minimumFractionDigits: 2})} MXN
                     </span>
                   </div>
                   <div className="flex justify-between items-center pt-3">
-                    <span className="text-xl font-bold text-gray-900">TOTAL:</span>
-                    <span className="text-3xl font-bold text-indigo-600">
+                    <span className="text-lg sm:text-xl font-bold text-gray-900">TOTAL:</span>
+                    <span className="text-2xl sm:text-3xl font-bold text-indigo-600">
                       ${result.precioTotal.toLocaleString('es-MX', {minimumFractionDigits: 2})}
                     </span>
                   </div>
@@ -610,9 +616,9 @@ const ShippingCalculator = () => {
 
         {/* Market Info Footer */}
         {userRole === 'admin' && (
-        <div className="mt-8 bg-white rounded-lg shadow-md p-6">
-          <h3 className="font-semibold text-gray-900 mb-4 flex items-center">
-            <TrendingUp className="w-5 h-5 mr-2 text-indigo-600" />
+        <div className="mt-6 md:mt-8 bg-white rounded-lg shadow-md p-4 sm:p-6">
+          <h3 className="font-semibold text-gray-900 mb-4 flex items-center text-sm sm:text-base">
+            <TrendingUp className="w-4 h-4 sm:w-5 sm:h-5 mr-2 text-indigo-600" />
             Precios de Mercado Actuales
           </h3>
           {marketDataLoading ? (

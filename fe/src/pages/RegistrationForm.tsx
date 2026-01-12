@@ -156,13 +156,13 @@ export function RegistrationForm({ onComplete }: RegistrationFormProps) {
   };
 
   const renderForm = () => (
-    <div className="max-w-3xl mx-auto bg-white rounded-lg shadow-lg p-8 flex flex-col items-center">
-      <div className="text-center mb-8">
-        <h1 className="text-3xl font-bold text-blue-900 mb-2">REGISTRO</h1>
-        <p className="text-gray-600">Completa tu información para continuar</p>
+    <div className="max-w-3xl mx-auto bg-white rounded-lg shadow-lg p-4 sm:p-6 md:p-8 flex flex-col items-center">
+      <div className="text-center mb-6 md:mb-8">
+        <h1 className="text-2xl sm:text-3xl font-bold text-blue-900 mb-2">REGISTRO</h1>
+        <p className="text-sm sm:text-base text-gray-600">Completa tu información para continuar</p>
       </div>
 
-      <div className="w-full flex flex-col items-center gap-6 max-w-md mx-auto">
+      <div className="w-full flex flex-col items-center gap-4 sm:gap-6 max-w-md mx-auto">
         {/* Left Column */}
         <div className="space-y-4">
           <div>
@@ -269,13 +269,13 @@ export function RegistrationForm({ onComplete }: RegistrationFormProps) {
       </div>
 
       {/* reCAPTCHA container */}
-      <div className="mt-8" id="recaptcha-container"></div>
+      <div className="mt-6 md:mt-8 w-full flex justify-center" id="recaptcha-container"></div>
 
-      <div className="mt-8 flex justify-center">
+      <div className="mt-6 md:mt-8 flex justify-center w-full">
         <Button
           onClick={handleSendVerification}
           disabled={!formData.nombre || !formData.celular || !formData.empresa || !formData.tipoEmpresa || isVerifying}
-          className="bg-blue-900 text-white hover:bg-blue-800 px-8 py-3 text-lg font-medium"
+          className="bg-blue-900 text-white hover:bg-blue-800 px-6 sm:px-8 py-3 text-base sm:text-lg font-medium w-full sm:w-auto"
         >
           {isVerifying ? 'Enviando...' : 'REGISTRARME'}
         </Button>
@@ -286,9 +286,9 @@ export function RegistrationForm({ onComplete }: RegistrationFormProps) {
   );
 
   const renderVerification = () => (
-    <div className="max-w-md mx-auto bg-white rounded-lg shadow-lg p-8">
-      <div className="text-center mb-8">
-        <h2 className="text-2xl font-bold text-blue-900 mb-2">Verificación</h2>
+    <div className="max-w-md mx-auto bg-white rounded-lg shadow-lg p-4 sm:p-6 md:p-8">
+      <div className="text-center mb-6 md:mb-8">
+        <h2 className="text-xl sm:text-2xl font-bold text-blue-900 mb-2">Verificación</h2>
         <p className="text-gray-600">
           Ingresa el código de 6 dígitos que enviamos a tu celular
         </p>
@@ -313,18 +313,18 @@ export function RegistrationForm({ onComplete }: RegistrationFormProps) {
           />
         </div>
 
-        <div className="flex space-x-4">
+        <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4">
           <Button
             variant="outline"
             onClick={() => setVerificationStep('form')}
-            className="flex-1"
+            className="flex-1 w-full"
           >
             Atrás
           </Button>
           <Button
             onClick={handleVerifyCode}
             disabled={verificationCode.length !== 6}
-            className="flex-1 bg-blue-900 text-white hover:bg-blue-800"
+            className="flex-1 w-full bg-blue-900 text-white hover:bg-blue-800"
           >
             Verificar
           </Button>
@@ -334,7 +334,7 @@ export function RegistrationForm({ onComplete }: RegistrationFormProps) {
   );
 
   const renderComplete = () => (
-    <div className="max-w-md mx-auto bg-white rounded-lg shadow-lg p-8 text-center">
+    <div className="max-w-md mx-auto bg-white rounded-lg shadow-lg p-4 sm:p-6 md:p-8 text-center">
       <CheckCircle className="h-16 w-16 text-green-500 mx-auto mb-4" />
       <h2 className="text-2xl font-bold text-green-900 mb-2">¡Registro Completo!</h2>
       <p className="text-gray-600">

@@ -188,43 +188,80 @@ export function DataExplorer() {
             <Text className="ml-2">{t('dataExplorer.loadingData')}</Text>
           </div>
         ) : (
-          <div className="overflow-x-auto mt-4">
-            <table className="w-full">
-              <thead>
-                <tr className="border-b">
-                  <th className="text-left py-3 px-4 font-medium">Date (YYYY-MM-DD)</th>
-                  <th className="text-left py-3 px-4 font-medium">Scrap (MXN)</th>
-                  <th className="text-left py-3 px-4 font-medium">Gas (MXN)</th>
-                  <th className="text-left py-3 px-4 font-medium">Rebar (MXN)</th>
-                  <th className="text-left py-3 px-4 font-medium">HRCC1 (MXN)</th>
-                  <th className="text-left py-3 px-4 font-medium">Varilla Credito (MXN)</th>
-                  <th className="text-left py-3 px-4 font-medium">Varilla Distribuidor (MXN)</th>
-                  <th className="text-left py-3 px-4 font-medium">Precio Mercado (MXN)</th>
-                  {/* <th className="text-left py-3 px-4 font-medium">Actions</th> */}
-                </tr>
-              </thead>
-              <tbody>
-                {filteredData.map((item) => (
-                  <tr key={item.id} className="border-b hover:bg-gray-50">
-                    <td className="py-3 px-4 font-medium">{item.date}</td>
-                    <td className="py-3 px-4">${item.scrap_mxn.toFixed(2)}</td>
-                    <td className="py-3 px-4">${item.gas_mxn.toFixed(2)}</td>
-                    <td className="py-3 px-4">${item.rebar_mxn.toFixed(2)}</td>
-                    <td className="py-3 px-4">${item.hrcc1_mxn.toFixed(2)}</td>
-                    <td className="py-3 px-4 font-semibold">${item.varilla_credito.toLocaleString()}</td>
-                    <td className="py-3 px-4 font-semibold">${item.varilla_distribuidor.toLocaleString()}</td>
-                    <td className="py-3 px-4 font-semibold">${item.precio_mercado.toLocaleString()}</td>
-                    
-                    {/* <td className="py-3 px-4">
-                      <Button variant="ghost" size="1">
-                        View Details
-                      </Button>
-                    </td> */}
+          <>
+            {/* Desktop: Table View */}
+            <div className="hidden md:block overflow-x-auto mt-4">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b">
+                    <th className="text-left py-3 px-4 font-medium">Date (YYYY-MM-DD)</th>
+                    <th className="text-left py-3 px-4 font-medium">Scrap (MXN)</th>
+                    <th className="text-left py-3 px-4 font-medium">Gas (MXN)</th>
+                    <th className="text-left py-3 px-4 font-medium">Rebar (MXN)</th>
+                    <th className="text-left py-3 px-4 font-medium">HRCC1 (MXN)</th>
+                    <th className="text-left py-3 px-4 font-medium">Varilla Credito (MXN)</th>
+                    <th className="text-left py-3 px-4 font-medium">Varilla Distribuidor (MXN)</th>
+                    <th className="text-left py-3 px-4 font-medium">Precio Mercado (MXN)</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody>
+                  {filteredData.map((item) => (
+                    <tr key={item.id} className="border-b hover:bg-gray-50">
+                      <td className="py-3 px-4 font-medium">{item.date}</td>
+                      <td className="py-3 px-4">${item.scrap_mxn.toFixed(2)}</td>
+                      <td className="py-3 px-4">${item.gas_mxn.toFixed(2)}</td>
+                      <td className="py-3 px-4">${item.rebar_mxn.toFixed(2)}</td>
+                      <td className="py-3 px-4">${item.hrcc1_mxn.toFixed(2)}</td>
+                      <td className="py-3 px-4 font-semibold">${item.varilla_credito.toLocaleString()}</td>
+                      <td className="py-3 px-4 font-semibold">${item.varilla_distribuidor.toLocaleString()}</td>
+                      <td className="py-3 px-4 font-semibold">${item.precio_mercado.toLocaleString()}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Mobile: Card View */}
+            <div className="md:hidden mt-4 space-y-4">
+              {filteredData.map((item) => (
+                <div key={item.id} className="bg-gray-50 rounded-lg p-4 border border-gray-200 shadow-sm">
+                  <div className="font-bold text-lg text-gray-900 mb-3 pb-2 border-b">
+                    {item.date}
+                  </div>
+                  <div className="grid grid-cols-2 gap-3 text-sm">
+                    <div>
+                      <span className="text-gray-500 block text-xs">Scrap</span>
+                      <span className="font-medium">${item.scrap_mxn.toFixed(2)}</span>
+                    </div>
+                    <div>
+                      <span className="text-gray-500 block text-xs">Gas</span>
+                      <span className="font-medium">${item.gas_mxn.toFixed(2)}</span>
+                    </div>
+                    <div>
+                      <span className="text-gray-500 block text-xs">Rebar</span>
+                      <span className="font-medium">${item.rebar_mxn.toFixed(2)}</span>
+                    </div>
+                    <div>
+                      <span className="text-gray-500 block text-xs">HRCC1</span>
+                      <span className="font-medium">${item.hrcc1_mxn.toFixed(2)}</span>
+                    </div>
+                    <div>
+                      <span className="text-gray-500 block text-xs">Varilla Crédito</span>
+                      <span className="font-semibold text-blue-600">${item.varilla_credito.toLocaleString()}</span>
+                    </div>
+                    <div>
+                      <span className="text-gray-500 block text-xs">Varilla Distribuidor</span>
+                      <span className="font-semibold text-blue-600">${item.varilla_distribuidor.toLocaleString()}</span>
+                    </div>
+                  </div>
+                  <div className="mt-3 pt-3 border-t">
+                    <span className="text-gray-500 block text-xs">Precio Mercado</span>
+                    <span className="font-bold text-lg text-indigo-600">${item.precio_mercado.toLocaleString()}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </>
         )}
 
         {/* Pagination */}

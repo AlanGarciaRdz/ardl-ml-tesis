@@ -49,7 +49,7 @@ const UserStatsBar: React.FC<UserStatsBarProps> = ({
   const cotizaciones = quotesData?.total_cotizaciones ?? propCotizaciones ?? 0
   return (
     <div className="relative z-10 w-full bg-white border-b border-gray-200 shadow-sm">
-      <div className="max-w-7xl mx-auto px-6 py-6">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-6">
         {/* Stats Section */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
           {/* Cotizaciones */}

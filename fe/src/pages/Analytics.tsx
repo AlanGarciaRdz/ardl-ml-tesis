@@ -305,10 +305,10 @@ export function Analytics() {
   ]
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 md:space-y-6">
       <div>
-        <h1 className="text-3xl font-bold text-gray-900">{t('analytics.title')}</h1>
-        <p className="text-gray-600">{t('analytics.subtitle')}</p>
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">{t('analytics.title')}</h1>
+        <p className="text-sm sm:text-base text-gray-600">{t('analytics.subtitle')}</p>
       </div>
 
       {/* Stats Bar - Only show when logged in */}
@@ -357,28 +357,28 @@ export function Analytics() {
             </div>
 
             {/* Manual Date Selection */}
-            <div className="flex flex-wrap gap-4 items-end">
-              <div className="flex flex-col space-y-2">
+            <div className="flex flex-col sm:flex-row flex-wrap gap-4 items-stretch sm:items-end">
+              <div className="flex flex-col space-y-2 flex-1 min-w-[140px]">
                 <Label htmlFor="start-date">{t('analytics.startDate')}</Label>
                 <Input
                   id="start-date"
                   type="date"
                   value={startDate}
                   onChange={(e) => setStartDate(e.target.value)}
-                  className="w-40"
+                  className="w-full sm:w-40"
                 />
               </div>
-              <div className="flex flex-col space-y-2">
+              <div className="flex flex-col space-y-2 flex-1 min-w-[140px]">
                 <Label htmlFor="end-date">{t('analytics.endDate')}</Label>
                 <Input
                   id="end-date"
                   type="date"
                   value={endDate}
                   onChange={(e) => setEndDate(e.target.value)}
-                  className="w-40"
+                  className="w-full sm:w-40"
                 />
               </div>
-              <Button onClick={() => refetch()} disabled={isLoading}>
+              <Button onClick={() => refetch()} disabled={isLoading} className="w-full sm:w-auto">
                 <RefreshCw className={`h-4 w-4 mr-2 ${isLoading ? 'animate-spin' : ''}`} />
                 {t('analytics.updateData')}
               </Button>
@@ -396,7 +396,7 @@ export function Analytics() {
           <select
             value={selectedModel}
             onChange={(e) => setSelectedModel(e.target.value)}
-            className="border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full sm:w-auto border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             <option value="lstm">LSTM (Neural Network)</option>
             <option value="simple_linear">Simple Linear</option>
@@ -441,7 +441,7 @@ export function Analytics() {
               <Label className="text-sm font-medium mb-3 block">
                 {t('analytics.showLines') || 'Mostrar líneas en el gráfico'}
               </Label>
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 md:gap-4">
                 {/* Show switches based on currency */}
                 {showMXN ? (
                   <>

@@ -44,14 +44,21 @@ const fetchMarketPrices = async () => {
 
 // API function to fetch forecast data
 const fetchForecastData = async (): Promise<ApiResponse> => {
+  // Calculate date one month ago to limit historical data
+  const today = new Date();
+  const oneMonthAgo = new Date(today);
+  oneMonthAgo.setMonth(today.getMonth() - 1);
+  const startDate = oneMonthAgo.toISOString().split('T')[0];
+  
   const params = new URLSearchParams({
     table_name: 'precios_materiales',
-    limit: '20',
+    limit: '30',
     forecast_periods: '18',
     value_column: 'scrap_mxn',
     transform: 'none',
     model_type: 'lstm',
-    use_trained_model: 'true'
+    use_trained_model: 'true',
+    start_date: startDate  
   });
 
   const response = await axios.get(`http://127.0.0.1:8000/api/v1/forecast/?${params}`);
@@ -75,6 +82,9 @@ const ShippingCalculator = () => {
   const [error, setError] = useState<string | null>(null);
   const [userRole, setUserRole] = useState<string>('user')
   const [suggestedVolume, setSuggestedVolume] = useState<number | null>(null);
+  const [currentQuote, setCurrentQuote] = useState<any>(null);
+  const [suggestedQuote, setSuggestedQuote] = useState<any>(null);
+  const [loadingPrices, setLoadingPrices] = useState(false);
   const materials = ['Varilla'];
 
   // Fetch market prices using React Query
@@ -93,6 +103,23 @@ const ShippingCalculator = () => {
     staleTime: 600000, // Consider data fresh for 10 minutes
   });
   
+  // Calculate price for a specific volume
+  const calculatePriceForVolume = async (volume: number) => {
+    try {
+      const requestData = {
+        codigo_postal: formData.codigoPostal,
+        peso: volume,
+        material: formData.material.toLowerCase()
+      };
+
+      const response = await axios.post('http://127.0.0.1:8000/api/v1/quote/calcular-envio', requestData);
+      return response.data;
+    } catch (error) {
+      console.error('Error calculating price for volume:', error);
+      return null;
+    }
+  };
+
   // Calculate shipping using the backend API
   const calculateShipping = async () => {
     // Check if market data is available
@@ -165,11 +192,30 @@ const ShippingCalculator = () => {
     }
   };
 
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
     // Calculate suggested volume for next tier
     const currentVolume = parseFloat(formData.peso);
     const suggested = getSuggestedVolume(currentVolume);
     setSuggestedVolume(suggested);
+    
+    // Calculate prices for both volumes
+    setLoadingPrices(true);
+    try {
+      // Calculate current volume price
+      const currentPrice = await calculatePriceForVolume(currentVolume);
+      setCurrentQuote(currentPrice);
+      
+      // Calculate suggested volume price if exists
+      if (suggested) {
+        const suggestedPrice = await calculatePriceForVolume(suggested);
+        setSuggestedQuote(suggestedPrice);
+      }
+    } catch (error) {
+      console.error('Error calculating prices:', error);
+    } finally {
+      setLoadingPrices(false);
+    }
+    
     setStep(2.5);
   };
 
@@ -283,7 +329,7 @@ const ShippingCalculator = () => {
                   type="text"
                   value={formData.codigoPostal}
                   onChange={(e) => setFormData({...formData, codigoPostal: e.target.value})}
-                  placeholder="Ej: 45010"
+                  placeholder="Ej: 44100"
                   maxLength={5}
                   className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-indigo-500 focus:outline-none text-lg"
                 />
@@ -304,7 +350,7 @@ const ShippingCalculator = () => {
                   step="0.01"
                   className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-indigo-500 focus:outline-none text-lg"
                 />
-                <p className="mt-1 text-sm text-gray-500">Peso mínimo: 15 Toneladas</p>
+                <p className="mt-1 text-sm text-gray-500">Envio mínimo: 15 Toneladas</p>
               </div>
 
               <div>
@@ -408,12 +454,20 @@ const ShippingCalculator = () => {
               </div>
 
               {/* Volume Tier Analysis */}
-              {marketData && (
+              {loadingPrices ? (
+                <div className="h-64 flex items-center justify-center">
+                  <div className="text-gray-500">Calculando precios...</div>
+                </div>
+              ) : currentQuote ? (
                 <VolumeTierAnalysis 
                   currentVolume={parseFloat(formData.peso)}
-                  basePricePerTon={marketData.precioBase}
+                  currentTotal={currentQuote.precio_total}
+                  currentPricePerTon={currentQuote.tarifa_precio_base_tn}
+                  suggestedVolume={suggestedVolume}
+                  suggestedTotal={suggestedQuote?.precio_total || null}
+                  suggestedPricePerTon={suggestedQuote?.tarifa_precio_base_tn || null}
                 />
-              )}
+              ) : null}
 
               {/* Action Buttons */}
               <div className="flex flex-col sm:flex-row gap-4">

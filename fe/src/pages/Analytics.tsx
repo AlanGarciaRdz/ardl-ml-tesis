@@ -6,12 +6,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { RefreshCw, Calculator } from 'lucide-react'
+import { RefreshCw } from 'lucide-react'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
 import axios from 'axios'
 import { useQuery } from '@tanstack/react-query'
 import 'katex/dist/katex.min.css'
-import { InlineMath, BlockMath } from 'react-katex'
+import { BlockMath } from 'react-katex'
 import { Switch } from '@/components/ui/switch'
 import { ForecastChart } from '@/components/charts/ForecastChart'
 
@@ -63,21 +63,6 @@ interface ApiResponse {
   startDate: string
 }
 
-interface CorrelationRequest {
-  data: MaterialPrice[]
-  field1: string
-  field2: string
-}
-
-interface CorrelationResponse {
-  correlation_coefficient: number
-  p_value: number
-  field1: string
-  field2: string
-  sample_size: number
-  interpretation: string
-}
-
 // API function to fetch data
 const fetchMaterialPrices = async (startDate?: string, endDate?: string, transform?: string, forecast_periods?: string, modelType?: string, value_column?: string): Promise<ApiResponse> => {
   const params = new URLSearchParams({
@@ -100,21 +85,6 @@ const fetchMaterialPrices = async (startDate?: string, endDate?: string, transfo
 }
 
 
-// API function to calculate correlation using the new service
-const calculateCorrelation = async (request: CorrelationRequest): Promise<CorrelationResponse> => {
-  const analysisRequest = {
-    analysis_type: 'correlation',
-    data: request.data,
-    parameters: {
-      field1: request.field1,
-      field2: request.field2
-    }
-  }
-  const response = await axios.post('http://127.0.0.1:8000/api/v1/ml/analyze', analysisRequest)
-  return response.data.result
-}
-
-
 
 
 export function Analytics() {
@@ -133,10 +103,6 @@ export function Analytics() {
   const [startDate, setStartDate] = useState(getSixMonthsAgo())
   const today = new Date().toISOString().split('T')[0]
   const [endDate, setEndDate] = useState(today)
-  const [correlationField1, setCorrelationField1] = useState('varilla_distribuidor')
-  const [correlationField2, setCorrelationField2] = useState('varilla_credito')
-  const [correlationResult, setCorrelationResult] = useState<CorrelationResponse | null>(null)
-  const [isCalculatingCorrelation, setIsCalculatingCorrelation] = useState(false)
   const [normalization, setNormalization] = useState<'none' | 'log' | 'sqrt' | 'normalize'>('normalize')
 
   const [selectedModel, setSelectedModel] = useState('lstm')
@@ -275,34 +241,9 @@ export function Analytics() {
     return { keys, matrix }
   }, [data?.data])
 
-  const handleCorrelationCalculation = async () => {
-    if (!data?.data) return
+  
 
-    setIsCalculatingCorrelation(true)
-    try {
-      const result = await calculateCorrelation({
-        data: data.data,
-        field1: correlationField1,
-        field2: correlationField2
-      })
-      setCorrelationResult(result)
-    } catch (error) {
-      console.error('Error calculating correlation:', error)
-    } finally {
-      setIsCalculatingCorrelation(false)
-    }
-  }
-
-  const fieldOptions = [
-    { value: 'varilla_distribuidor', label: t('analytics.varillaDistribuidor') },
-    { value: 'varilla_credito', label: t('analytics.varillaCredito') },
-    { value: 'precio_mercado', label: t('analytics.precioMercado') },
-    { value: 'tipoDeCambio', label: t('analytics.tipoDeCambio') },
-    { value: 'scrap_mxn', label: t('analytics.scrap_mxn') },
-    { value: 'rebar_mxn', label: t('analytics.rebar_mxn') },
-    { value: 'hrcc1_mxn', label: t('analytics.hrcc1_mxn') },
-    { value: 'gas_mxn', label: t('analytics.gas_mxn') },
-  ]
+ 
 
   return (
     <div className="space-y-4 md:space-y-6">

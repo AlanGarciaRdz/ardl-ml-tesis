@@ -57,7 +57,6 @@ export function VolumeTierAnalysis({
   suggestedVolume,
   suggestedTotal,
   suggestedPricePerTon,
-  onSelectVolume 
 }: VolumeTierAnalysisProps) {
   const currentTier = getCurrentTier(currentVolume)
   const nextTier = suggestedVolume ? getNextTier(currentVolume) : null

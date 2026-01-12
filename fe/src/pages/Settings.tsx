@@ -6,7 +6,7 @@ import { Switch } from '@/components/ui/switch'
 import { Label } from '@/components/ui/label'
 import { Save, RefreshCw, Database, Bell, User, Shield, Phone, CheckCircle } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
-import { setUpRecaptcha, signInWithPhone } from '@/services/authService'
+import { signInWithPhone } from '@/services/authService'
 import { getUserData, updatePhoneVerificationStatus, saveUserData } from '@/services/userService'
 
 export function Settings() {
@@ -14,11 +14,11 @@ export function Settings() {
   const [phoneNumber, setPhoneNumber] = useState('');
   const [verificationCode, setVerificationCode] = useState('');
   const [verificationStep, setVerificationStep] = useState<'idle' | 'sending' | 'verify'>('idle');
-  const [recaptchaVerifier, setRecaptchaVerifier] = useState<any>(null);
+  const [recaptchaVerifier] = useState<any>(null);
   const [isVerifying, setIsVerifying] = useState(false);
 
   // Dark mode state
-  const [isDarkMode, setIsDarkMode] = useState(() => {
+  const [isDarkMode] = useState(() => {
     // Check localStorage first
     const saved = localStorage.getItem('darkMode');
     if (saved !== null) {
@@ -41,7 +41,7 @@ export function Settings() {
 
   const handleDarkModeToggle = (checked: boolean) => {
     //TODO: I need to work on the dark version because not dark all the elements
-    //setIsDarkMode(checked);
+    localStorage.setItem('darkMode', checked.toString());
   };
 
   useEffect(() => {

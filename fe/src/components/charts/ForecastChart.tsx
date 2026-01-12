@@ -65,8 +65,6 @@ export function ForecastChart({
   visibleLines = {}, 
   height = 320,
   simplified = false,
-  startDate,
-  endDate 
 }: ForecastChartProps) {
   const { t } = useTranslation()
 

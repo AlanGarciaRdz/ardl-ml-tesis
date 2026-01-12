@@ -1,5 +1,5 @@
 import React from 'react';
-import { FileText, DollarSign, Coins, TrendingUp, ChevronDown } from 'lucide-react';
+import { FileText, DollarSign, Coins, TrendingUp } from 'lucide-react';
 import axios from 'axios';
 import { useQuery } from '@tanstack/react-query';
 
@@ -28,14 +28,6 @@ const UserStatsBar: React.FC<UserStatsBarProps> = ({
     comprado = 75000,
     tokens = 5,
     variacion = 1.6,
-    cp = '',
-    nombreProyecto = '',
-    material = '',
-    volumen = '',
-    onCPChange,
-    onNombreProyectoChange,
-    onMaterialChange,
-    onVolumenChange,
 }) => {
   // Fetch quotes total using React Query
   const { data: quotesData, isLoading: quotesLoading } = useQuery({

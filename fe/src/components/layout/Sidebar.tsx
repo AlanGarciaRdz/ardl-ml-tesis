@@ -4,7 +4,6 @@ import {
   Database,
   Settings,
   Home,
-  TrendingUp,
   TextQuote,
   X
 } from 'lucide-react'

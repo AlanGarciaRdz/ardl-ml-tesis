@@ -1,0 +1,2 @@
+cd /Users/alangarcia/Documents/Alan/Maestria/Tesis/projecto/etl
+streamlit run load/insert_precios_ui.py

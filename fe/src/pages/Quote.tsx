@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
-import { Calculator, MapPin, Package, TrendingUp, DollarSign } from 'lucide-react';
+import { Calculator, MapPin, Package, TrendingUp, DollarSign, Search } from 'lucide-react';
 import axios from 'axios';
 import { useQuery } from '@tanstack/react-query';
 import { ForecastChart, ApiResponse } from '@/components/charts/ForecastChart';
 import { VolumeTierAnalysis, getSuggestedVolume } from '@/components/quote/VolumeTierAnalysis';
+import { ZipCodeFinder } from '@/components/quote/ZipCodeFinder';
 
 // Types
 interface ShippingResult {
@@ -85,6 +86,8 @@ const ShippingCalculator = () => {
   const [currentQuote, setCurrentQuote] = useState<any>(null);
   const [suggestedQuote, setSuggestedQuote] = useState<any>(null);
   const [loadingPrices, setLoadingPrices] = useState(false);
+  const [isZipFinderOpen, setIsZipFinderOpen] = useState(false);
+  const [selectedMunicipality, setSelectedMunicipality] = useState<string>('');
   const materials = ['Varilla'];
 
   // Fetch market prices using React Query
@@ -235,6 +238,12 @@ const ShippingCalculator = () => {
     setResult(null);
     setError(null);
     setStep(1);
+    setSelectedMunicipality('');
+  };
+
+  const handleZipCodeSelect = (zipCode: string, municipalityName: string) => {
+    setFormData({ ...formData, codigoPostal: zipCode });
+    setSelectedMunicipality(municipalityName);
   };
 
   useEffect(() => {
@@ -325,15 +334,32 @@ const ShippingCalculator = () => {
                   <MapPin className="w-5 h-5 mr-2 text-indigo-600" />
                   Código postal de entrega (a donde enviaremos el acero)
                 </label>
-                <input
-                  type="text"
-                  value={formData.codigoPostal}
-                  onChange={(e) => setFormData({...formData, codigoPostal: e.target.value})}
-                  placeholder="Ej: 44100"
-                  maxLength={5}
-                  className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-indigo-500 focus:outline-none text-lg"
-                />
-                <p className="mt-1 text-sm text-gray-500">Codigo postal de entrega</p>
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={formData.codigoPostal}
+                    onChange={(e) => setFormData({...formData, codigoPostal: e.target.value})}
+                    placeholder="Ej: 44100"
+                    maxLength={5}
+                    className="flex-1 px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-indigo-500 focus:outline-none text-lg"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setIsZipFinderOpen(true)}
+                    className="px-4 py-3 bg-indigo-100 hover:bg-indigo-200 text-indigo-700 rounded-lg transition-colors flex items-center gap-2 font-semibold"
+                  >
+                    <Search className="w-5 h-5" />
+                    <span className="hidden sm:inline">Buscar</span>
+                  </button>
+                </div>
+                {selectedMunicipality && (
+                  <p className="mt-2 text-sm text-indigo-600 font-medium">
+                    📍 {selectedMunicipality}
+                  </p>
+                )}
+                <p className="mt-1 text-sm text-gray-500">
+                  Ingresa tu código postal o búscalo por región/municipio
+                </p>
               </div>
 
               <div>
@@ -624,6 +650,13 @@ const ShippingCalculator = () => {
           ) : null}
         </div>
         )}
+
+        {/* Zip Code Finder Modal */}
+        <ZipCodeFinder
+          isOpen={isZipFinderOpen}
+          onClose={() => setIsZipFinderOpen(false)}
+          onSelectZipCode={handleZipCodeSelect}
+        />
       </div>
     </div>
   );

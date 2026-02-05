@@ -176,7 +176,7 @@ Este proyecto es parte de una tesis de maestría y está bajo uso académico.
 
 ## 🙏 Agradecimientos
 
-- Profesores del programa de Maestría
+
 
 ---
 

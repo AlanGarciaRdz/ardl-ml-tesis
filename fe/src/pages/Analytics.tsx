@@ -15,6 +15,9 @@ import { BlockMath } from 'react-katex'
 import { Switch } from '@/components/ui/switch'
 import { ForecastChart } from '@/components/charts/ForecastChart'
 
+import { exportToExcel, TranslationKeys } from '@/utils/excelExport'
+
+
 // Types for the API response
 interface MaterialPrice {
   id: number
@@ -111,6 +114,7 @@ export function Analytics() {
   const [material, setMaterial] = useState('');
   const [volumen, setVolumen] = useState('');
   const [showMXN, setShowMXN] = useState(true) // true = MXN, false = USD
+  const [isExporting, setIsExporting] = useState(false)
 
   // Add state for line visibility - all visible by default
   const [visibleLines, setVisibleLines] = useState({
@@ -131,6 +135,9 @@ export function Analytics() {
     tipoDeCambio: true
   })
 
+  
+
+
   useEffect(() => {
     const role = localStorage.getItem('userRole') || 'user'
     setUserRole(role)
@@ -142,6 +149,59 @@ export function Analytics() {
       ...prev,
       [lineKey]: !prev[lineKey]
     }))
+  }
+
+  
+  const handleExportExcel = async () => {
+    if (!data) {
+      alert(t('errors.serverError'))
+      return
+    }
+
+    setIsExporting(true)
+
+    try {
+      // Preparar traducciones
+      const translations: TranslationKeys = {
+        date: t('analytics.startDate'),
+        type: 'Tipo',
+        typeHistorical: 'Histórico',
+        typeForecast: 'Pronóstico',
+        varillaDistribuidor: t('analytics.varillaDistribuidor'),
+        varillaCredito: t('analytics.varillaCredito'),
+        precioMercado: t('analytics.precioMercado'),
+        scrapMxn: t('analytics.scrap_mxn'),
+        scrap: t('analytics.scrap'),
+        gasMxn: t('analytics.gas_mxn'),
+        gas: t('analytics.gas'),
+        rebarMxn: t('analytics.rebar_mxn'),
+        rebar: t('analytics.rebar'),
+        hrcc1Mxn: t('analytics.hrcc1_mxn'),
+        hrcc1: t('analytics.hrcc1'),
+        tipoDeCambio: t('analytics.tipoDeCambio'),
+        predictedBajista: 'Pronóstico Bajista',
+        predictedConservador: 'Pronóstico Conservador',
+        predictedAlza: 'Pronóstico Alza',
+        confidenceLower: 'Intervalo Confianza (Inferior)',
+        confidenceUpper: 'Intervalo Confianza (Superior)',
+      }
+
+      // Exportar
+      exportToExcel(
+        {
+          historicalData: data.data,
+          forecastData: data.forecast,
+          startDate,
+          endDate,
+        },
+        translations
+      )
+    } catch (error) {
+      console.error('Error exporting to Excel:', error)
+      alert(t('common.error'))
+    } finally {
+      setIsExporting(false)
+    }
   }
 
   useEffect(() => {
@@ -970,7 +1030,13 @@ export function Analytics() {
         <CardContent>
           <div className="flex flex-wrap gap-2">
             {/* git <Button variant="outline">{t('analytics.exportPdf')}</Button> */}
-            <Button variant="outline">{t('analytics.exportExcel')}</Button>
+            <Button 
+              variant="outline" 
+              onClick={handleExportExcel}
+              disabled={isExporting || !data}
+            >
+              {isExporting ? t('common.loading') : t('analytics.exportExcel')}
+            </Button>
             {/* <Button variant="outline">{t('analytics.shareDashboard')}</Button>
             <Button variant="outline">{t('analytics.scheduleReports')}</Button> */}
           </div>

@@ -48,7 +48,8 @@ const fetchMaterialPrices = async (params: {
     ...(params.end_date && { end_date: params.end_date })
   })
 
-  const response = await axios.get(`/api/v1/data/?${searchParams}`)
+  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000'
+  const response = await axios.get(`${API_URL}/api/v1/data/?${searchParams}`)
   return response.data
 }
 

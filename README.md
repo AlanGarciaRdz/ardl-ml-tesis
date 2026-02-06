@@ -182,3 +182,6 @@ Este proyecto es parte de una tesis de maestría y está bajo uso académico.
 
 **Nota**: Este proyecto está en desarrollo activo como parte de la tesis de maestría. Las funcionalidades se implementarán gradualmente según el cronograma académico.
 
+
+
+

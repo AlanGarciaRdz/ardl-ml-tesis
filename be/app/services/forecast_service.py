@@ -2,7 +2,14 @@ from typing import Dict, Any, Optional, List
 import pandas as pd
 from datetime import datetime, timedelta
 from app.models.model_registry_service import ModelRegistryService
-from app.models.lstm_model import LSTMModel
+
+# Try to import LSTM model, but don't fail if Keras is not installed
+try:
+    from app.models.lstm_model import LSTMModel
+    LSTM_AVAILABLE = True
+except ImportError:
+    LSTM_AVAILABLE = False
+    LSTMModel = None
 
 
 class ForecastService:
@@ -29,6 +36,8 @@ class ForecastService:
         """
         # Load model
         if model_type.lower() == 'lstm':
+            if not LSTM_AVAILABLE:
+                raise ValueError("LSTM model is not available. Keras/TensorFlow is not installed.")
             model = self.registry.load_model(
                 LSTMModel, table_name, model_type, version
             )

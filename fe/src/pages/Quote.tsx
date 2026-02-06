@@ -30,7 +30,8 @@ const fetchMarketPrices = async () => {
     limit: '1'
   });
 
-  const response = await axios.get(`http://127.0.0.1:8000/api/v1/data/?${params}`);
+  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000'
+  const response = await axios.get(`${API_URL}/api/v1/data/?${params}`);
   const data = response.data.data[0];
 
   return {
@@ -62,7 +63,8 @@ const fetchForecastData = async (): Promise<ApiResponse> => {
     start_date: startDate  
   });
 
-  const response = await axios.get(`http://127.0.0.1:8000/api/v1/forecast/?${params}`);
+  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000'
+  const response = await axios.get(`${API_URL}/api/v1/forecast/?${params}`);
   return response.data;
 };
 
@@ -109,13 +111,14 @@ const ShippingCalculator = () => {
   // Calculate price for a specific volume
   const calculatePriceForVolume = async (volume: number) => {
     try {
+      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000'
       const requestData = {
         codigo_postal: formData.codigoPostal,
         peso: volume,
         material: formData.material.toLowerCase()
       };
 
-      const response = await axios.post('http://127.0.0.1:8000/api/v1/quote/calcular-envio', requestData);
+      const response = await axios.post(`${API_URL}/api/v1/quote/calcular-envio`, requestData);
       return response.data;
     } catch (error) {
       console.error('Error calculating price for volume:', error);
@@ -135,13 +138,14 @@ const ShippingCalculator = () => {
     setError(null);
 
     try {
+      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000'
       const requestData = {
         codigo_postal: formData.codigoPostal,
         peso: parseFloat(formData.peso),
         material: formData.material.toLowerCase()
       };
 
-      const response = await axios.post('http://127.0.0.1:8000/api/v1/quote/calcular-envio', requestData);
+      const response = await axios.post(`${API_URL}/api/v1/quote/calcular-envio`, requestData);
 
       // Transform API response to match component expectations
       const apiResult = response.data;

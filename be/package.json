@@ -8,7 +8,13 @@
     "start:prod": "uvicorn app.main:app --host 0.0.0.0 --port 8000",
     "start:dev": "uvicorn app.main:app --reload --host 0.0.0.0 --port 8000",
     "test": "pytest",
-    "install": "pip install -r requirements.txt"
+    "install": "pip install -r requirements.txt",
+    "deploy": "rsync -avz --exclude='venv/' --exclude='__pycache__/' --exclude='.env' --exclude='*.pyc' --exclude='node_modules/' --exclude='.git/' --exclude='app/model_registry/' --exclude='*.log' -e 'ssh -i ~/Desktop/monitoreo.pem' ./ ec2-user@100.24.31.252:/opt/servicios/tesis/",
+    "pm2:start": "pm2 start ecosystem.config.js",
+    "pm2:stop": "pm2 stop tesis-api",
+    "pm2:restart": "pm2 restart tesis-api",
+    "pm2:logs": "pm2 logs tesis-api",
+    "pm2:monitor": "pm2 monit"
   },
   "keywords": [
     "fastapi",

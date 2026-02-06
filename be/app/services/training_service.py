@@ -2,8 +2,15 @@ from typing import Dict, Any, Optional
 import pandas as pd
 from sqlalchemy import text
 from app.core.database import get_database_connection
-from app.models.lstm_model import LSTMModel
 from app.models.model_registry_service import ModelRegistryService
+
+# Try to import LSTM model, but don't fail if Keras is not installed
+try:
+    from app.models.lstm_model import LSTMModel
+    LSTM_AVAILABLE = True
+except ImportError:
+    LSTM_AVAILABLE = False
+    LSTMModel = None
 
 
 class TrainingService:
@@ -102,6 +109,8 @@ class TrainingService:
         
         # Create and train model based on type
         if model_type.lower() == 'lstm':
+            if not LSTM_AVAILABLE:
+                raise ValueError("LSTM model is not available. Keras/TensorFlow is not installed.")
             model = LSTMModel(
                 sequence_length=model_params.get('sequence_length', 20),
                 lstm_units=model_params.get('lstm_units', 2000),

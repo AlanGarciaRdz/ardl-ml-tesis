@@ -1,6 +1,12 @@
+import os
 from typing import List, Union
 from pydantic import AnyHttpUrl, validator
 from pydantic_settings import BaseSettings
+from dotenv import load_dotenv
+
+# Load environment variables from .env.production or .env
+env_file = ".env.production" if os.path.exists(".env.production") else ".env"
+load_dotenv(env_file)
 
 class Settings(BaseSettings):
     API_V1_STR: str
@@ -35,7 +41,8 @@ class Settings(BaseSettings):
     DEBUG: bool = True
 
     class Config:
-        env_file = ".env"
+        # Try .env.production first (for production), then .env (for development)
+        env_file = ".env.production" if os.path.exists(".env.production") else ".env"
         case_sensitive = True
 
 settings = Settings()

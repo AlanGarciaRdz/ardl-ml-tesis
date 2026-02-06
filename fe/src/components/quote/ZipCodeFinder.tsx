@@ -44,7 +44,8 @@ export function ZipCodeFinder({ isOpen, onClose, onSelectZipCode }: ZipCodeFinde
     setLoading(true)
     setError(null)
     try {
-      const response = await axios.get('http://127.0.0.1:8000/api/v1/locations/regions')
+      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000'
+      const response = await axios.get(`${API_URL}/api/v1/locations/regions`)
       setRegions(response.data)
     } catch (err) {
       setError('Error al cargar regiones')
@@ -58,7 +59,8 @@ export function ZipCodeFinder({ isOpen, onClose, onSelectZipCode }: ZipCodeFinde
     setLoading(true)
     setError(null)
     try {
-      const response = await axios.get(`http://127.0.0.1:8000/api/v1/locations/regions/${regionId}/municipalities`)
+      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000'
+      const response = await axios.get(`${API_URL}/api/v1/locations/regions/${regionId}/municipalities`)
       setMunicipalities(response.data)
       setStep('municipality')
     } catch (err) {

@@ -22,7 +22,7 @@ if (typeof window !== 'undefined') {
 }
 
 
-const basename = '/acero';//import.meta.env.PROD ? '/acero' : '/'
+const basename = '/';//import.meta.env.PROD ? '/acero' : '/'
 
 
 ReactDOM.createRoot(document.getElementById('root')!).render(

@@ -8,6 +8,7 @@ interface ProtectedRouteProps {
 }
 
 export function ProtectedRoute({ children }: ProtectedRouteProps) {
+  return children; // 🔥 bypass total
   const { isLoggedIn, loading, isRegistrationComplete } = useAuth();
   const location = useLocation();
 

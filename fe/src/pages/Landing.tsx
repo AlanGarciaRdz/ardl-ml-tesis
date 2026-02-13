@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom'
 import { useState } from 'react';
-import { useAuth } from '@/contexts/AuthContext'
+//import { useAuth } from '@/contexts/AuthContext'  //COMMENT THIS OUT FOR PRODUCTION
 import { RegistrationForm } from './RegistrationForm';
 import UserStatsBar from '../components/shared/UserStatsBar';
 import { Button } from '@radix-ui/themes'
@@ -17,7 +17,15 @@ import socio8 from '@/assets/images/socios/SUACERO.png'
 
 
 export function Landing() {
-  const { login, logout, isLoggedIn, user, isRegistrationComplete } = useAuth();
+  //const { login, logout, isLoggedIn, user, isRegistrationComplete } = useAuth();  //COMMENT THIS OUT FOR PRODUCTION
+  const isLoggedIn = true;
+  const user = {
+    displayName: 'John Doe'
+  };
+  const logout = () => {
+    console.log('Logout');
+  };
+  const isRegistrationComplete = true;
   const [material, setMaterial] = useState('');
   const [volumen, setVolumen] = useState('');
   const [cp, setCP] = useState('');
@@ -29,13 +37,14 @@ export function Landing() {
 
   const handleLogin = async () => {
     try {
-      await login();
+      //await login();
       // After login, if registration is incomplete, RegistrationForm will be shown
       // Show registration form if user is logged in but registration is not complete
       
-      if (isLoggedIn && !isRegistrationComplete) {
-        return <RegistrationForm onComplete={handleRegistrationComplete} />;
-      }
+      //COMMENT THIS OUT FOR PRODUCTION
+        // if (isLoggedIn && !isRegistrationComplete) {
+        //   return <RegistrationForm onComplete={handleRegistrationComplete} />;
+        // }
     } catch (error) {
       console.error('Login failed:', error);
     }
@@ -54,7 +63,8 @@ export function Landing() {
   const handleGetStarted = () => {
     if (!isLoggedIn) {
       // User not logged in, trigger login
-      handleLogin();
+      handleLogin();  //COMMENT THIS OUT FOR PRODUCTION
+      //setShowRegistrationForm(true);
     } else if (!isRegistrationComplete) {
       // User logged in but registration incomplete, show form
       setShowRegistrationForm(true);

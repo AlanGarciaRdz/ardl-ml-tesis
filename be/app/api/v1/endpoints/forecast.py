@@ -25,7 +25,7 @@ async def get_forecast(
     transform: str = Query("log", description="Transform the data", choices=["log", "sqrt", "normalize", "none"]),
     value_column: str = Query("scrap_mxn", description="Name of the column containing values to forecast"),
     model_type: str = Query("lstm", description="Type of model to use for forecasting", 
-                           pattern="^(lstm|arima|simple_linear)$"),
+                           pattern="^(lstm|arima|simple_linear|empirical)$"),
     use_trained_model: bool = Query(True, description="Use trained model if available, otherwise train on-the-fly")
 ) -> Any:
     """

@@ -31,7 +31,7 @@ class DatabaseManager:
         if not password:
             password = 'abcd1234'
         self.config = {
-            'host': os.getenv('POSTGRES_HOST', 'localhost'),
+            'host': os.getenv('POSTGRES_HOST', '52.14.228.224'),
             'port': int(os.getenv('POSTGRES_PORT', 5432)),
             'database': os.getenv('POSTGRES_DB', 'tesis'),
             'user': os.getenv('POSTGRES_USER', 'postgres'),

@@ -31,6 +31,8 @@ if 'precio_mercado' not in st.session_state:
     st.session_state.precio_mercado = 0.0
 if 'existing_id' not in st.session_state:
     st.session_state.existing_id = None
+if 'coeficiente' not in st.session_state:
+    st.session_state.coeficiente = float(0.95)
 
 st.title("Insertar/Actualizar registros en precios_materiales")
 st.write("Selecciona una fecha para cargar datos existentes o crear uno nuevo.")
@@ -49,7 +51,7 @@ if load_btn:
             cur.execute("""
                 SELECT id, date, year, scrap, gas, rebar, hrcc1,
                        scrap_mxn, gas_mxn, rebar_mxn, hrcc1_mxn,
-                       tipo_de_cambio, varilla_distribuidor, varilla_credito, precio_mercado
+                       tipo_de_cambio, varilla_distribuidor, varilla_credito, precio_mercado , coeficiente
                 FROM precios_materiales
                 WHERE date = %s
                 LIMIT 1
@@ -72,6 +74,7 @@ if load_btn:
                 st.session_state.loaded_varilla_distribuidor = row[12] or 0.0
                 st.session_state.loaded_varilla_credito = row[13] or 0.0
                 st.session_state.loaded_precio_mercado = row[14] or 0.0
+                st.session_state.loaded_coeficiente = float(row[15]) if row[15] else 0.95
                 
                 # Update calculated values
                 st.session_state.scrap_mxn = st.session_state.loaded_scrap_mxn
@@ -81,7 +84,8 @@ if load_btn:
                 st.session_state.varilla_distribuidor = st.session_state.loaded_varilla_distribuidor
                 st.session_state.varilla_credito = st.session_state.loaded_varilla_credito
                 st.session_state.precio_mercado = st.session_state.loaded_precio_mercado
-                
+                st.session_state.coeficiente = float(st.session_state.loaded_coeficiente)
+
                 st.success(f"✅ Datos cargados para {load_date} (ID: {st.session_state.existing_id})")
             else:
                 st.session_state.existing_id = None
@@ -138,6 +142,12 @@ with st.form("precios_form"):
         "precio_mercado", 
         value=st.session_state.precio_mercado
     )
+    coeficiente = st.number_input(
+        "coeficiente (para cálculo precio_mercado)", 
+        value=float(st.session_state.coeficiente),  
+        step=0.001,
+        format="%.4f"
+    )
 
     col1, col2 = st.columns(2)
     with col1:
@@ -182,7 +192,7 @@ if submitted:
                     SET year = %s, scrap = %s, gas = %s, rebar = %s, hrcc1 = %s,
                         scrap_mxn = %s, gas_mxn = %s, rebar_mxn = %s, hrcc1_mxn = %s,
                         tipo_de_cambio = %s, varilla_distribuidor = %s, 
-                        varilla_credito = %s, precio_mercado = %s
+                        varilla_credito = %s, precio_mercado = %s, coeficiente = %s
                     WHERE id = %s
                     RETURNING id;
                 """
@@ -200,6 +210,7 @@ if submitted:
                     float(varilla_distribuidor_val) if varilla_distribuidor_val is not None else None,
                     float(varilla_credito_val) if varilla_credito_val is not None else None,
                     float(precio_mercado_val) if precio_mercado_val is not None else None,
+                    float(coeficiente) if coeficiente is not None else 0.95,
                     st.session_state.existing_id
                 )
                 cur.execute(update_sql, params)
@@ -218,11 +229,11 @@ if submitted:
                         INSERT INTO precios_materiales (
                             date, year, scrap, gas, rebar, hrcc1,
                             scrap_mxn, gas_mxn, rebar_mxn, hrcc1_mxn,
-                            tipo_de_cambio, varilla_distribuidor, varilla_credito, precio_mercado
+                            tipo_de_cambio, varilla_distribuidor, varilla_credito, precio_mercado, coeficiente
                         )
                         VALUES (%s, %s, %s, %s, %s, %s,
                                 %s, %s, %s, %s,
-                                %s, %s, %s, %s)
+                                %s, %s, %s, %s, %s)
                         RETURNING id;
                     """
                     params = (
@@ -240,6 +251,7 @@ if submitted:
                         float(varilla_distribuidor_val) if varilla_distribuidor_val is not None else None,
                         float(varilla_credito_val) if varilla_credito_val is not None else None,
                         float(precio_mercado_val) if precio_mercado_val is not None else None,
+                        float(coeficiente) if coeficiente is not None else 0.95,
                     )
                     cur.execute(insert_sql, params)
                     new_id = cur.fetchone()[0]

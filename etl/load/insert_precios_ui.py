@@ -163,9 +163,9 @@ if calculate_btn:
         st.session_state.rebar_mxn = rebar * tipo_de_cambio
         st.session_state.hrcc1_mxn = hrcc1 * tipo_de_cambio
 
-        st.session_state.varilla_distribuidor = st.session_state.rebar_mxn * 1.344
-        st.session_state.varilla_credito = st.session_state.rebar_mxn * 1.372
-        st.session_state.precio_mercado = st.session_state.rebar_mxn * 1.391
+        st.session_state.varilla_distribuidor = st.session_state.scrap_mxn * 1.344
+        st.session_state.varilla_credito = st.session_state.scrap_mxn * 1.372
+        st.session_state.precio_mercado = (st.session_state.scrap_mxn * 2) / coeficiente
 
         st.success("✅ Valores MXN calculados correctamente!")
     else:

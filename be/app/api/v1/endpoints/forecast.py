@@ -104,8 +104,10 @@ async def get_forecast(
             forecast_data = []
             
             if model_type == "empirical": 
+                print("Calculating empirical forecast")
                 forecast_data = calculate_empirical_forecast(data, forecast_periods, value_column)
             elif  model_type == "lstm":
+                print("Calculating LSTM forecast")
                 try:
                     # Try to use trained model
                     forecast_data = forecast_service.generate_forecast(
@@ -211,6 +213,7 @@ def calculate_simple_forecast(data: List[Dict], periods: int, value_column: str)
 # rename the function
 def calculate_empirical_forecast(data: List[Dict], periods: int, value_column: str) -> List[Dict]:
     # replace the regression part with this empirical logic (keep your date handling)
+    
     df = pd.DataFrame(data)
 
     date_col = 'date' if 'date' in df.columns else 'Date'
@@ -225,7 +228,17 @@ def calculate_empirical_forecast(data: List[Dict], periods: int, value_column: s
     df = df.sort_values(date_col)
 
     last_val = df[base_col].dropna().iloc[-1]  
-    base_price = float(last_val) * 2.0         
+    base_price = float(last_val) * 2.0     
+
+    MONTHLY_COEFS = {
+        (2026, 2): 0.7929,
+        (2026, 3): 0.7889,
+        (2026, 4): 0.7913,
+        (2026, 5): 0.8094,
+        (2026, 6): 0.8162,
+        (2026, 7): 0.8464,
+        (2026, 8): 0.8549,
+    }    
 
     day_interval = 7
     last_date = df[date_col].max()
@@ -233,9 +246,18 @@ def calculate_empirical_forecast(data: List[Dict], periods: int, value_column: s
 
     forecast_data = []
     for i, date in enumerate(future_dates):
-        bajista = base_price / 0.95
-        conservador = base_price / 0.93
-        alza = base_price / 0.90
+        coef = MONTHLY_COEFS.get((date.year, date.month), list(MONTHLY_COEFS.values())[-1])
+        
+        if i == 0:
+            coef_bajista = coef
+            coef_alza = coef
+        else:
+            coef_bajista = coef * 0.98
+            coef_alza = coef * 1.02
+
+        conservador = base_price / coef
+        bajista = base_price / coef_bajista
+        alza = base_price / coef_alza
 
         forecast_data.append({
             'date': date.strftime('%Y-%m-%d'),

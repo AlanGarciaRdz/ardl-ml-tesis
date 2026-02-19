@@ -14,7 +14,7 @@ import { useState, useEffect } from 'react'
 const navigation = [
   { nameKey: 'navigation.dashboard', href: '/dashboard', icon: Home, end: true, roles: ['admin', 'user'] },
   { nameKey: 'navigation.dataExplorer', href: '/dashboard/data', icon: Database, roles: ['admin'] },
-  { nameKey: 'navigation.analytics', href: '/dashboard/analytics', icon: BarChart3, roles: [ 'user'] },
+  { nameKey: 'navigation.analytics', href: '/dashboard/analytics', icon: BarChart3, roles: [ 'user', 'admin'] },
   // { nameKey: 'Forecasting', href: '/dashboard/forecasting', icon: TrendingUp },
   {nameKey : 'navigation.quotes', href: '/dashboard/quote', icon: TextQuote, roles: [ 'admin', 'user'] },
   { nameKey: 'navigation.settings', href: '/dashboard/settings', icon: Settings, roles: [ 'admin'] },

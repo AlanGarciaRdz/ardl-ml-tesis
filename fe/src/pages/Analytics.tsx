@@ -14,7 +14,7 @@ import 'katex/dist/katex.min.css'
 import { BlockMath } from 'react-katex'
 import { Switch } from '@/components/ui/switch'
 import { ForecastChart } from '@/components/charts/ForecastChart'
-
+import { MonthlyAnalysisTable } from '@/components/charts/MonthlyAnalysisTable';
 import { exportToExcel, TranslationKeys } from '@/utils/excelExport'
 
 
@@ -34,6 +34,7 @@ interface MaterialPrice {
   hrcc1: number,
   hrcc1_mxn: number,
   tipo_de_cambio: number
+  coeficiente: number
 }
 
 interface ForecastPrice {
@@ -75,7 +76,7 @@ const fetchMaterialPrices = async (startDate?: string, endDate?: string, transfo
     value_column: value_column || "scrap_mxn",
     transform: transform || 'none',
     model_type: modelType || 'lstm',
-    use_trained_model: 'true'
+    use_trained_model: 'false'
   })
 
   if (startDate) params.append('start_date', startDate)
@@ -108,7 +109,7 @@ export function Analytics() {
   const [endDate, setEndDate] = useState(today)
   const [normalization, setNormalization] = useState<'none' | 'log' | 'sqrt' | 'normalize'>('normalize')
 
-  const [selectedModel, setSelectedModel] = useState('lstm')
+  const [selectedModel, setSelectedModel] = useState('empirical')//useState('lstm')
 
   const { isLoggedIn } = useAuth();
   const [material, setMaterial] = useState('');
@@ -599,11 +600,17 @@ export function Analytics() {
         </Card>
       </div>
 
+      <div className="grid grid-cols-1 lg:grid-cols-1 gap-12">
+
+      <MonthlyAnalysisTable data={data?.data} />
+      </div>
 
 
       {/* Normalized Charts */}
       {userRole === 'admin' && (
         <div className="grid grid-cols-1 lg:grid-cols-1 gap-12">
+
+        
 
           <Card>
             <CardHeader>
@@ -667,6 +674,7 @@ export function Analytics() {
                       [t('analytics.varillaDistribuidor')]: item.varilla_distribuidor,
                       [t('analytics.varillaCredito')]: item.varilla_credito,
                       [t('analytics.tipoDeCambio')]: item.tipo_de_cambio,
+                      [t('analytics.coeficiente')]: item.coeficiente,
                       type: 'historical'
                     })) || []
 

@@ -17,6 +17,7 @@ export interface MaterialPrice {
   hrcc1: number
   hrcc1_mxn: number
   tipo_de_cambio: number
+  coeficiente: number
 }
 
 export interface ForecastPrice {

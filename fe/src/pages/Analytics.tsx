@@ -602,7 +602,7 @@ export function Analytics() {
 
       <div className="grid grid-cols-1 lg:grid-cols-1 gap-12">
 
-      <MonthlyAnalysisTable data={data?.data} />
+      { <MonthlyAnalysisTable data={data?.data} /*forecast={data?.forecast */ />}
       </div>
 
 

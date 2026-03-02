@@ -5,7 +5,7 @@ import { RegistrationForm } from './RegistrationForm';
 import UserStatsBar from '../components/shared/UserStatsBar';
 import { HeroVisualCard } from '../components/charts/HeroVisualCard';
 import { Button } from '@radix-ui/themes'
-import { BarChart3, Database, TrendingUp, Shield, Globe, Factory, Zap, Users, Award, LogOut, Menu, X } from 'lucide-react'  //ChevronRight
+import { BarChart3, Database, Shield, Globe, Factory, Zap, Users, Award, LogOut, Menu, X } from 'lucide-react'  //ChevronRight // TrendingUp
 import logo from '@/assets/images/PITIAX-logo.png'
 import socio1 from '@/assets/images/socios/ACC.png'
 import socio2 from '@/assets/images/socios/ACEROS OCOTLAN.png'
@@ -276,10 +276,10 @@ export function Landing() {
               </h2>
               <div className="space-y-4 sm:space-y-6 text-base sm:text-lg text-white/95 leading-relaxed">
                 <p className="drop-shadow-md">
-                  Soy una inteligencia artificial que usa datos históricos, macroeconómicos y domésticos.
+                  Soy un sistema de predicción de precios impulsado por inteligencia artificial.
                 </p>
                 <p className="drop-shadow-md">
-                  Analizo lo que sucede en el mercado, genero pronósticos y te ayudo a tomar decisiones sobre tus proyectos e inversiones en base a un análisis inteligente de datos.
+                  Combino modelos econométricos avanzados, redes neuronales y datos macroeconómicos para analizar el mercado, generar pronósticos y ayudarte a tomar mejores decisiones de compra.
                 </p>
                 <p className="text-white font-bold text-lg sm:text-xl drop-shadow-lg bg-white/10 px-4 py-2 rounded-lg inline-block">
                   ¿Te interesa que hablemos del futuro?
@@ -302,7 +302,7 @@ export function Landing() {
       </div>
 
       {/* ── STATS ── */}
-      <div id="que-hago" className="relative z-10 px-4 sm:px-6 py-8 sm:py-12 md:py-16">
+      {/* <div id="que-hago" className="relative z-10 px-4 sm:px-6 py-8 sm:py-12 md:py-16">
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 md:gap-8">
             {[
@@ -321,7 +321,7 @@ export function Landing() {
             ))}
           </div>
         </div>
-      </div>
+      </div> */}
 
       {/* ── FEATURES ── */}
       <div className="relative z-10 px-4 sm:px-6 py-10 sm:py-16 md:py-20">

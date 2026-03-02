@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext'
 import { RegistrationForm } from './RegistrationForm';
 import UserStatsBar from '../components/shared/UserStatsBar';
+import { HeroVisualCard } from '../components/charts/HeroVisualCard';
 import { Button } from '@radix-ui/themes'
 import { BarChart3, Database, TrendingUp, Shield, Globe, Factory, Zap, Users, Award, LogOut, Menu, X } from 'lucide-react'  //ChevronRight
 import logo from '@/assets/images/PITIAX-logo.png'
@@ -16,17 +17,10 @@ import socio7 from '@/assets/images/socios/RECAL.png'
 import socio8 from '@/assets/images/socios/SUACERO.png'
 
 
+
 export function Landing() {
   const { login, logout, isLoggedIn, user, isRegistrationComplete } = useAuth();  //COMMENT THIS OUT FOR PRODUCTION
-  //const isLoggedIn = true;
-  // const user = {
-  //   displayName: 'John Doe'
-  // };
-  // const logout = () => {
-  //   console.log('Logout');
-  // };
 
-  //const isRegistrationComplete = true;
   const [material, setMaterial] = useState('');
   const [volumen, setVolumen] = useState('');
   const [cp, setCP] = useState('');
@@ -39,38 +33,25 @@ export function Landing() {
   const handleLogin = async () => {
     try {
       await login();
-      // After login, if registration is incomplete, RegistrationForm will be shown
-      // Show registration form if user is logged in but registration is not complete
-      
-      
-         if (isLoggedIn && !isRegistrationComplete) {
-           return <RegistrationForm onComplete={handleRegistrationComplete} />;
-         }
+      if (isLoggedIn && !isRegistrationComplete) {
+        return <RegistrationForm onComplete={handleRegistrationComplete} />;
+      }
     } catch (error) {
       console.error('Login failed:', error);
     }
   };
 
   const handleRegistrationComplete = () => {
-    // After registration is complete, user can access the dashboard
-    // The auth context will update automatically
     setShowRegistrationForm(false);
     window.location.reload();
   };
 
-  
-
-
   const handleGetStarted = () => {
     if (!isLoggedIn) {
-      // User not logged in, trigger login
-      handleLogin();  //COMMENT THIS OUT FOR PRODUCTION
-      //setShowRegistrationForm(true);
+      handleLogin();
     } else if (!isRegistrationComplete) {
-      // User logged in but registration incomplete, show form
       setShowRegistrationForm(true);
     } else {
-      // User logged in and registration complete, go to dashboard
       navigate('/dashboard');
     }
   }
@@ -96,14 +77,11 @@ export function Landing() {
     { id: 8, image: socio8, name: "Socio 8" },
   ]
 
-  // Show registration form if user is logged in but registration is not complete
   if (isLoggedIn && !isRegistrationComplete && showRegistrationForm) {
     return <RegistrationForm onComplete={handleRegistrationComplete} />;
   }
 
-  // Also show form automatically when user logs in without complete registration
   if (isLoggedIn && !isRegistrationComplete && !showRegistrationForm) {
-    // Automatically show the form after login
     setTimeout(() => setShowRegistrationForm(true), 100);
   }
 
@@ -118,57 +96,27 @@ export function Landing() {
       </div>
 
       {/* Navigation */}
-      <nav className="sticky top-0 z-50 px-4 sm:px-6 py-4 backdrop-blur-md bg-white/90 border-b border-[#2596be]/20">
+      <nav className="sticky top-0 z-50 px-4 sm:px-6 py-3 sm:py-4 backdrop-blur-md bg-white/90 border-b border-[#2596be]/20">
         <div className="max-w-7xl mx-auto flex justify-between items-center">
           <div className="flex items-center space-x-3">
-            <img src={logo} alt="Pitiax Logo" className="w-21 h-16 object-contain" />
+            <img src={logo} alt="Pitiax Logo" className="w-auto h-10 sm:h-14 object-contain" />
           </div>
-          
-          {/* Desktop Navigation - Hidden on mobile */}
+
+          {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-6">
-            <button
-              onClick={() => scrollToSection('quien-soy')}
-              className="text-gray-800 hover:text-[#27348B] transition-colors duration-300 text-[16px] font-medium">
-              ¿Quién soy?
-            </button>
-            <button
-              onClick={() => scrollToSection('que-hago')}
-              className="text-gray-800 hover:text-[#27348B] transition-colors duration-300 text-[16px] font-medium">
-              ¿Qué hago?
-            </button>
-            <button
-              onClick={() => scrollToSection('socios')}
-              className="text-gray-800 hover:text-[#27348B] transition-colors duration-300 text-[16px] font-medium">
-              Mis socios
-            </button>
-            <button
-              onClick={() => scrollToSection('futuro')}
-              className="text-gray-800 hover:text-[#27348B] transition-colors duration-300 text-[16px] font-medium">
-              Hablemos del futuro
-            </button>
-            <button
-              onClick={() => scrollToSection('futuro')}
-              className="text-gray-800 hover:text-[#27348B] transition-colors duration-300 text-[16px] font-medium">
-              Tu plan en acción
-            </button>
+            <button onClick={() => scrollToSection('quien-soy')} className="text-gray-800 hover:text-[#27348B] transition-colors duration-300 text-[16px] font-medium">¿Quién soy?</button>
+            <button onClick={() => scrollToSection('que-hago')} className="text-gray-800 hover:text-[#27348B] transition-colors duration-300 text-[16px] font-medium">¿Qué hago?</button>
+            <button onClick={() => scrollToSection('socios')} className="text-gray-800 hover:text-[#27348B] transition-colors duration-300 text-[16px] font-medium">Mis socios</button>
+            <button onClick={() => scrollToSection('futuro')} className="text-gray-800 hover:text-[#27348B] transition-colors duration-300 text-[16px] font-medium">Hablemos del futuro</button>
+            <button onClick={() => scrollToSection('futuro')} className="text-gray-800 hover:text-[#27348B] transition-colors duration-300 text-[16px] font-medium">Tu plan en acción</button>
 
             {isLoggedIn ? (
               <div className="flex items-center gap-2">
-                <span className="text-[16px] text-gray-700">
-                  {user?.displayName?.split(' ')[0] || 'User'}
-                </span>
-                <Button variant="ghost" size="2" onClick={logout}>
-                  <LogOut className="h-5 w-5" />
-                </Button>
+                <span className="text-[16px] text-gray-700">{user?.displayName?.split(' ')[0] || 'User'}</span>
+                <Button variant="ghost" size="2" onClick={logout}><LogOut className="h-5 w-5" /></Button>
               </div>
             ) : (
-              <Button
-                variant="ghost"
-                onClick={handleLogin}
-                className="text-[#27348B] hover:text-[#616cb5] transition-all duration-300"
-              >
-                Sign In
-              </Button>
+              <Button variant="ghost" onClick={handleLogin} className="text-[#27348B] hover:text-[#616cb5] transition-all duration-300">Sign In</Button>
             )}
           </div>
 
@@ -181,175 +129,121 @@ export function Landing() {
             <Menu className="h-6 w-6" />
           </button>
         </div>
-
-        {/* Mobile Menu Overlay */}
-        {mobileMenuOpen && (
-          <div className="fixed inset-0 z-50 md:hidden">
-            {/* Backdrop */}
-            <div 
-              className="absolute inset-0 bg-black opacity-50"
-              onClick={() => setMobileMenuOpen(false)}
-            />
-            
-            {/* Menu Panel */}
-            <div className="absolute right-0 top-0 h-full w-64 bg-white shadow-xl">
-              <div className="flex flex-col h-full">
-                {/* Header */}
-                <div className="flex items-center justify-between p-4 border-b">
-                  <span className="text-lg font-semibold text-gray-800">Menú</span>
-                  <button
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="p-2 rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-100"
-                    aria-label="Cerrar menú"
-                  >
-                    <X className="h-6 w-6" />
-                  </button>
-                </div>
-
-                {/* Navigation Links */}
-                <nav className="flex-1 px-4 py-6 space-y-4 overflow-y-auto">
-                  <button
-                    onClick={() => {
-                      scrollToSection('quien-soy');
-                      setMobileMenuOpen(false);
-                    }}
-                    className="w-full text-left py-3 px-4 text-gray-800 hover:bg-gray-100 rounded-lg transition-colors text-base font-medium"
-                  >
-                    ¿Quién soy?
-                  </button>
-                  <button
-                    onClick={() => {
-                      scrollToSection('que-hago');
-                      setMobileMenuOpen(false);
-                    }}
-                    className="w-full text-left py-3 px-4 text-gray-800 hover:bg-gray-100 rounded-lg transition-colors text-base font-medium"
-                  >
-                    ¿Qué hago?
-                  </button>
-                  <button
-                    onClick={() => {
-                      scrollToSection('socios');
-                      setMobileMenuOpen(false);
-                    }}
-                    className="w-full text-left py-3 px-4 text-gray-800 hover:bg-gray-100 rounded-lg transition-colors text-base font-medium"
-                  >
-                    Mis socios
-                  </button>
-                  <button
-                    onClick={() => {
-                      scrollToSection('futuro');
-                      setMobileMenuOpen(false);
-                    }}
-                    className="w-full text-left py-3 px-4 text-gray-800 hover:bg-gray-100 rounded-lg transition-colors text-base font-medium"
-                  >
-                    Hablemos del futuro
-                  </button>
-                  <button
-                    onClick={() => {
-                      scrollToSection('futuro');
-                      setMobileMenuOpen(false);
-                    }}
-                    className="w-full text-left py-3 px-4 text-gray-800 hover:bg-gray-100 rounded-lg transition-colors text-base font-medium"
-                  >
-                    Tu plan en acción
-                  </button>
-
-                  <div className="border-t pt-4 mt-4">
-                    {isLoggedIn ? (
-                      <div className="space-y-3">
-                        <div className="px-4 py-2 text-sm text-gray-600">
-                          {user?.displayName || 'User'}
-                        </div>
-                        <Button
-                          variant="ghost"
-                          onClick={() => {
-                            logout();
-                            setMobileMenuOpen(false);
-                          }}
-                          className="w-full justify-start"
-                        >
-                          <LogOut className="h-5 w-5 mr-2" />
-                          Cerrar Sesión
-                        </Button>
-                      </div>
-                    ) : (
-                      <Button
-                        onClick={() => {
-                          handleLogin();
-                          setMobileMenuOpen(false);
-                        }}
-                        className="w-full bg-[#27348B] text-white hover:bg-[#36A9E1]"
-                      >
-                        Sign In
-                      </Button>
-                    )}
-                  </div>
-                </nav>
-              </div>
-            </div>
-          </div>
-        )}
       </nav>
 
-      {/* Stats Bar - Only show when logged in */}
+      {/* Mobile Menu Overlay — fuera del nav para que cubra toda la pantalla correctamente */}
+      {mobileMenuOpen && (
+        <div className="fixed inset-0 z-[100] md:hidden">
+          {/* Backdrop */}
+          <div className="absolute inset-0 bg-black/50" onClick={() => setMobileMenuOpen(false)} />
+          {/* Panel — slide desde la derecha */}
+          <div className="absolute right-0 top-0 h-full w-72 bg-white shadow-2xl flex flex-col">
+            {/* Header */}
+            <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
+              <img src={logo} alt="Pitiax Logo" className="h-9 w-auto object-contain" />
+              <button
+                onClick={() => setMobileMenuOpen(false)}
+                className="p-2 rounded-md text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-colors"
+                aria-label="Cerrar menú"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+            {/* Auth — arriba de los links */}
+            <div className="px-3 pt-4 pb-3 border-b border-gray-100">
+              {isLoggedIn ? (
+                <div className="flex items-center justify-between px-2">
+                  <span className="text-sm text-gray-600 font-medium">{user?.displayName || 'User'}</span>
+                  <Button
+                    variant="ghost"
+                    onClick={() => { logout(); setMobileMenuOpen(false); }}
+                    className="text-red-500 hover:bg-red-50 flex items-center gap-1.5 text-sm"
+                  >
+                    <LogOut className="h-4 w-4" />Cerrar Sesión
+                  </Button>
+                </div>
+              ) : (
+                <Button
+                  onClick={() => { handleLogin(); setMobileMenuOpen(false); }}
+                  className="w-full bg-[#27348B] text-white hover:bg-[#36A9E1] transition-colors"
+                >
+                  Sign In
+                </Button>
+              )}
+            </div>
+            {/* Links */}
+            <nav className="flex-1 px-3 py-5 space-y-1 overflow-y-auto">
+              {[
+                { label: '¿Quién soy?', id: 'quien-soy' },
+                { label: '¿Qué hago?', id: 'que-hago' },
+                { label: 'Mis socios', id: 'socios' },
+                { label: 'Hablemos del futuro', id: 'futuro' },
+                { label: 'Tu plan en acción', id: 'futuro' },
+              ].map((item) => (
+                <button
+                  key={item.label}
+                  onClick={() => { scrollToSection(item.id); setMobileMenuOpen(false); }}
+                  className="w-full text-left py-3 px-4 text-gray-700 hover:bg-[#27348B]/5 hover:text-[#27348B] rounded-xl transition-colors text-base font-medium"
+                >
+                  {item.label}
+                </button>
+              ))}
+            </nav>
+          </div>
+        </div>
+      )}
+
+      {/* Stats Bar */}
       {isLoggedIn && isRegistrationComplete && (
         <UserStatsBar
-          cotizaciones={10}
-          comprado={75000}
-          tokens={5}
-          variacion={1.6}
-          cp={cp}
-          nombreProyecto={nombreProyecto}
-          material={material}
-          volumen={volumen}
-          onCPChange={setCP}
-          onNombreProyectoChange={setNombreProyecto}
-          onMaterialChange={setMaterial}
-          onVolumenChange={setVolumen}
+          cotizaciones={10} comprado={75000} tokens={5} variacion={1.6}
+          cp={cp} nombreProyecto={nombreProyecto} material={material} volumen={volumen}
+          onCPChange={setCP} onNombreProyectoChange={setNombreProyecto}
+          onMaterialChange={setMaterial} onVolumenChange={setVolumen}
         />
       )}
 
-      {/* Hero Section */}
-      <div className="relative z-10 px-4 sm:px-6 py-12 md:py-24">
+      {/* ── HERO ── */}
+      <div className="relative z-10 px-4 sm:px-6 py-10 sm:py-16 md:py-24">
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-12 items-center">
+
+            {/* Left copy */}
             <div>
-              <div className="inline-flex items-center px-3 sm:px-4 py-2 rounded-full bg-white/20 border border-white/30 mb-4 md:mb-6">
-                <Globe className="w-4 h-4 text-white mr-2" />
+              <div className="inline-flex items-center px-3 py-1.5 sm:px-4 sm:py-2 rounded-full bg-white/20 border border-white/30 mb-4 md:mb-6">
+                <Globe className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-white mr-2" />
                 <span className="text-xs sm:text-sm text-white font-medium">Enfocado en el Mercado Mexicano</span>
               </div>
 
-              <h1 className="text-4xl sm:text-5xl lg:text-7xl font-bold mb-4 md:mb-6 leading-tight text-white drop-shadow-lg">
+              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-bold mb-4 md:mb-6 leading-tight text-white drop-shadow-lg">
                 Analítica de
-                <span className="block text-white">
-                  Precios de Acero
-                </span>
+                <span className="block text-white">Precios de Acero</span>
               </h1>
 
-              <p className="text-lg sm:text-xl text-white/95 mb-6 md:mb-8 leading-relaxed max-w-lg drop-shadow-md">
+              <p className="text-base sm:text-lg md:text-xl text-white/95 mb-6 md:mb-8 leading-relaxed max-w-lg drop-shadow-md">
                 Plataforma líder en México para análisis de precios de acero en tiempo real,
                 tendencias del mercado y predicciones inteligentes.
               </p>
 
-              <div className="flex flex-col sm:flex-row gap-4 mb-12">
+              <div className="flex flex-col xs:flex-row gap-3 mb-8 sm:mb-12">
                 <Button
-                  size="4"
+                  size="3"
                   onClick={handleGetStarted}
-                  className="bg-white text-[#27348B] hover:bg-[#36A9E1] hover:text-white px-8 py-4 text-lg font-semibold shadow-2xl transform hover:scale-105 transition-all duration-300"
+                  className="bg-white text-[#27348B] hover:bg-[#36A9E1] hover:text-white px-6 py-3 sm:px-8 sm:py-4 text-base sm:text-lg font-semibold shadow-2xl transform hover:scale-105 transition-all duration-300 w-full xs:w-auto"
                 >
                   Comenzar Ahora
                 </Button>
                 <Button
-                  size="4"
+                  size="3"
                   variant="outline"
-                  className="border-white text-white hover:bg-white hover:text-[#27348B] px-8 py-4 text-lg"
+                  className="border-white text-white hover:bg-white hover:text-[#27348B] px-6 py-3 sm:px-8 sm:py-4 text-base sm:text-lg w-full xs:w-auto"
                 >
                   Ver Demo
                 </Button>
               </div>
 
               {/* Trust Indicators */}
-              <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-3 sm:space-y-0 sm:space-x-6 text-sm text-white/90">
+              <div className="flex flex-wrap items-center gap-4 text-sm text-white/90">
                 <div className="flex items-center">
                   <Users className="w-4 h-4 mr-2 text-white" />
                   <span className="font-medium">500+ Empresas</span>
@@ -361,84 +255,43 @@ export function Landing() {
               </div>
             </div>
 
-            {/* Hero Visual */}
-            <div className="relative mt-8 lg:mt-0">
-              <div className="bg-white/90 backdrop-blur-md rounded-3xl p-4 sm:p-8 border border-[#2596be]/20 shadow-2xl">
-                <div className="mb-6">
-                  <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-lg font-semibold text-gray-800">Precio del Acero - Tiempo Real</h3>
-                    <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
-                  </div>
-
-                  {/* Mock Chart */}
-                  <div className="h-48 bg-gradient-to-t from-[#2596be]/20 to-transparent rounded-lg p-4 border border-[#2596be]/30">
-                    <div className="flex items-end justify-between h-full space-x-2">
-                      {[65, 72, 58, 81, 67, 89, 94, 76, 88, 95, 87, 92].map((height, i) => (
-                        <div
-                          key={i}
-                          className="bg-gradient-to-t from-[#2596be] to-[#2ca6e1] rounded-t flex-1 transition-all duration-1000 hover:from-[#1772b5] hover:to-[#2596be]"
-                          style={{ height: `${height}%` }}
-                        ></div>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="mt-4 flex justify-between text-sm">
-                    <span className="text-gray-500">Ene 2025</span>
-                    <span className="text-green-600 font-semibold">+12.5% ↗</span>
-                    <span className="text-gray-500">Aug 2025</span>
-                  </div>
-                </div>
-
-                {/* Live Data Simulation */}
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="bg-[#2596be]/5 rounded-lg p-4">
-                    <div className="text-xs text-gray-500 mb-1">Acero Estructural</div>
-                    <div className="text-lg font-bold text-gray-800">$18,450</div>
-                    <div className="text-xs text-green-600">+2.3%</div>
-                  </div>
-                  <div className="bg-[#2596be]/5 rounded-lg p-4">
-                    <div className="text-xs text-gray-500 mb-1">Varilla Corrugada</div>
-                    <div className="text-lg font-bold text-gray-800">$16,890</div>
-                    <div className="text-xs text-red-500">-1.1%</div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Floating Elements */}
-              <div className="absolute -top-4 -right-4 w-20 h-20 bg-gradient-to-br from-[#2ca6e1] to-[#41afe0] rounded-full blur-xl opacity-60 animate-bounce"></div>
-              <div className="absolute -bottom-4 -left-4 w-16 h-16 bg-gradient-to-br from-[#2596be] to-[#1772b5] rounded-full blur-xl opacity-60 animate-bounce delay-500"></div>
+            {/* Hero Visual Card */}
+            <div className="relative mt-6 lg:mt-0">
+              <HeroVisualCard />
+              {/* Floating blobs — hidden on small screens */}
+              <div className="hidden sm:block absolute -top-4 -right-4 w-20 h-20 bg-gradient-to-br from-[#2ca6e1] to-[#41afe0] rounded-full blur-xl opacity-60 animate-bounce"></div>
+              <div className="hidden sm:block absolute -bottom-4 -left-4 w-16 h-16 bg-gradient-to-br from-[#2596be] to-[#1772b5] rounded-full blur-xl opacity-60 animate-bounce delay-500"></div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Who Am I Section */}
-      <div id="quien-soy" className="relative z-10 px-4 sm:px-6 py-12 md:py-20">
+      {/* ── QUIEN SOY ── */}
+      <div id="quien-soy" className="relative z-10 px-4 sm:px-6 py-10 sm:py-16 md:py-20">
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-12 items-center">
             <div>
-              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-6 md:mb-8 drop-shadow-lg">
+              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-5 md:mb-8 drop-shadow-lg">
                 ¿Quién soy?
               </h2>
-              <div className="space-y-6 text-lg text-white/95 leading-relaxed">
+              <div className="space-y-4 sm:space-y-6 text-base sm:text-lg text-white/95 leading-relaxed">
                 <p className="drop-shadow-md">
                   Soy una inteligencia artificial que usa datos históricos, macroeconómicos y domésticos.
                 </p>
                 <p className="drop-shadow-md">
                   Analizo lo que sucede en el mercado, genero pronósticos y te ayudo a tomar decisiones sobre tus proyectos e inversiones en base a un análisis inteligente de datos.
                 </p>
-                <p className="text-white font-bold text-xl drop-shadow-lg bg-white/10 px-4 py-2 rounded-lg inline-block">
+                <p className="text-white font-bold text-lg sm:text-xl drop-shadow-lg bg-white/10 px-4 py-2 rounded-lg inline-block">
                   ¿Te interesa que hablemos del futuro?
                 </p>
               </div>
             </div>
 
-            <div className="relative">
-              <div className="bg-gradient-to-br from-[#2596be]/10 to-[#2ca6e1]/10 rounded-3xl p-8 border border-[#2596be]/20 shadow-xl h-96 flex items-center justify-center">
+            <div className="relative mt-4 lg:mt-0">
+              <div className="bg-gradient-to-br from-[#2596be]/10 to-[#2ca6e1]/10 rounded-3xl p-8 border border-[#2596be]/20 shadow-xl h-64 sm:h-80 md:h-96 flex items-center justify-center">
                 <div className="text-center text-gray-400">
-                  <div className="w-32 h-32 mx-auto mb-4 bg-white rounded-2xl flex items-center justify-center shadow-lg">
-                    <BarChart3 className="w-16 h-16 text-[#2596be]" />
+                  <div className="w-24 h-24 sm:w-32 sm:h-32 mx-auto mb-4 bg-white rounded-2xl flex items-center justify-center shadow-lg">
+                    <BarChart3 className="w-12 h-12 sm:w-16 sm:h-16 text-[#2596be]" />
                   </div>
                   <p className="text-sm">Image Placeholder</p>
                 </div>
@@ -448,176 +301,76 @@ export function Landing() {
         </div>
       </div>
 
-      {/* Stats Section */}
-      <div id="que-hago" className="relative z-10 px-4 sm:px-6 py-12 md:py-16">
+      {/* ── STATS ── */}
+      <div id="que-hago" className="relative z-10 px-4 sm:px-6 py-8 sm:py-12 md:py-16">
         <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8">
-            <div className="text-center group cursor-pointer">
-              <div className="w-16 h-16 bg-gradient-to-br from-[#27348B] to-[#36A9E1] rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg">
-                <Database className="w-8 h-8 text-white" />
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 md:gap-8">
+            {[
+              { Icon: Database, value: '50M+', label: 'Puntos de Datos', from: '[#27348B]', to: '[#36A9E1]' },
+              { Icon: TrendingUp, value: '99.9%', label: 'Disponibilidad', from: '[#36A9E1]', to: '[#27348B]' },
+              { Icon: Factory, value: '200+', label: 'Proveedores', from: '[#27348B]', to: '[#36A9E1]' },
+              { Icon: Zap, value: '<2s', label: 'Tiempo de Respuesta', from: '[#36A9E1]', to: '[#27348B]' },
+            ].map(({ Icon, value, label, from, to }) => (
+              <div key={label} className="text-center group cursor-pointer">
+                <div className={`w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-br from-${from} to-${to} rounded-xl sm:rounded-2xl flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform duration-300 shadow-lg`}>
+                  <Icon className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
+                </div>
+                <div className="text-2xl sm:text-3xl font-bold text-white mb-1 drop-shadow-lg">{value}</div>
+                <div className="text-xs sm:text-sm text-white/90 font-medium leading-tight">{label}</div>
               </div>
-              <div className="text-3xl font-bold text-white mb-2 drop-shadow-lg">50M+</div>
-              <div className="text-white/90 font-medium">Puntos de Datos</div>
-            </div>
-
-            <div className="text-center group cursor-pointer">
-              <div className="w-16 h-16 bg-gradient-to-br from-[#36A9E1] to-[#27348B] rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg">
-                <TrendingUp className="w-8 h-8 text-white" />
-              </div>
-              <div className="text-3xl font-bold text-white mb-2 drop-shadow-lg">99.9%</div>
-              <div className="text-white/90 font-medium">Disponibilidad</div>
-            </div>
-
-            <div className="text-center group cursor-pointer">
-              <div className="w-16 h-16 bg-gradient-to-br from-[#27348B] to-[#36A9E1] rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg">
-                <Factory className="w-8 h-8 text-white" />
-              </div>
-              <div className="text-3xl font-bold text-white mb-2 drop-shadow-lg">200+</div>
-              <div className="text-white/90 font-medium">Proveedores</div>
-            </div>
-
-            <div className="text-center group cursor-pointer">
-              <div className="w-16 h-16 bg-gradient-to-br from-[#36A9E1] to-[#27348B] rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg">
-                <Zap className="w-8 h-8 text-white" />
-              </div>
-              <div className="text-3xl font-bold text-white mb-2 drop-shadow-lg">&lt;2s</div>
-              <div className="text-white/90 font-medium">Tiempo de Respuesta</div>
-            </div>
+            ))}
           </div>
         </div>
       </div>
 
-      {/* Features Section */}
-      <div className="relative z-10 px-4 sm:px-6 py-12 md:py-20">
+      {/* ── FEATURES ── */}
+      <div className="relative z-10 px-4 sm:px-6 py-10 sm:py-16 md:py-20">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-12 md:mb-16">
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4 md:mb-6">
-              ¿Qué hago?
-            </h2>
-            <p className="text-xl text-white max-w-3xl mx-auto">
-              Características Principales
-            </p>
+          <div className="text-center mb-8 sm:mb-12 md:mb-16">
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-3 sm:mb-6">¿Qué hago?</h2>
+            <p className="text-lg sm:text-xl text-white max-w-3xl mx-auto">Características Principales</p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {/* Feature Cards */}
-            <div className="group cursor-pointer">
-              <div className="bg-white/90 backdrop-blur-md rounded-2xl p-8 border border-[#2596be]/20 hover:border-[#2596be]/50 transition-all duration-500 hover:transform hover:scale-105 h-full shadow-lg">
-                <div className="w-14 h-14 bg-gradient-to-br from-[#2596be] to-[#2ca6e1] rounded-xl flex items-center justify-center mb-6 group-hover:rotate-12 transition-transform duration-300">
-                  <BarChart3 className="w-7 h-7 text-white" />
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6 md:gap-8">
+            {[
+              { icon: BarChart3, color: 'from-[#2596be] to-[#2ca6e1]', title: 'Análisis Histórico de Precios', desc: 'Conservo y analizo el historial del comportamiento de precios por región en México, considerando las características específicas de cada proyecto.' },
+              { icon: Globe, color: 'from-[#2ca6e1] to-[#41afe0]', title: 'Seguimiento del Mercado Regional', desc: 'Actualizo en tiempo real los precios de cada región de México de acuerdo con el comportamiento del mercado.' },
+              { icon: Shield, color: 'from-[#41afe0] to-[#2596be]', title: 'Monitor de Noticias Económicas', desc: 'Centralizo y sintetizo las noticias nacionales e internacionales con impacto potencial en el mercado y los precios.' },
+              { icon: Factory, color: 'from-[#1772b5] to-[#2596be]', title: 'Modelado de Precios Futuros', desc: 'Analizo y proyecto distintos escenarios futuros del comportamiento de los precios para apoyar la toma conjunta de decisiones.' },
+              { icon: Database, color: 'from-[#2596be] to-[#2ca6e1]', title: 'Comparativo Regional y Sectorial', desc: 'Identifico patrones y diferencias de precios entre regiones y sectores en México para descubrir oportunidades y optimizar decisiones estratégicas.' },
+              { icon: Zap, color: 'from-[#2ca6e1] to-[#41afe0]', title: 'Conexión Financiera en Tiempo Real', desc: 'Nos conectamos a fuentes financieras externas e internas mediante una API ultrarrápida que integra datos de precios en tiempo real directamente en tus aplicaciones.' },
+            ].map(({ icon: Icon, color, title, desc }) => (
+              <div key={title} className="group cursor-pointer">
+                <div className="bg-white/90 backdrop-blur-md rounded-2xl p-5 sm:p-6 md:p-8 border border-[#2596be]/20 hover:border-[#2596be]/50 transition-all duration-500 hover:scale-105 h-full shadow-lg">
+                  <div className={`w-11 h-11 sm:w-14 sm:h-14 bg-gradient-to-br ${color} rounded-xl flex items-center justify-center mb-4 sm:mb-6 group-hover:rotate-12 transition-transform duration-300`}>
+                    <Icon className="w-5 h-5 sm:w-7 sm:h-7 text-white" />
+                  </div>
+                  <h3 className="text-base sm:text-lg md:text-xl font-bold text-gray-800 mb-3">{title}</h3>
+                  <p className="text-sm sm:text-base text-gray-600">{desc}</p>
                 </div>
-                <h3 className="text-xl font-bold text-gray-800 mb-4">Análisis Histórico de Precios</h3>
-                <p className="text-gray-600 mb-4">
-                  Conservo y analizo el historial del comportamiento de precios por región en México, considerando las características específicas de cada proyecto.
-                </p>
-                {/* <div className="flex items-center text-[#2596be] text-sm font-semibold">
-                  Ver más <ChevronRight className="w-4 h-4 ml-1" />
-                </div> */}
               </div>
-            </div>
-
-            <div className="group cursor-pointer">
-              <div className="bg-white/90 backdrop-blur-md rounded-2xl p-8 border border-[#2596be]/20 hover:border-[#2ca6e1]/50 transition-all duration-500 hover:transform hover:scale-105 h-full shadow-lg">
-                <div className="w-14 h-14 bg-gradient-to-br from-[#2ca6e1] to-[#41afe0] rounded-xl flex items-center justify-center mb-6 group-hover:rotate-12 transition-transform duration-300">
-                  <Globe className="w-7 h-7 text-white" />
-                </div>
-                <h3 className="text-xl font-bold text-gray-800 mb-4">Seguimiento del Mercado Regional</h3>
-                <p className="text-gray-600 mb-4">
-                  Actualizo en tiempo real los precios de cada región de México de acuerdo con el comportamiento del mercado.
-                </p>
-                {/* <div className="flex items-center text-[#2ca6e1] text-sm font-semibold">
-                  Ver más <ChevronRight className="w-4 h-4 ml-1" />
-                </div> */}
-              </div>
-            </div>
-
-            <div className="group cursor-pointer">
-              <div className="bg-white/90 backdrop-blur-md rounded-2xl p-8 border border-[#2596be]/20 hover:border-[#41afe0]/50 transition-all duration-500 hover:transform hover:scale-105 h-full shadow-lg">
-                <div className="w-14 h-14 bg-gradient-to-br from-[#41afe0] to-[#2596be] rounded-xl flex items-center justify-center mb-6 group-hover:rotate-12 transition-transform duration-300">
-                  <Shield className="w-7 h-7 text-white" />
-                </div>
-                <h3 className="text-xl font-bold text-gray-800 mb-4">Monitor de Noticias Económicas</h3>
-                <p className="text-gray-600 mb-4">
-                  Centralizo y sintetizo las noticias nacionales e internacionales con impacto potencial en el mercado y los precios.
-                </p>
-                {/* <div className="flex items-center text-[#41afe0] text-sm font-semibold">
-                  Ver más <ChevronRight className="w-4 h-4 ml-1" />
-                </div> */}
-              </div>
-            </div>
-
-            <div className="group cursor-pointer">
-              <div className="bg-white/90 backdrop-blur-md rounded-2xl p-8 border border-[#2596be]/20 hover:border-[#1772b5]/50 transition-all duration-500 hover:transform hover:scale-105 h-full shadow-lg">
-                <div className="w-14 h-14 bg-gradient-to-br from-[#1772b5] to-[#2596be] rounded-xl flex items-center justify-center mb-6 group-hover:rotate-12 transition-transform duration-300">
-                  <Factory className="w-7 h-7 text-white" />
-                </div>
-                <h3 className="text-xl font-bold text-gray-800 mb-4">Modelado de Precios Futuros</h3>
-                <p className="text-gray-600 mb-4">
-                  Analizo y proyecto distintos escenarios futuros del comportamiento de los precios para apoyar la toma conjunta de decisiones.
-                </p>
-                {/* <div className="flex items-center text-[#1772b5] text-sm font-semibold">
-                  Ver más <ChevronRight className="w-4 h-4 ml-1" />
-                </div> */}
-              </div>
-            </div>
-
-            <div className="group cursor-pointer">
-              <div className="bg-white/90 backdrop-blur-md rounded-2xl p-8 border border-[#2596be]/20 hover:border-[#2596be]/50 transition-all duration-500 hover:transform hover:scale-105 h-full shadow-lg">
-                <div className="w-14 h-14 bg-gradient-to-br from-[#2596be] to-[#2ca6e1] rounded-xl flex items-center justify-center mb-6 group-hover:rotate-12 transition-transform duration-300">
-                  <Database className="w-7 h-7 text-white" />
-                </div>
-                <h3 className="text-xl font-bold text-gray-800 mb-4">Comparativo Regional y Sectorial</h3>
-                <p className="text-gray-600 mb-4">
-                  Identifico patrones y diferencias de precios entre regiones y sectores en México para descubrir oportunidades y optimizar decisiones estratégicas.
-                </p>
-                {/* <div className="flex items-center text-[#2596be] text-sm font-semibold">
-                  Ver más <ChevronRight className="w-4 h-4 ml-1" />
-                </div> */}
-              </div>
-            </div>
-
-            <div className="group cursor-pointer">
-              <div className="bg-white/90 backdrop-blur-md rounded-2xl p-8 border border-[#2596be]/20 hover:border-[#2ca6e1]/50 transition-all duration-500 hover:transform hover:scale-105 h-full shadow-lg">
-                <div className="w-14 h-14 bg-gradient-to-br from-[#2ca6e1] to-[#41afe0] rounded-xl flex items-center justify-center mb-6 group-hover:rotate-12 transition-transform duration-300">
-                  <Zap className="w-7 h-7 text-white" />
-                </div>
-                <h3 className="text-xl font-bold text-gray-800 mb-4">Conexión Financiera en Tiempo Real</h3>
-                <p className="text-gray-600 mb-4">
-                  Nos conectamos a fuentes financieras externas e internas mediante una API ultrarrápida que integra datos de precios en tiempo real directamente en tus aplicaciones, garantizando información actualizada y confiable para tus decisiones
-                </p>
-                {/* <div className="flex items-center text-[#2ca6e1] text-sm font-semibold">
-                  Ver más <ChevronRight className="w-4 h-4 ml-1" />
-                </div> */}
-              </div>
-            </div>
+            ))}
           </div>
         </div>
       </div>
 
-      {/* Partners Section */}
-      <div id="socios" className="relative z-10 w-full py-20">
+      {/* ── PARTNERS ── */}
+      <div id="socios" className="relative z-10 w-full py-14 sm:py-20">
         <div className="relative w-full overflow-hidden">
-          {/* Background Image with Overlay */}
           <div className="absolute inset-0 bg-gradient-to-br from-[#2596be] to-[#1772b5] opacity-90"></div>
           <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48cGF0dGVybiBpZD0iZ3JpZCIgd2lkdGg9IjQwIiBoZWlnaHQ9IjQwIiBwYXR0ZXJuVW5pdHM9InVzZXJTcGFjZU9uVXNlIj48cGF0aCBkPSJNIDQwIDAgTCAwIDAgMCA0MCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLW9wYWNpdHk9IjAuMSIgc3Ryb2tlLXdpZHRoPSIxIi8+PC9wYXR0ZXJuPjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI2dyaWQpIi8+PC9zdmc+')] opacity-50"></div>
 
-          <div className="relative z-10 px-6 py-16 md:px-12 md:py-20">
-            <div className="max-w-7xl mx-auto mb-12">
-              <h2 className="text-4xl lg:text-5xl font-bold text-white mb-8">
-                Mis socios
-              </h2>
-              <div className="space-y-6 text-lg text-white/90 leading-relaxed max-w-4xl">
-                <p>
-                  Esto no lo hago sola necesitamos el pasado y el presente para conocer nuestro futuro por eso contamos con socios que aportan a la información del mercado.
-                </p>
-                <p>
-                  Nuestros socios se forman de proveedores y compradores, juntos logramos consolidar suficiente información para entender el pasado, presente y nuestro futuro.
-                </p>
+          <div className="relative z-10 px-4 sm:px-8 md:px-12 py-10 sm:py-16 md:py-20">
+            <div className="max-w-7xl mx-auto mb-8 sm:mb-12">
+              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-5 sm:mb-8">Mis socios</h2>
+              <div className="space-y-4 text-sm sm:text-base md:text-lg text-white/90 leading-relaxed max-w-4xl">
+                <p>Esto no lo hago sola necesitamos el pasado y el presente para conocer nuestro futuro por eso contamos con socios que aportan a la información del mercado.</p>
+                <p>Nuestros socios se forman de proveedores y compradores, juntos logramos consolidar suficiente información para entender el pasado, presente y nuestro futuro.</p>
               </div>
             </div>
 
-            {/* Scrolling Partners Logos */}
-            <div className="relative overflow-hidden mt-16">
+            {/* Scrolling Logos */}
+            <div className="relative overflow-hidden mt-10 sm:mt-16">
               <style>{`
                 @keyframes scroll {
                   0% { transform: translateX(0); }
@@ -630,35 +383,15 @@ export function Landing() {
                   animation-play-state: paused;
                 }
               `}</style>
-
               <div className="flex animate-scroll">
-                {/* First set of logos */}
-                {partners.map((partner) => (
-                  <div key={`logo-${partner.id}`} className="flex-shrink-0 mx-8">
-                    <div className="w-40 h-24 bg-white/60 backdrop-blur-sm rounded-xl border border-white/30 flex items-center justify-center hover:bg-white/80 transition-all duration-300">
-                      <div className="text-center">
-                        <img
-                          src={partner.image}
-                          alt={partner.name}
-                          className="w-36 h-20  object-contain mx-auto mb-2"
-                        />
-                        {/* <p className="text-white/40 text-xs">{partner.name}</p> */}
-                      </div>
-                    </div>
-                  </div>
-                ))}
-                {/* Duplicate set for seamless loop */}
-                {partners.map((partner) => (
-                  <div key={`logo-dup-${partner.id}`} className="flex-shrink-0 mx-8">
-                    <div className="w-40 h-24 bg-white/60 backdrop-blur-sm rounded-xl border border-white/30 flex items-center justify-center hover:bg-white/80 transition-all duration-300">
-                      <div className="text-center">
-                        <img
-                          src={partner.image}
-                          alt={partner.name}
-                          className="w-36 h-20 object-contain mx-auto mb-2"
-                        />
-                        {/* <p className="text-white/40 text-xs">{partner.name}</p> */}
-                      </div>
+                {[...partners, ...partners].map((partner, idx) => (
+                  <div key={`logo-${idx}`} className="flex-shrink-0 mx-4 sm:mx-8">
+                    <div className="w-28 h-18 sm:w-40 sm:h-24 bg-white/60 backdrop-blur-sm rounded-xl border border-white/30 flex items-center justify-center hover:bg-white/80 transition-all duration-300 px-2">
+                      <img
+                        src={partner.image}
+                        alt={partner.name}
+                        className="w-24 h-14 sm:w-36 sm:h-20 object-contain"
+                      />
                     </div>
                   </div>
                 ))}
@@ -668,33 +401,27 @@ export function Landing() {
         </div>
       </div>
 
-      {/* Interactive Dashboard Preview */}
-      <div className="relative z-10 px-4 sm:px-6 py-12 md:py-20">
+      {/* ── DASHBOARD PREVIEW ── */}
+      <div className="relative z-10 px-4 sm:px-6 py-10 sm:py-16 md:py-20">
         <div className="max-w-7xl mx-auto text-center">
-          <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4 md:mb-6">
-            Dashboard en Acción
-          </h2>
-          <p className="text-xl text-white/90 mb-12">
-            Visualiza datos complejos de manera simple e intuitiva
-          </p>
+          <h2 className="text-2xl sm:text-3xl sm:text-4xl font-bold text-white mb-3 sm:mb-6">Dashboard en Acción</h2>
+          <p className="text-base sm:text-xl text-white/90 mb-8 sm:mb-12">Visualiza datos complejos de manera simple e intuitiva</p>
 
-          {/* Mock Dashboard */}
-          <div className="bg-white/90 backdrop-blur-md rounded-3xl p-8 border border-[#2596be]/20 shadow-2xl">
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              {/* Left Panel */}
+          <div className="bg-white/90 backdrop-blur-md rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 border border-[#2596be]/20 shadow-2xl">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
+
+              {/* Chart panel */}
               <div className="lg:col-span-2">
-                <div className="bg-[#2596be]/5 rounded-xl p-6 h-64">
-                  <div className="flex justify-between items-center mb-4">
-                    <h4 className="text-lg font-semibold text-gray-800">Tendencias de Precios</h4>
+                <div className="bg-[#2596be]/5 rounded-xl p-4 sm:p-6 h-auto sm:h-64">
+                  <div className="flex justify-between items-center mb-3 sm:mb-4">
+                    <h4 className="text-sm sm:text-base md:text-lg font-semibold text-gray-800">Tendencias de Precios</h4>
                     <div className="flex space-x-2">
-                      <div className="w-3 h-3 bg-[#2596be] rounded-full"></div>
-                      <div className="w-3 h-3 bg-[#2ca6e1] rounded-full"></div>
-                      <div className="w-3 h-3 bg-[#41afe0] rounded-full"></div>
+                      <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 bg-[#2596be] rounded-full"></div>
+                      <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 bg-[#2ca6e1] rounded-full"></div>
+                      <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 bg-[#41afe0] rounded-full"></div>
                     </div>
                   </div>
-
-                  {/* Animated Line Chart Simulation */}
-                  <div className="h-40 relative overflow-hidden">
+                  <div className="h-32 sm:h-40 relative overflow-hidden">
                     <svg className="w-full h-full">
                       <defs>
                         <linearGradient id="gradient1" x1="0%" y1="0%" x2="0%" y2="100%">
@@ -702,40 +429,29 @@ export function Landing() {
                           <stop offset="100%" stopColor="#2596be" stopOpacity="0" />
                         </linearGradient>
                       </defs>
-                      <path
-                        d="M 0 120 Q 100 80 200 100 T 400 90 T 600 70"
-                        stroke="#2596be"
-                        strokeWidth="3"
-                        fill="none"
-                        className="animate-pulse"
-                      />
-                      <path
-                        d="M 0 120 Q 100 80 200 100 T 400 90 T 600 70 V 160 H 0 Z"
-                        fill="url(#gradient1)"
-                      />
+                      <path d="M 0 120 Q 100 80 200 100 T 400 90 T 600 70" stroke="#2596be" strokeWidth="3" fill="none" className="animate-pulse" />
+                      <path d="M 0 120 Q 100 80 200 100 T 400 90 T 600 70 V 160 H 0 Z" fill="url(#gradient1)" />
                     </svg>
                   </div>
                 </div>
               </div>
 
-              {/* Right Panel */}
-              <div className="space-y-4">
-                <div className="bg-[#2596be]/5 rounded-xl p-4">
-                  <div className="text-sm text-gray-500 mb-2">Top Producto</div>
-                  <div className="text-lg font-bold text-gray-800">Acero Inoxidable</div>
-                  <div className="text-sm text-green-600">+15.2% este mes</div>
+              {/* Right info cards */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-1 gap-3 sm:gap-4">
+                <div className="bg-[#2596be]/5 rounded-xl p-3 sm:p-4">
+                  <div className="text-xs text-gray-500 mb-1">Top Producto</div>
+                  <div className="text-sm sm:text-lg font-bold text-gray-800">Acero Inoxidable</div>
+                  <div className="text-xs text-green-600">+15.2% este mes</div>
                 </div>
-
-                <div className="bg-[#2596be]/5 rounded-xl p-4">
-                  <div className="text-sm text-gray-500 mb-2">Alerta Activa</div>
-                  <div className="text-lg font-bold text-[#2596be]">Precio Objetivo</div>
-                  <div className="text-sm text-gray-600">$13,100 MXN/ton</div>
+                <div className="bg-[#2596be]/5 rounded-xl p-3 sm:p-4">
+                  <div className="text-xs text-gray-500 mb-1">Alerta Activa</div>
+                  <div className="text-sm sm:text-lg font-bold text-[#2596be]">Precio Objetivo</div>
+                  <div className="text-xs text-gray-600">$13,100 MXN/ton</div>
                 </div>
-
-                <div className="bg-[#2596be]/5 rounded-xl p-4">
-                  <div className="text-sm text-gray-500 mb-2">Próxima Actualización</div>
-                  <div className="text-lg font-bold text-[#2ca6e1]">En Vivo</div>
-                  <div className="flex items-center text-sm text-green-600">
+                <div className="bg-[#2596be]/5 rounded-xl p-3 sm:p-4">
+                  <div className="text-xs text-gray-500 mb-1">Próxima Actualización</div>
+                  <div className="text-sm sm:text-lg font-bold text-[#2ca6e1]">En Vivo</div>
+                  <div className="flex items-center text-xs text-green-600">
                     <div className="w-2 h-2 bg-green-500 rounded-full mr-2 animate-pulse"></div>
                     Conectado
                   </div>
@@ -746,37 +462,36 @@ export function Landing() {
         </div>
       </div>
 
-      {/* CTA Section */}
-      <div id="futuro" className="relative z-10 px-4 sm:px-6 py-12 md:py-24">
+      {/* ── CTA ── */}
+      <div id="futuro" className="relative z-10 px-4 sm:px-6 py-10 sm:py-16 md:py-24">
         <div className="max-w-4xl mx-auto text-center">
-          <div className="bg-white/90 backdrop-blur-md rounded-3xl p-6 sm:p-8 md:p-12 border border-[#2596be]/20 shadow-2xl">
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-800 mb-4 md:mb-6">
+          <div className="bg-white/90 backdrop-blur-md rounded-2xl sm:rounded-3xl p-5 sm:p-8 md:p-12 border border-[#2596be]/20 shadow-2xl">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-gray-800 mb-4 md:mb-6">
               ¿Listo para Revolucionar tu
               <span className="bg-gradient-to-r from-[#2596be] to-[#2ca6e1] bg-clip-text text-transparent"> Análisis?</span>
             </h2>
-            <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
-              Únete a las empresas líderes en México que confían en nuestra plataforma
-              para tomar decisiones informadas sobre precios de acero
+            <p className="text-base sm:text-xl text-gray-600 mb-6 sm:mb-8 max-w-2xl mx-auto">
+              Únete a las empresas líderes en México que confían en nuestra plataforma para tomar decisiones informadas sobre precios de acero
             </p>
 
-            <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center mb-6 sm:mb-8">
               <Button
-                size="4"
+                size="3"
                 onClick={handleGetStarted}
-                className="bg-[#27348B] hover:bg-[#36A9E1] text-white px-10 py-4 text-lg font-semibold shadow-2xl transform hover:scale-105 transition-all duration-300"
+                className="bg-[#27348B] hover:bg-[#36A9E1] text-white px-8 py-3 sm:px-10 sm:py-4 text-base sm:text-lg font-semibold shadow-2xl transform hover:scale-105 transition-all duration-300 w-full sm:w-auto"
               >
                 Acceder al Dashboard
               </Button>
               <Button
-                size="4"
+                size="3"
                 variant="outline"
-                className="border-[#27348B] text-[#27348B] hover:bg-[#27348B] hover:text-white px-10 py-4 text-lg"
+                className="border-[#27348B] text-[#27348B] hover:bg-[#27348B] hover:text-white px-8 py-3 sm:px-10 sm:py-4 text-base sm:text-lg w-full sm:w-auto"
               >
                 Solicitar Demo
               </Button>
             </div>
 
-            <div className="flex flex-wrap justify-center items-center gap-8 text-sm text-gray-500">
+            <div className="flex flex-wrap justify-center items-center gap-4 sm:gap-8 text-xs sm:text-sm text-gray-500">
               <div className="flex items-center">
                 <Shield className="w-4 h-4 mr-2 text-green-500" />
                 <span>Seguridad Empresarial</span>
@@ -794,46 +509,34 @@ export function Landing() {
         </div>
       </div>
 
-      {/* Footer */}
-      <footer className="relative z-10 px-4 sm:px-6 py-8 md:py-12 border-t border-[#2596be]/20 bg-white/80">
+      {/* ── FOOTER ── */}
+      <footer className="relative z-10 px-4 sm:px-6 py-6 sm:py-8 md:py-12 border-t border-[#2596be]/20 bg-white/80">
         <div className="max-w-7xl mx-auto">
-          <div className="flex flex-col md:flex-row justify-between items-center">
-            <div className="flex items-center space-x-3 mb-4 md:mb-0">
-              <div className="flex items-center space-x-3">
-                <div className="flex flex-col items-center md:items-start mb-4 md:mb-0">
-                  <img src={logo} alt="Pitiax Logo" className="w-21 h-16 object-contain" />
-                  <div className="text-xs text-[#2596be]">Analisis precios de Acero</div>
-                </div>
-              </div>
+          <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
+            <div className="flex flex-col items-center sm:items-start">
+              <img src={logo} alt="Pitiax Logo" className="w-auto h-10 sm:h-14 object-contain" />
+              <div className="text-xs text-[#2596be] mt-1">Analisis precios de Acero</div>
             </div>
-            <div className="text-center md:text-right">
-              <div className="text-gray-500 text-sm">
-                © 2025 Pitiax Analytics. Todos los derechos reservados.
-              </div>
-              <div className="text-gray-400 text-xs mt-1">
-                Hecho con ❤️ en México
-              </div>
+            <div className="text-center sm:text-right">
+              <div className="text-gray-500 text-xs sm:text-sm">© 2025 Pitiax Analytics. Todos los derechos reservados.</div>
+              <div className="text-gray-400 text-xs mt-1">Hecho con ❤️ en México</div>
             </div>
           </div>
         </div>
       </footer>
-      {/* WhatsApp Floating Button */}
+
+      {/* WhatsApp FAB */}
       <a
         href="https://wa.me/1234567890"
         target="_blank"
         rel="noopener noreferrer"
-        className="fixed bottom-6 right-6 w-14 h-14 bg-green-500 hover:bg-green-600 rounded-full flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-300 z-50"
+        className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 w-12 h-12 sm:w-14 sm:h-14 bg-green-500 hover:bg-green-600 rounded-full flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-300 z-50"
         aria-label="Contactar por WhatsApp"
       >
-        <svg
-          className="w-8 h-8 text-white"
-          fill="currentColor"
-          viewBox="0 0 24 24"
-        >
+        <svg className="w-6 h-6 sm:w-8 sm:h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
           <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
         </svg>
       </a>
     </div>
-
   )
 }

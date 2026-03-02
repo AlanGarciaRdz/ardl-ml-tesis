@@ -6,7 +6,7 @@ import { Switch } from '@/components/ui/switch'
 import { Label } from '@/components/ui/label'
 import { Save, RefreshCw, Database, Bell, User, Shield, Phone, CheckCircle } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
-import { signInWithPhone } from '@/services/authService'
+import { linkPhoneToAccount } from '@/services/authService'
 import { getUserData, updatePhoneVerificationStatus, saveUserData } from '@/services/userService'
 
 export function Settings() {
@@ -87,7 +87,7 @@ export function Settings() {
 
       // Send SMS verification
       const formattedPhone = `+52${phoneNumber.replace(/\D/g, '')}`;
-      const confirmationResult = await signInWithPhone(formattedPhone, recaptchaVerifier);
+      const confirmationResult = await linkPhoneToAccount(formattedPhone, recaptchaVerifier);
       
       // Store confirmation result for later use
       (window as any).confirmationResult = confirmationResult;

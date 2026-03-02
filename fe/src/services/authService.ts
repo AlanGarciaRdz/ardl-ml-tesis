@@ -7,9 +7,10 @@ import {
   signInWithEmailAndPassword,
   sendPasswordResetEmail,
   RecaptchaVerifier,
-  signInWithPhoneNumber,
+  linkWithPhoneNumber,
+  PhoneAuthProvider,
+  linkWithCredential,
   updateProfile,
-  //updatePhoneNumber,
   User
 } from 'firebase/auth';
 import { auth } from '../config/firebase';
@@ -94,12 +95,25 @@ export const clearRecaptcha = (verifier: RecaptchaVerifier | null) => {
   }
 };
 
-export const signInWithPhone = async (phoneNumber: string, appVerifier: RecaptchaVerifier) => {
+export const linkPhoneToAccount = async (phoneNumber: string, appVerifier: RecaptchaVerifier) => {
   try {
-    const confirmationResult = await signInWithPhoneNumber(auth, phoneNumber, appVerifier);
+    const currentUser = auth.currentUser;
+    if (!currentUser) throw new Error('No user logged in');
+    const confirmationResult = await linkWithPhoneNumber(currentUser, phoneNumber, appVerifier);
     return confirmationResult;
-  } catch (error) {
-    console.error('Error signing in with phone:', error);
+  } catch (error: any) {
+    if (error.code === 'auth/provider-already-linked') {
+      console.warn('Phone already linked to this account, verifying instead');
+      const provider = new PhoneAuthProvider(auth);
+      const verificationId = await provider.verifyPhoneNumber(phoneNumber, appVerifier);
+      return {
+        confirm: async (code: string) => {
+          const credential = PhoneAuthProvider.credential(verificationId, code);
+          return linkWithCredential(auth.currentUser!, credential);
+        }
+      };
+    }
+    console.error('Error linking phone to account:', error);
     throw error;
   }
 };

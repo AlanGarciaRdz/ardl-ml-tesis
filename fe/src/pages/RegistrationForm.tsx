@@ -3,8 +3,8 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { updateUserProfile, setUpRecaptcha, signInWithPhone, clearRecaptcha } from '@/services/authService';
-import { saveUserData, updatePhoneVerificationStatus } from '@/services/userService';
+import { updateUserProfile, setUpRecaptcha, linkPhoneToAccount, clearRecaptcha } from '@/services/authService';
+import { saveUserData, updatePhoneVerificationStatus, getUserData } from '@/services/userService';
 import { Phone, User, Building, MapPin, CheckCircle } from 'lucide-react';
 
 
@@ -33,6 +33,29 @@ export function RegistrationForm({ onComplete }: RegistrationFormProps) {
     'INVERSIONISTA',
     'PROVEEDOR'
   ];
+
+  useEffect(() => {
+    const loadExistingData = async () => {
+      if (user) {
+        try {
+          const existing = await getUserData(user);
+          if (existing) {
+            setFormData({
+              nombre: existing.nombre || user.displayName || '',
+              celular: existing.celular || '',
+              empresa: existing.empresa || '',
+              tipoEmpresa: existing.tipoEmpresa || '',
+              puesto: existing.puesto || '',
+              codigoPostal: existing.codigoPostal || '',
+            });
+          }
+        } catch (error) {
+          console.error('Error loading existing user data:', error);
+        }
+      }
+    };
+    loadExistingData();
+  }, [user]);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -100,9 +123,9 @@ export function RegistrationForm({ onComplete }: RegistrationFormProps) {
       // Update user profile with display name
       await updateUserProfile(formData.nombre);
 
-      // Send SMS verification
-      const phoneNumber = `+52${formData.celular.replace(/\D/g, '')}`; // Clean and format phone number
-      const confirmationResult = await signInWithPhone(phoneNumber, recaptchaVerifier);
+      // Link phone number to the current Google account
+      const phoneNumber = `+52${formData.celular.replace(/\D/g, '')}`;
+      const confirmationResult = await linkPhoneToAccount(phoneNumber, recaptchaVerifier);
 
       // Store confirmation result for later use
       (window as any).confirmationResult = confirmationResult;

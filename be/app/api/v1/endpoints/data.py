@@ -42,11 +42,15 @@ async def get_time_series_data(
             if end_date:
                 where_conditions.append("Date <= :end_date")
                 params['end_date'] = end_date
+
+            # Add WHERE clause if there are conditions
+            if where_conditions:
+                base_query += " WHERE " + " AND ".join(where_conditions)
             
             # Add pagination
-            base_query += " ORDER BY Date DESC LIMIT :limit OFFSET :offset"
-            params['limit'] = limit
-            params['offset'] = offset
+            # base_query += " ORDER BY Date DESC LIMIT :limit OFFSET :offset"
+            # params['limit'] = limit
+            # params['offset'] = offset
             
             # Execute the query
             result = conn.execute(text(base_query), params)
@@ -56,6 +60,14 @@ async def get_time_series_data(
             count_query = f"SELECT COUNT(*) as total FROM {table_name}"
             if where_conditions:
                 count_query += " WHERE " + " AND ".join(where_conditions)
+
+            # Add pagination
+            base_query += " ORDER BY Date DESC LIMIT :limit OFFSET :offset"
+            params['limit'] = limit
+            params['offset'] = offset
+            
+            # Execute the query
+            result = conn.execute(text(base_query), params)
             
             count_result = conn.execute(text(count_query), {k: v for k, v in params.items() if k not in ['limit', 'offset']})
             total_count = count_result.scalar()

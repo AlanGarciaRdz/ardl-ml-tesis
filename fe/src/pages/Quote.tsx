@@ -67,10 +67,7 @@ const fetchForecastData = async (): Promise<ApiResponse> => {
   const response = await axios.get(`${API_URL}/api/v1/forecast/?${params}`);
   return response.data;
 };
-
-
-
-  
+ 
 
 const ShippingCalculator = () => {
   const [step, setStep] = useState(1);

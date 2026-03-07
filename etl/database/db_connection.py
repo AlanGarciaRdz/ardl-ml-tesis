@@ -35,7 +35,8 @@ class DatabaseManager:
             'port': int(os.getenv('POSTGRES_PORT', 5432)),
             'database': os.getenv('POSTGRES_DB', 'tesis'),
             'user': os.getenv('POSTGRES_USER', 'postgres'),
-            'password': os.getenv('POSTGRES_PASSWORD', 'abcd1234')
+            'password': os.getenv('POSTGRES_PASSWORD', 'abcd1234'),
+            'sslmode': os.getenv('POSTGRES_SSLMODE', 'require')
         }
         self._pool: Optional[pool.SimpleConnectionPool] = None
         

@@ -235,3 +235,7 @@ For issues or questions:
 1. Check the Swagger documentation at `/docs`
 2. Review the logs for error messages
 3. Test database connectivity with `test_db_connection.py`
+
+
+source /Users/alangarcia/Documents/Alan/Maestria/Tesis/projecto/venv/bin/activate
+npm run start

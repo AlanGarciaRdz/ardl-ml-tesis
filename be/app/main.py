@@ -9,6 +9,8 @@ app = FastAPI(
     openapi_url=f"{settings.API_V1_STR}/openapi.json"
 )
 
+print(app)
+
 # Set up CORS
 if settings.ENVIRONMENT == "development":
     # Allow all origins in development

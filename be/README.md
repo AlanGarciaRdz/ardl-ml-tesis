@@ -237,5 +237,6 @@ For issues or questions:
 3. Test database connectivity with `test_db_connection.py`
 
 
+Run project
 source /Users/alangarcia/Documents/Alan/Maestria/Tesis/projecto/venv/bin/activate
 npm run start

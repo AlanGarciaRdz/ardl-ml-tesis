@@ -17,6 +17,7 @@ export interface MaterialPrice {
   hrcc1_mxn: number
   tipo_de_cambio: number
   coeficiente: number
+  vix: number;
 }
 
 export interface ForecastPrice {
@@ -94,6 +95,7 @@ export function ForecastChart({
     [t('analytics.rebar')]: item.rebar,
     [t('analytics.gas')]: item.gas,
     [t('analytics.hrcc1')]: item.hrcc1,
+    [t('analytics.vix')]: item.vix,
     [t('analytics.precioMercado')]: item.precio_mercado,
     [t('analytics.varillaDistribuidor')]: item.varilla_distribuidor,
     [t('analytics.varillaCredito')]: item.varilla_credito,
@@ -262,6 +264,9 @@ export function ForecastChart({
             {visibleLines.hrcc1_mxn && (
               <Line yAxisId={isMobile ? 'left' : 'right'} type="monotone" dataKey={t('analytics.hrcc1_mxn')}  stroke="#741b47" strokeWidth={2} dot={false} />
             )}
+            {visibleLines.vix && (
+              <Line yAxisId={isMobile ? 'left' : 'right'} type="monotone" dataKey={t('analytics.vix')}  stroke="#978A4F" strokeWidth={2} dot={false} />
+            )}
           </>
         )}
 
@@ -272,6 +277,7 @@ export function ForecastChart({
             {visibleLines.rebar  && <Line yAxisId="left" type="monotone" dataKey={t('analytics.rebar')}  stroke="#06b6d4" strokeWidth={2} dot={false} />}
             {visibleLines.gas    && <Line yAxisId="left" type="monotone" dataKey={t('analytics.gas')}    stroke="#6aa84f" strokeWidth={2} dot={false} />}
             {visibleLines.hrcc1  && <Line yAxisId="left" type="monotone" dataKey={t('analytics.hrcc1')}  stroke="#741b47" strokeWidth={2} dot={false} />}
+            {visibleLines.vix  && <Line yAxisId="left" type="monotone" dataKey={t('analytics.vix')}  stroke="#978A4F" strokeWidth={2} dot={false} />}
           </>
         )}
 
@@ -286,6 +292,20 @@ export function ForecastChart({
             dot={false}
           />
         )}
+
+      {!simplified && visibleLines.vix && (
+        <YAxis
+          yAxisId="vix"
+          orientation="right"
+          tick={{ fontSize: yAxisFontSize }}
+          tickFormatter={(value) => value.toFixed(1)}
+          domain={['auto', 'auto']}
+          width={isMobile ? 38 : 44}
+          tickLine={false}
+          axisLine={false}
+          stroke="#978A4F"
+        />
+      )}
 
         {/* Precio mercado + forecast lines — always on left axis */}
         {(visibleLines.precioMercado || simplified) && (

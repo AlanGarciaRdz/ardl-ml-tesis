@@ -19,6 +19,7 @@ import { exportToExcel, TranslationKeys } from '@/utils/excelExport'
 
 
 interface MaterialPrice {
+  vix: any;
   id: number
   date: string
   varilla_distribuidor: number
@@ -121,7 +122,8 @@ export function Analytics() {
     gas: true,
     rebar: true,
     hrcc1: true,
-    tipoDeCambio: true
+    tipoDeCambio: true,
+    vix: false,
   })
 
   useEffect(() => {
@@ -378,6 +380,9 @@ export function Analytics() {
                       <SwitchRow id="scrap_mxn" checked={visibleLines.scrap_mxn} onChange={() => toggleLine('scrap_mxn')} label={t('analytics.scrap_mxn') || 'Chatarra MXN'} />
                     )}
                     {userRole === 'admin' && (
+                      <SwitchRow id="vix" checked={visibleLines.vix} onChange={() => toggleLine('vix')} label={t('analytics.vix') || 'VIX'} />
+                    )}
+                    {userRole === 'admin' && (
                       <SwitchRow id="gas_mxn" checked={visibleLines.gas_mxn} onChange={() => toggleLine('gas_mxn')} label={t('analytics.gas_mxn') || 'Gas MXN'} />
                     )}
                     {userRole === 'admin' && (
@@ -390,6 +395,7 @@ export function Analytics() {
                     <SwitchRow id="rebar" checked={visibleLines.rebar} onChange={() => toggleLine('rebar')} label={t('analytics.rebar') || 'Varilla USD'} />
                     <SwitchRow id="gas" checked={visibleLines.gas} onChange={() => toggleLine('gas')} label={t('analytics.gas') || 'Gas USD'} />
                     <SwitchRow id="hrcc1" checked={visibleLines.hrcc1} onChange={() => toggleLine('hrcc1')} label={t('analytics.hrcc1') || 'HRCC1 USD'} />
+                    <SwitchRow id="vix" checked={visibleLines.vix} onChange={() => toggleLine('vix')} label={t('analytics.vix') || 'VIX'} />
                   </>
                 )}
                 {userRole === 'admin' && (
@@ -497,6 +503,7 @@ export function Analytics() {
                     [t('analytics.rebar')]: item.rebar,
                     [t('analytics.gas')]: item.gas,
                     [t('analytics.hrcc1')]: item.hrcc1,
+                    [t('analytics.vix')]: item.vix,
                     [t('analytics.precioMercado')]: item.precio_mercado,
                     [t('analytics.varillaDistribuidor')]: item.varilla_distribuidor,
                     [t('analytics.varillaCredito')]: item.varilla_credito,
@@ -554,6 +561,7 @@ export function Analytics() {
                             {visibleLines.rebar_mxn && <Line type="monotone" dataKey={t('analytics.rebar_mxn')} stroke="#06b6d4" strokeWidth={2} dot={false} />}
                             {visibleLines.gas_mxn && <Line type="monotone" dataKey={t('analytics.gas_mxn')} stroke="#6aa84f" strokeWidth={2} dot={false} />}
                             {visibleLines.hrcc1_mxn && <Line type="monotone" dataKey={t('analytics.hrcc1_mxn')} stroke="#741b47" strokeWidth={2} dot={false} />}
+                            {visibleLines.vix && <Line type="monotone" dataKey={t('analytics.vix')} stroke="#741b47" strokeWidth={2} dot={false} />}
                           </>
                         ) : (
                           <>
@@ -561,6 +569,7 @@ export function Analytics() {
                             {visibleLines.rebar && <Line type="monotone" dataKey={t('analytics.rebar')} stroke="#06b6d4" strokeWidth={2} dot={false} />}
                             {visibleLines.gas && <Line type="monotone" dataKey={t('analytics.gas')} stroke="#6aa84f" strokeWidth={2} dot={false} />}
                             {visibleLines.hrcc1 && <Line type="monotone" dataKey={t('analytics.hrcc1')} stroke="#741b47" strokeWidth={2} dot={false} />}
+                            {visibleLines.vix && <Line type="monotone" dataKey={t('analytics.vix')} stroke="#741b47" strokeWidth={2} dot={false} />}
                           </>
                         )}
                         {visibleLines.tipoDeCambio && <Line type="monotone" dataKey={t('analytics.tipoDeCambio')} stroke="#10b981" strokeWidth={2} dot={false} />}
